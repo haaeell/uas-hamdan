@@ -203,7 +203,24 @@
             @if($student->status === 'selfie')
                 <div id="selfieStep" class="max-w-3xl mx-auto bg-white border border-slate-200 rounded-[32px] p-6 md:p-8 shadow-sm">
                     <h2 class="text-2xl font-extrabold text-slate-900">Verifikasi Selfie</h2>
-                    <p class="text-slate-500 mt-2 mb-6">Pastikan wajah terlihat jelas dan pencahayaan cukup.</p>
+                    <p class="text-slate-500 mt-2 mb-6">Pastikan wajah terlihat jelas, pencahayaan cukup, dan tunjukkan senyum tipis sebelum mengambil foto.</p>
+
+                    <div class="grid sm:grid-cols-3 gap-3 mb-5">
+                        <div id="faceStatusBadge" class="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3">
+                            <div class="text-xs font-bold uppercase tracking-wide text-slate-500">Deteksi Wajah</div>
+                            <div id="faceStatusText" class="mt-2 text-sm font-extrabold text-slate-700">Menunggu kamera</div>
+                        </div>
+
+                        <div id="smileStatusBadge" class="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3">
+                            <div class="text-xs font-bold uppercase tracking-wide text-slate-500">Deteksi Senyum</div>
+                            <div id="smileStatusText" class="mt-2 text-sm font-extrabold text-slate-700">Belum terdeteksi</div>
+                        </div>
+
+                        <div id="cameraStatusBadge" class="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3">
+                            <div class="text-xs font-bold uppercase tracking-wide text-slate-500">Status Kamera</div>
+                            <div id="cameraStatusText" class="mt-2 text-sm font-extrabold text-slate-700">Memuat...</div>
+                        </div>
+                    </div>
 
                     <video id="video" autoplay playsinline
                         class="w-full aspect-video object-cover rounded-[28px] bg-slate-900 mb-4">
@@ -214,9 +231,9 @@
                     <img id="preview" class="hidden w-full aspect-video object-cover rounded-[28px] mb-4">
 
                     <div class="grid grid-cols-2 gap-3">
-                        <button id="captureBtn" class="btn-primary" type="button">
+                        <button id="captureBtn" class="btn-primary opacity-60 cursor-not-allowed" type="button" disabled>
                             <i class="fa-solid fa-camera"></i>
-                            Ambil Foto
+                            Senyum untuk Ambil Foto
                         </button>
 
                         <button id="retakeBtn" class="btn-secondary hidden" type="button">
@@ -334,6 +351,158 @@
 @endsection
 
 @push('scripts')
+    <script type="module">
+        import vision from 'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14/+esm';
+
+        const { FaceLandmarker, FilesetResolver } = vision;
+
+        window.selfieSmileDetector = {
+            faceLandmarker: null,
+            animationFrameId: null,
+            lastVideoTime: -1,
+            faceDetected: false,
+            smileDetected: false,
+            smileScore: 0,
+            ready: false,
+        };
+
+        async function setupSmileDetector() {
+            if (!document.getElementById('video')) {
+                return;
+            }
+
+            try {
+                const filesetResolver = await FilesetResolver.forVisionTasks(
+                    'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14/wasm'
+                );
+
+                window.selfieSmileDetector.faceLandmarker = await FaceLandmarker.createFromOptions(filesetResolver, {
+                    baseOptions: {
+                        modelAssetPath: 'https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/1/face_landmarker.task',
+                    },
+                    outputFaceBlendshapes: true,
+                    runningMode: 'VIDEO',
+                    numFaces: 1,
+                });
+
+                window.selfieSmileDetector.ready = true;
+                updateCameraStatus('Detektor siap', true);
+            } catch (error) {
+                console.error(error);
+                updateCameraStatus('Detektor gagal dimuat', false, true);
+            }
+        }
+
+        function updateBadgeState(elementId, textId, text, active, warning = false) {
+            const badge = document.getElementById(elementId);
+            const label = document.getElementById(textId);
+
+            if (!badge || !label) {
+                return;
+            }
+
+            badge.className = 'rounded-2xl border px-4 py-3 ' + (
+                active
+                    ? 'border-blue-200 bg-blue-50'
+                    : warning
+                        ? 'border-amber-200 bg-amber-50'
+                        : 'border-slate-200 bg-slate-50'
+            );
+
+            label.className = 'mt-2 text-sm font-extrabold ' + (
+                active
+                    ? 'text-blue-700'
+                    : warning
+                        ? 'text-amber-700'
+                        : 'text-slate-700'
+            );
+
+            label.textContent = text;
+        }
+
+        function updateCameraStatus(text, active, warning = false) {
+            updateBadgeState('cameraStatusBadge', 'cameraStatusText', text, active, warning);
+        }
+
+        function updateFaceStatus(text, active, warning = false) {
+            updateBadgeState('faceStatusBadge', 'faceStatusText', text, active, warning);
+        }
+
+        function updateSmileStatus(text, active, warning = false) {
+            updateBadgeState('smileStatusBadge', 'smileStatusText', text, active, warning);
+        }
+
+        function setCaptureAvailability(canCapture) {
+            const button = document.getElementById('captureBtn');
+
+            if (!button || button.classList.contains('hidden')) {
+                return;
+            }
+
+            button.disabled = !canCapture;
+            button.classList.toggle('opacity-60', !canCapture);
+            button.classList.toggle('cursor-not-allowed', !canCapture);
+            button.innerHTML = canCapture
+                ? '<i class="fa-solid fa-camera"></i> Ambil Foto Sekarang'
+                : '<i class="fa-solid fa-face-smile"></i> Senyum untuk Ambil Foto';
+        }
+
+        window.updateCameraStatus = updateCameraStatus;
+        window.updateFaceStatus = updateFaceStatus;
+        window.updateSmileStatus = updateSmileStatus;
+        window.setCaptureAvailability = setCaptureAvailability;
+
+        function detectSmileLoop() {
+            const detector = window.selfieSmileDetector;
+            const video = document.getElementById('video');
+
+            if (!detector.ready || !detector.faceLandmarker || !video || video.readyState < 2 || $('#video').hasClass('hidden')) {
+                detector.animationFrameId = requestAnimationFrame(detectSmileLoop);
+                return;
+            }
+
+            const nowInMs = performance.now();
+
+            if (video.currentTime !== detector.lastVideoTime) {
+                detector.lastVideoTime = video.currentTime;
+
+                const result = detector.faceLandmarker.detectForVideo(video, nowInMs);
+                const blendshapes = result.faceBlendshapes?.[0]?.categories ?? [];
+                const smileLeft = blendshapes.find(item => item.categoryName === 'mouthSmileLeft')?.score ?? 0;
+                const smileRight = blendshapes.find(item => item.categoryName === 'mouthSmileRight')?.score ?? 0;
+                const smileScore = (smileLeft + smileRight) / 2;
+                const faceDetected = (result.faceLandmarks?.length ?? 0) > 0;
+                const smileDetected = faceDetected && smileScore >= 0.35;
+
+                detector.faceDetected = faceDetected;
+                detector.smileDetected = smileDetected;
+                detector.smileScore = smileScore;
+
+                if (faceDetected) {
+                    updateFaceStatus('Wajah terdeteksi', true);
+                } else {
+                    updateFaceStatus('Arahkan wajah ke kamera', false, true);
+                }
+
+                if (smileDetected) {
+                    updateSmileStatus('Senyum terdeteksi', true);
+                } else if (faceDetected) {
+                    updateSmileStatus('Coba senyum sedikit lagi', false, true);
+                } else {
+                    updateSmileStatus('Belum terdeteksi', false);
+                }
+
+                setCaptureAvailability(faceDetected && smileDetected);
+            }
+
+            detector.animationFrameId = requestAnimationFrame(detectSmileLoop);
+        }
+
+        setupSmileDetector().then(() => {
+            window.selfieSmileDetector.animationFrameId = requestAnimationFrame(detectSmileLoop);
+        });
+    </script>
+
     <script>
         $('#startBtn').on('click', function () {
             $('#biodataForm').removeClass('hidden');
@@ -395,7 +564,15 @@
                 });
 
                 document.getElementById('video').srcObject = stream;
+                if (window.updateCameraStatus) {
+                    window.updateCameraStatus('Kamera aktif', true);
+                } else {
+                    $('#cameraStatusText').text('Kamera aktif');
+                }
             } catch (error) {
+                if (window.updateCameraStatus) {
+                    window.updateCameraStatus('Izin kamera ditolak', false, true);
+                }
                 Swal.fire('Kamera Tidak Aktif', 'Izinkan akses kamera untuk melanjutkan verifikasi selfie.', 'warning');
             }
         }
@@ -403,6 +580,11 @@
         startCamera();
 
         $('#captureBtn').on('click', function () {
+            if (window.selfieSmileDetector && (!window.selfieSmileDetector.faceDetected || !window.selfieSmileDetector.smileDetected)) {
+                Swal.fire('Belum Siap', 'Pastikan wajah terdeteksi dan Anda tersenyum sebelum mengambil foto.', 'warning');
+                return;
+            }
+
             const video = document.getElementById('video');
             const canvas = document.getElementById('canvas');
 
@@ -417,6 +599,8 @@
             $('#video').addClass('hidden');
             $('#retakeBtn, #uploadSelfieBtn').removeClass('hidden');
             $('#captureBtn').addClass('hidden');
+            $('#faceStatusText').text('Foto berhasil diambil');
+            $('#smileStatusText').text('Silakan simpan selfie');
         });
 
         $('#retakeBtn').on('click', function () {
@@ -426,6 +610,10 @@
             $('#video').removeClass('hidden');
             $('#retakeBtn, #uploadSelfieBtn').addClass('hidden');
             $('#captureBtn').removeClass('hidden');
+            if (window.selfieSmileDetector) {
+                window.selfieSmileDetector.faceDetected = false;
+                window.selfieSmileDetector.smileDetected = false;
+            }
         });
 
         $('#uploadSelfieBtn').on('click', function () {
