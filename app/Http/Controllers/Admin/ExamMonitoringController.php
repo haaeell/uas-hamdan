@@ -20,9 +20,17 @@ class ExamMonitoringController extends Controller
                 $join->on('v.student_id', '=', 's.id')
                     ->on('v.test_session_id', '=', 'ts.id');
             })
-            ->whereIn('s.status', ['academic_test', 'psychology_test'])
-            ->where('sts.status', 'in_progress')
-            ->whereNull('sts.finished_at')
+            ->where(function ($query) {
+                $query
+                    ->where(function ($inner) {
+                        $inner->whereNotNull('sts.academic_started_at')
+                            ->whereNull('sts.academic_submitted_at');
+                    })
+                    ->orWhere(function ($inner) {
+                        $inner->whereNotNull('sts.psychology_started_at')
+                            ->whereNull('sts.psychology_submitted_at');
+                    });
+            })
             ->selectRaw("
                 s.id as student_id,
                 s.name,
@@ -38,6 +46,8 @@ class ExamMonitoringController extends Controller
                 sts.started_at,
                 sts.academic_started_at,
                 sts.psychology_started_at,
+                sts.academic_submitted_at,
+                sts.psychology_submitted_at,
                 sts.academic_violation_count,
                 sts.psychology_violation_count,
                 MAX(v.occurred_at) as last_violation_at
@@ -57,6 +67,8 @@ class ExamMonitoringController extends Controller
                 'sts.started_at',
                 'sts.academic_started_at',
                 'sts.psychology_started_at',
+                'sts.academic_submitted_at',
+                'sts.psychology_submitted_at',
                 'sts.academic_violation_count',
                 'sts.psychology_violation_count',
             ])
@@ -65,7 +77,14 @@ class ExamMonitoringController extends Controller
             ->orderBy('s.name')
             ->get()
             ->map(function ($student) use ($academicDuration, $psychologyDuration) {
-                $isAcademic = $student->student_status === 'academic_test';
+                $isAcademicActive = $student->academic_started_at && !$student->academic_submitted_at;
+                $isPsychologyActive = $student->psychology_started_at && !$student->psychology_submitted_at;
+
+                if (!$isAcademicActive && !$isPsychologyActive) {
+                    return null;
+                }
+
+                $isAcademic = $isAcademicActive && !$isPsychologyActive;
                 $durationMinutes = $isAcademic ? $academicDuration : $psychologyDuration;
                 $startedAt = $isAcademic ? $student->academic_started_at : $student->psychology_started_at;
                 $violationCount = $isAcademic
@@ -82,14 +101,17 @@ class ExamMonitoringController extends Controller
                 $student->remaining_seconds = $remainingSeconds;
                 $student->remaining_label = sprintf('%02d:%02d', floor($remainingSeconds / 60), $remainingSeconds % 60);
                 $student->progress_percent = min(100, max(0, round((($durationMinutes * 60) - $remainingSeconds) / max(1, ($durationMinutes * 60)) * 100)));
+                $student->active_exam_key = $isAcademic ? 'academic' : 'psychology';
 
                 return $student;
-            });
+            })
+            ->filter()
+            ->values();
 
         $summary = [
             'active_students' => $students->count(),
-            'academic' => $students->where('student_status', 'academic_test')->count(),
-            'psychology' => $students->where('student_status', 'psychology_test')->count(),
+            'academic' => $students->where('active_exam_key', 'academic')->count(),
+            'psychology' => $students->where('active_exam_key', 'psychology')->count(),
             'high_violation' => $students->where('violation_count', '>=', Setting::getInt('cbt_auto_submit_violation_limit', 3))->count(),
         ];
 
