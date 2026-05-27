@@ -32,7 +32,7 @@ class WizardController extends Controller
 
         $packages = collect();
         if ($student->status === 'package_choice') {
-            $packages = Package::where('is_active')->with('subjects')->get();
+            $packages = Package::where('is_active', true)->with('subjects')->get();
         }
 
         return view('siswa.wizard.index', compact('student', 'packages', 'announcement'));
