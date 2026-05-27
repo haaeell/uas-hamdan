@@ -9,16 +9,25 @@ use App\Models\Setting;
 use App\Models\StudentAcademicAnswer;
 use App\Models\TestResult;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 
 class AcademicTestController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         $student = auth()->user()->student;
 
         abort_if(!$student->selfie, 403, 'Selfie wajib dilakukan sebelum tes.');
         abort_if($student->status !== 'academic_test', 403, 'Tes akademik belum tersedia untuk status Anda.');
+
+        $sessionState = $this->getSessionState($request, $student->id);
+        $durationMinutes = Setting::getInt('academic_duration_minutes', 60);
+        $remainingSeconds = $this->calculateRemainingSeconds($sessionState->academic_started_at, $durationMinutes);
+
+        if ($remainingSeconds <= 0) {
+            return $this->finalizeAcademic($student, $sessionState->test_session_id, true);
+        }
 
         $questions = AcademicQuestion::where('is_active', true)
             ->with('options')
@@ -30,8 +39,10 @@ class AcademicTestController extends Controller
             ->toArray();
 
         $cbtSettings = [
-            'duration_minutes' => Setting::getInt('academic_duration_minutes', 60),
+            'duration_minutes' => $durationMinutes,
+            'remaining_seconds' => $remainingSeconds,
             'violation_limit' => Setting::getInt('cbt_auto_submit_violation_limit', 3),
+            'initial_violation_count' => (int) ($sessionState->academic_violation_count ?? 0),
             'force_fullscreen' => Setting::getBool('cbt_force_fullscreen', true),
             'warning_message' => Setting::getSetting('cbt_warning_message', 'Aktivitas mencurigakan terdeteksi dan dicatat.'),
             'student_help_text' => Setting::getSetting('student_help_text', ''),
@@ -49,6 +60,9 @@ class AcademicTestController extends Controller
 
         $student = auth()->user()->student;
         abort_if($student->status !== 'academic_test', 403, 'Tes akademik belum tersedia untuk status Anda.');
+
+        $sessionState = $this->getSessionState($request, $student->id);
+        abort_if($this->calculateRemainingSeconds($sessionState->academic_started_at, Setting::getInt('academic_duration_minutes', 60)) <= 0, 423, 'Waktu tes akademik sudah habis.');
 
         $option = AcademicQuestionOption::where('id', $validated['academic_question_option_id'])
             ->where('academic_question_id', $validated['academic_question_id'])
@@ -71,12 +85,44 @@ class AcademicTestController extends Controller
         ]);
     }
 
-    public function submit()
+    public function submit(Request $request)
     {
         $student = auth()->user()->student;
         abort_if($student->status !== 'academic_test', 403, 'Tes akademik belum tersedia untuk status Anda.');
 
-        DB::transaction(function () use ($student) {
+        $sessionState = $this->getSessionState($request, $student->id);
+
+        return $this->finalizeAcademic($student, $sessionState->test_session_id);
+    }
+
+    private function getSessionState(Request $request, int $studentId): object
+    {
+        $sessionId = $request->attributes->get('active_test_session_id');
+
+        abort_if(!$sessionId, 403, 'Sesi tes tidak ditemukan.');
+
+        $state = DB::table('student_test_sessions')
+            ->where('student_id', $studentId)
+            ->where('test_session_id', $sessionId)
+            ->first();
+
+        abort_if(!$state, 403, 'State tes siswa tidak ditemukan.');
+
+        return $state;
+    }
+
+    private function calculateRemainingSeconds(?string $startedAt, int $durationMinutes): int
+    {
+        if (!$startedAt) {
+            return $durationMinutes * 60;
+        }
+
+        return max(0, ($durationMinutes * 60) - Carbon::parse($startedAt)->diffInSeconds(now()));
+    }
+
+    private function finalizeAcademic($student, int $sessionId, bool $expired = false)
+    {
+        DB::transaction(function () use ($student, $sessionId) {
             $total = AcademicQuestion::where('is_active', true)->count();
 
             $correct = $student->academicAnswers()
@@ -90,8 +136,22 @@ class AcademicTestController extends Controller
                 ['academic_score' => $score]
             );
 
+            DB::table('student_test_sessions')
+                ->where('student_id', $student->id)
+                ->where('test_session_id', $sessionId)
+                ->update([
+                    'academic_submitted_at' => now(),
+                    'updated_at' => now(),
+                ]);
+
             $student->update(['status' => 'psychology_test']);
         });
+
+        if ($expired) {
+            return redirect()
+                ->route('siswa.psychology.index')
+                ->with('warning', 'Waktu tes akademik sudah habis. Jawaban Anda dikirim otomatis.');
+        }
 
         return response()->json([
             'message' => 'Tes akademik selesai.',

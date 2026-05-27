@@ -5,6 +5,7 @@ namespace App\Http\Middleware;
 use App\Models\TestSession;
 use Closure;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Symfony\Component\HttpFoundation\Response;
 
 class EnsureStudentTestSessionIsOpen
@@ -31,13 +32,50 @@ class EnsureStudentTestSessionIsOpen
                 ->with('warning', 'Sesi tes Anda belum dibuka atau sudah berakhir.');
         }
 
-        $student->testSessions()->syncWithoutDetaching([
-            $session->id => [
+        $examType = $request->routeIs('siswa.psychology.*') ? 'psychology' : 'academic';
+        $now = now();
+
+        $pivot = DB::table('student_test_sessions')
+            ->where('student_id', $student->id)
+            ->where('test_session_id', $session->id)
+            ->first();
+
+        if (!$pivot) {
+            DB::table('student_test_sessions')->insert([
+                'student_id' => $student->id,
+                'test_session_id' => $session->id,
+                'started_at' => $now,
+                'academic_started_at' => $examType === 'academic' ? $now : null,
+                'psychology_started_at' => $examType === 'psychology' ? $now : null,
                 'status' => 'in_progress',
-                'started_at' => now(),
-                'updated_at' => now(),
-            ],
-        ]);
+                'created_at' => $now,
+                'updated_at' => $now,
+            ]);
+        } else {
+            $updates = [
+                'status' => 'in_progress',
+                'updated_at' => $now,
+            ];
+
+            if (!$pivot->started_at) {
+                $updates['started_at'] = $now;
+            }
+
+            if ($examType === 'academic' && !$pivot->academic_started_at) {
+                $updates['academic_started_at'] = $now;
+            }
+
+            if ($examType === 'psychology' && !$pivot->psychology_started_at) {
+                $updates['psychology_started_at'] = $now;
+            }
+
+            DB::table('student_test_sessions')
+                ->where('student_id', $student->id)
+                ->where('test_session_id', $session->id)
+                ->update($updates);
+        }
+
+        $request->attributes->set('active_test_session_id', $session->id);
 
         return $next($request);
     }

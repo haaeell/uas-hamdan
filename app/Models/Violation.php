@@ -8,6 +8,7 @@ class Violation extends Model
 {
     protected $fillable = [
         'student_id',
+        'test_session_id',
         'exam_type',
         'action',
         'violation_count',
@@ -25,5 +26,10 @@ class Violation extends Model
     public function student()
     {
         return $this->belongsTo(Student::class);
+    }
+
+    public function testSession()
+    {
+        return $this->belongsTo(TestSession::class);
     }
 }

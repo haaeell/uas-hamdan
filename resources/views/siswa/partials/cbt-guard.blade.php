@@ -8,7 +8,7 @@
             this.maxViolations = config.maxViolations || 3;
             this.warningMessage = config.warningMessage || 'Aktivitas mencurigakan terdeteksi dan dicatat.';
             this.forceFullscreenEnabled = config.forceFullscreen !== false;
-            this.violationCount = 0;
+            this.violationCount = config.initialViolationCount || 0;
             this.isSubmitting = false;
             this.storageKey = `backup_${this.examType}`;
         }
@@ -76,10 +76,11 @@
                 _token: this.csrf,
                 exam_type: this.examType,
                 action: action,
-                violation_count: this.violationCount,
                 device_info: this.deviceInfo()
-            }).always(() => {
-                if (this.violationCount >= this.maxViolations) {
+            }).done((response) => {
+                this.violationCount = Number(response.total_violations || this.violationCount);
+
+                if (response.auto_submit || this.violationCount >= this.maxViolations) {
                     Swal.fire({
                         icon: 'error',
                         title: 'Batas Pelanggaran Tercapai',
@@ -91,6 +92,14 @@
                     return;
                 }
 
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Peringatan',
+                    text: this.warningMessage,
+                    allowOutsideClick: false,
+                    confirmButtonText: 'Saya Mengerti'
+                });
+            }).fail(() => {
                 Swal.fire({
                     icon: 'warning',
                     title: 'Peringatan',

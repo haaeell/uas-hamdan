@@ -150,6 +150,7 @@ const guard = new CBTGuard({
     submitUrl: '{{ route("siswa.psychology.submit") }}',
     csrf: '{{ csrf_token() }}',
     maxViolations: {{ (int) $cbtSettings['violation_limit'] }},
+    initialViolationCount: {{ (int) $cbtSettings['initial_violation_count'] }},
     warningMessage: @json($cbtSettings['warning_message']),
     forceFullscreen: {{ $cbtSettings['force_fullscreen'] ? 'true' : 'false' }}
 });
@@ -157,7 +158,7 @@ const guard = new CBTGuard({
 guard.init();
 
 const totalQuestions = {{ $questions->count() }};
-let remainingSeconds = {{ (int) $cbtSettings['duration_minutes'] * 60 }};
+let remainingSeconds = {{ (int) $cbtSettings['remaining_seconds'] }};
 
 function formatTime(totalSeconds) {
     const minutes = Math.floor(totalSeconds / 60);
@@ -226,6 +227,11 @@ $('.answer-option').on('change', function () {
         _token: '{{ csrf_token() }}',
         psychology_question_id: questionId,
         psychology_question_option_id: optionId
+    }).fail(function (xhr) {
+        if (xhr.status === 423) {
+            Swal.fire('Waktu Habis', 'Jawaban akan dikirim otomatis.', 'info')
+                .then(() => guard.submitExam());
+        }
     });
 });
 
