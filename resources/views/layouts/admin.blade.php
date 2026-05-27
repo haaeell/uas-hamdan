@@ -318,6 +318,12 @@
                     <span>Pelanggaran CBT</span>
                 </a>
 
+                <a href="{{ route('admin.exam-monitoring.index') }}"
+                    class=" sidebar-link {{ request()->routeIs('admin.exam-monitoring.*') ? 'active' : '' }}">
+                    <i class="fa-solid fa-desktop"></i>
+                    <span>Monitoring Ujian</span>
+                </a>
+
                 <div class="menu-title">Laporan</div>
 
                 <a href="{{ route('admin.test-results.index') }}"

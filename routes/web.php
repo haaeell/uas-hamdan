@@ -5,6 +5,7 @@ use App\Http\Controllers\Admin\ActivityLogController;
 use App\Http\Controllers\Admin\AnnouncementController;
 use App\Http\Controllers\Admin\ClassDistributionController;
 use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\ExamMonitoringController;
 use App\Http\Controllers\Admin\PackageController;
 use App\Http\Controllers\Admin\PsychologyQuestionController;
 use App\Http\Controllers\Admin\SettingController;
@@ -51,6 +52,9 @@ Route::middleware(['auth', 'role:admin'])
 
         Route::get('/dashboard', [DashboardController::class, 'index'])
             ->name('dashboard');
+
+        Route::get('/exam-monitoring', [ExamMonitoringController::class, 'index'])
+            ->name('exam-monitoring.index');
 
         /*
         |--------------------------------------------------------------------------
