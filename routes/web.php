@@ -241,6 +241,29 @@ Route::middleware(['auth', 'role:siswa'])
         | CBT AKADEMIK
         |--------------------------------------------------------------------------
         */
+        // Route::middleware('test.session.open')->group(function () {
+
+        //     Route::get('/academic-test', [AcademicTestController::class, 'index'])
+        //         ->name('academic.index');
+
+        //     Route::post('/academic-test/autosave', [AcademicTestController::class, 'autosave'])
+        //         ->name('academic.autosave');
+
+        //     Route::post('/academic-test/submit', [AcademicTestController::class, 'submit'])
+        //         ->name('academic.submit');
+
+        //     Route::get('/psychology-test', [PsychologyTestController::class, 'index'])
+        //         ->name('psychology.index');
+
+        //     Route::post('/psychology-test/autosave', [PsychologyTestController::class, 'autosave'])
+        //         ->name('psychology.autosave');
+
+        //     Route::post('/psychology-test/submit', [PsychologyTestController::class, 'submit'])
+        //         ->name('psychology.submit');
+
+        //     Route::post('/violations', [ViolationController::class, 'store'])
+        //         ->name('violations.store');
+        // });
         Route::get('/academic-test', [AcademicTestController::class, 'index'])
             ->name('academic.index');
 

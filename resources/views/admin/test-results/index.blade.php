@@ -14,16 +14,6 @@
         </div>
 
         <div class="flex flex-wrap gap-3">
-            <form id="distributeForm" method="POST" action="{{ route('admin.test-results.distribute') }}">
-                @csrf
-
-                <button type="button"
-                    onclick="confirmDelete('distributeForm')"
-                    class="inline-flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-5 py-3 rounded-2xl font-extrabold shadow-lg shadow-blue-200 transition">
-                    <i class="fa-solid fa-random"></i>
-                    Bagi Otomatis
-                </button>
-            </form>
 
             <a href="{{ route('admin.test-results.export') }}"
                 class="inline-flex items-center justify-center gap-2 bg-blue-50 hover:bg-blue-100 text-blue-700 px-5 py-3 rounded-2xl font-extrabold transition">

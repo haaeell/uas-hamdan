@@ -6,50 +6,66 @@ use App\Models\ClassGroup;
 use App\Models\ClassStudent;
 use App\Models\Package;
 use App\Models\TestResult;
-use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
 class ClassDistributionService
 {
+    private int $classCapacity = 30;
+
     public function distribute(): void
     {
         DB::transaction(function () {
+            // Hapus hasil auto lama, manual tetap aman
             ClassStudent::where('is_manual_override', false)->delete();
+
+            // Hapus kelas kosong yang belum dikunci
+            ClassGroup::where('is_locked', false)
+                ->whereDoesntHave('students')
+                ->delete();
 
             $packages = Package::where('is_active', true)->get()->keyBy('id');
 
-            $results = TestResult::with([
-                'student.packageChoice',
-                'student',
-                'recommendedPackage',
-            ])
+            $results = TestResult::with(['student'])
                 ->where('is_locked', false)
                 ->whereNotNull('recommended_package_id')
                 ->get()
-                ->sortByDesc(fn($result) => $this->priorityScore($result));
+                ->filter(fn($result) => $packages->has($result->recommended_package_id))
+                ->groupBy('recommended_package_id');
 
-            foreach ($results as $result) {
-                $packageId = $this->resolveBestPackage($result, $packages);
+            foreach ($results as $packageId => $packageResults) {
+                $package = $packages[$packageId];
 
-                if (!$packageId) {
-                    continue;
+                $sortedResults = $packageResults
+                    ->sortByDesc(fn($result) => (float) $result->academic_score)
+                    ->values();
+
+                foreach ($sortedResults->chunk($this->classCapacity) as $index => $chunk) {
+                    $classGroup = ClassGroup::firstOrCreate(
+                        [
+                            'package_id' => $packageId,
+                            'name' => 'XI ' . $package->code . ' ' . ($index + 1),
+                        ],
+                        [
+                            'capacity' => $this->classCapacity,
+                            'is_locked' => false,
+                        ]
+                    );
+
+                    foreach ($chunk as $result) {
+                        ClassStudent::updateOrCreate(
+                            ['student_id' => $result->student_id],
+                            [
+                                'class_group_id' => $classGroup->id,
+                                'package_id' => $packageId,
+                                'is_manual_override' => false,
+                            ]
+                        );
+
+                        $result->update([
+                            'final_package_id' => $packageId,
+                        ]);
+                    }
                 }
-
-                $classGroup = $this->findAvailableClass($packageId)
-                    ?? $this->createNextClass($packageId);
-
-                ClassStudent::updateOrCreate(
-                    ['student_id' => $result->student_id],
-                    [
-                        'class_group_id' => $classGroup->id,
-                        'package_id' => $packageId,
-                        'is_manual_override' => false,
-                    ]
-                );
-
-                $result->update([
-                    'final_package_id' => $packageId,
-                ]);
             }
         });
     }
@@ -59,7 +75,13 @@ class ClassDistributionService
         DB::transaction(function () use ($studentId, $classGroupId) {
             $classGroup = ClassGroup::findOrFail($classGroupId);
 
-            $currentCount = $classGroup->students()->count();
+            if ($classGroup->is_locked) {
+                abort(422, 'Kelas sudah dikunci.');
+            }
+
+            $currentCount = $classGroup->students()
+                ->where('student_id', '!=', $studentId)
+                ->count();
 
             if ($currentCount >= $classGroup->capacity) {
                 abort(422, 'Kapasitas kelas sudah penuh.');
@@ -86,71 +108,5 @@ class ClassDistributionService
             TestResult::query()->update(['is_locked' => true]);
             ClassGroup::query()->update(['is_locked' => true]);
         });
-    }
-
-    private function priorityScore(TestResult $result): float
-    {
-        $choice = $result->student?->packageChoice;
-
-        $choiceBonus = 0;
-
-        if ($choice?->first_package_id === $result->recommended_package_id) {
-            $choiceBonus = 20;
-        } elseif ($choice?->second_package_id === $result->recommended_package_id) {
-            $choiceBonus = 10;
-        }
-
-        return ((float) $result->academic_score * 0.7) + $choiceBonus;
-    }
-
-    private function resolveBestPackage(TestResult $result, Collection $packages): ?int
-    {
-        $choice = $result->student?->packageChoice;
-
-        $candidates = array_filter([
-            $result->recommended_package_id,
-            $choice?->first_package_id,
-            $choice?->second_package_id,
-        ]);
-
-        foreach (array_unique($candidates) as $packageId) {
-            if ($packages->has($packageId) && $this->packageHasCapacity($packageId)) {
-                return $packageId;
-            }
-        }
-
-        return null;
-    }
-
-    private function packageHasCapacity(int $packageId): bool
-    {
-        $package = Package::findOrFail($packageId);
-
-        $used = ClassStudent::where('package_id', $packageId)->count();
-
-        return $used < $package->capacity;
-    }
-
-    private function findAvailableClass(int $packageId): ?ClassGroup
-    {
-        return ClassGroup::where('package_id', $packageId)
-            ->where('is_locked', false)
-            ->withCount('students')
-            ->get()
-            ->first(fn($class) => $class->students_count < 30);
-    }
-
-    private function createNextClass(int $packageId): ClassGroup
-    {
-        $package = Package::findOrFail($packageId);
-
-        $number = ClassGroup::where('package_id', $packageId)->count() + 1;
-
-        return ClassGroup::create([
-            'package_id' => $packageId,
-            'name' => 'XI ' . $package->code . ' ' . $number,
-            'capacity' => 30,
-            'is_locked' => false,
-        ]);
     }
 }

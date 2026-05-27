@@ -356,7 +356,7 @@ class DatabaseSeeder extends Seeder
                 [
                     'package_id' => $ipa,
                     'name' => 'XI IPA 1',
-                    'capacity' => 36,
+                    'capacity' => 30,
                     'is_locked' => false,
                     'created_at' => now(),
                     'updated_at' => now(),
@@ -364,7 +364,7 @@ class DatabaseSeeder extends Seeder
                 [
                     'package_id' => $ipa,
                     'name' => 'XI IPA 2',
-                    'capacity' => 36,
+                    'capacity' => 30,
                     'is_locked' => false,
                     'created_at' => now(),
                     'updated_at' => now(),
@@ -372,7 +372,7 @@ class DatabaseSeeder extends Seeder
                 [
                     'package_id' => $ips,
                     'name' => 'XI IPS 1',
-                    'capacity' => 36,
+                    'capacity' => 30,
                     'is_locked' => false,
                     'created_at' => now(),
                     'updated_at' => now(),
