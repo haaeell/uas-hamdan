@@ -37,6 +37,7 @@ class AnnouncementController extends Controller
     public function accept(Announcement $announcement)
     {
         $student = auth()->user()->student;
+        abort_if(!$announcement->is_published, 404);
 
         AnnouncementResponse::updateOrCreate(
             [

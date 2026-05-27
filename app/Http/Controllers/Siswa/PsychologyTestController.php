@@ -46,6 +46,7 @@ class PsychologyTestController extends Controller
         ]);
 
         $student = auth()->user()->student;
+        abort_if($student->status !== 'psychology_test', 403, 'Tes psikologi belum tersedia untuk status Anda.');
 
         StudentPsychologyAnswer::updateOrCreate(
             [
@@ -66,6 +67,7 @@ class PsychologyTestController extends Controller
     public function submit(PsychologyScoringService $scoringService)
     {
         $student = auth()->user()->student;
+        abort_if($student->status !== 'psychology_test', 403, 'Tes psikologi belum tersedia untuk status Anda.');
 
         DB::transaction(function () use ($student, $scoringService) {
             $scoringService->calculate($student);

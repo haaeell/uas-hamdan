@@ -107,6 +107,7 @@ class WizardController extends Controller
         $image = base64_decode($image, true);
 
         abort_if($image === false, 422, 'Foto tidak valid.');
+        abort_if(strlen($image) > (5 * 1024 * 1024), 422, 'Ukuran foto terlalu besar.');
 
         $path = 'selfies/student-' . $student->id . '-' . now()->timestamp . '.jpg';
 

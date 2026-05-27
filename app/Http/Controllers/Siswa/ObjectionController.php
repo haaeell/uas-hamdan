@@ -13,6 +13,8 @@ class ObjectionController extends Controller
 {
     public function store(Request $request, Announcement $announcement)
     {
+        abort_if(!$announcement->is_published, 404);
+
         $validated = $request->validate([
             'reason' => ['required', 'string', 'min:10'],
         ]);

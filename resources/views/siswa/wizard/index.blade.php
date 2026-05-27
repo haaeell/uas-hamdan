@@ -94,26 +94,33 @@
                     </div>
 
                     <div class="grid md:grid-cols-2 gap-4">
-                        <input name="birth_place" placeholder="Tempat lahir" class="input" required>
-                        <input type="date" name="birth_date" class="input" required>
+                        <input name="birth_place" placeholder="Tempat lahir" class="input"
+                            value="{{ old('birth_place', $student->biodata?->birth_place) }}" required>
+                        <input type="date" name="birth_date" class="input"
+                            value="{{ old('birth_date', optional($student->biodata?->birth_date)->format('Y-m-d') ?? $student->biodata?->birth_date) }}"
+                            required>
                     </div>
 
                     <select name="gender" class="input" required>
                         <option value="">Jenis Kelamin</option>
-                        <option value="L">Laki-laki</option>
-                        <option value="P">Perempuan</option>
+                        <option value="L" {{ old('gender', $student->biodata?->gender) === 'L' ? 'selected' : '' }}>Laki-laki</option>
+                        <option value="P" {{ old('gender', $student->biodata?->gender) === 'P' ? 'selected' : '' }}>Perempuan</option>
                     </select>
 
-                    <textarea name="address" rows="4" placeholder="Alamat lengkap" class="input" required></textarea>
+                    <textarea name="address" rows="4" placeholder="Alamat lengkap" class="input" required>{{ old('address', $student->biodata?->address) }}</textarea>
 
                     <div class="grid md:grid-cols-2 gap-4">
-                        <input name="phone" placeholder="No HP siswa" class="input">
-                        <input name="parent_phone" placeholder="No HP orang tua" class="input" required>
+                        <input name="phone" placeholder="No HP siswa" class="input"
+                            value="{{ old('phone', $student->biodata?->phone) }}">
+                        <input name="parent_phone" placeholder="No HP orang tua" class="input"
+                            value="{{ old('parent_phone', $student->biodata?->parent_phone) }}" required>
                     </div>
 
                     <div class="grid md:grid-cols-2 gap-4">
-                        <input name="father_name" placeholder="Nama ayah" class="input" required>
-                        <input name="mother_name" placeholder="Nama ibu" class="input" required>
+                        <input name="father_name" placeholder="Nama ayah" class="input"
+                            value="{{ old('father_name', $student->biodata?->father_name) }}" required>
+                        <input name="mother_name" placeholder="Nama ibu" class="input"
+                            value="{{ old('mother_name', $student->biodata?->mother_name) }}" required>
                     </div>
 
                     <button type="submit" class="btn-primary">
@@ -131,6 +138,10 @@
                         <h2 class="text-2xl font-extrabold text-slate-900">Pilih Jurusan</h2>
                         <p class="text-slate-500 mt-2">Pelajari jurusan yang tersedia, lalu tentukan pilihan pertama dan kedua.
                         </p>
+
+                        <div class="mt-4 rounded-2xl border border-blue-100 bg-blue-50 px-4 py-3 text-sm text-blue-700">
+                            Pilihan 1 dan Pilihan 2 harus berbeda. Pilih sesuai minat utama dan cadangan Anda.
+                        </div>
 
                         <div class="grid md:grid-cols-2 gap-4 mt-6">
                             @foreach($packages as $package)
@@ -164,14 +175,20 @@
                         <select name="first_package_id" class="input" required>
                             <option value="">Pilihan 1</option>
                             @foreach($packages as $package)
-                                <option value="{{ $package->id }}">{{ $package->name }}</option>
+                                <option value="{{ $package->id }}"
+                                    {{ (string) old('first_package_id', $student->packageChoice?->first_package_id) === (string) $package->id ? 'selected' : '' }}>
+                                    {{ $package->name }}
+                                </option>
                             @endforeach
                         </select>
 
                         <select name="second_package_id" class="input" required>
                             <option value="">Pilihan 2</option>
                             @foreach($packages as $package)
-                                <option value="{{ $package->id }}">{{ $package->name }}</option>
+                                <option value="{{ $package->id }}"
+                                    {{ (string) old('second_package_id', $student->packageChoice?->second_package_id) === (string) $package->id ? 'selected' : '' }}>
+                                    {{ $package->name }}
+                                </option>
                             @endforeach
                         </select>
 

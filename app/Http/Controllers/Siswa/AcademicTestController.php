@@ -18,6 +18,7 @@ class AcademicTestController extends Controller
         $student = auth()->user()->student;
 
         abort_if(!$student->selfie, 403, 'Selfie wajib dilakukan sebelum tes.');
+        abort_if($student->status !== 'academic_test', 403, 'Tes akademik belum tersedia untuk status Anda.');
 
         $questions = AcademicQuestion::where('is_active', true)
             ->with('options')
@@ -47,6 +48,7 @@ class AcademicTestController extends Controller
         ]);
 
         $student = auth()->user()->student;
+        abort_if($student->status !== 'academic_test', 403, 'Tes akademik belum tersedia untuk status Anda.');
 
         $option = AcademicQuestionOption::where('id', $validated['academic_question_option_id'])
             ->where('academic_question_id', $validated['academic_question_id'])
@@ -72,6 +74,7 @@ class AcademicTestController extends Controller
     public function submit()
     {
         $student = auth()->user()->student;
+        abort_if($student->status !== 'academic_test', 403, 'Tes akademik belum tersedia untuk status Anda.');
 
         DB::transaction(function () use ($student) {
             $total = AcademicQuestion::where('is_active', true)->count();
