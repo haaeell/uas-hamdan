@@ -110,20 +110,28 @@
                                 Ajukan Keberatan
                             </button>
                         </form>
-                    @elseif($response)
+                    @elseif($response || ($announcement->type === 'final' && $classStudent))
                         <div class="space-y-4">
                             <div class="bg-blue-50 border border-blue-100 text-blue-700 rounded-[28px] p-5">
-                                <p class="font-bold">Respons Anda: {{ $response->response === 'accepted' ? 'Diterima' : 'Mengajukan keberatan' }}</p>
-                                @if($response->responded_at)
+                                @if($response)
+                                    <p class="font-bold">Respons Anda: {{ $response->response === 'accepted' ? 'Diterima' : 'Mengajukan keberatan' }}</p>
+                                @else
+                                    <p class="font-bold">Pengumuman final sudah tersedia.</p>
+                                @endif
+
+                                @if($response?->responded_at)
                                     <p class="text-sm mt-1">Dikirim pada {{ $response->responded_at->translatedFormat('d F Y H:i') }}</p>
+                                @elseif($announcement->type === 'final' && $announcement->published_at)
+                                    <p class="text-sm mt-1">Dipublikasikan pada {{ $announcement->published_at->translatedFormat('d F Y H:i') }}</p>
                                 @endif
                             </div>
 
-                            @if($response->response === 'accepted' && $classStudent)
+                            @if((($response && $response->response === 'accepted') || $announcement->type === 'final') && $classStudent)
                                 <a href="{{ route('siswa.announcements.letter', $announcement) }}"
+                                    target="_blank" rel="noopener"
                                     class="w-full inline-flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white py-4 rounded-2xl font-extrabold shadow-lg shadow-blue-200 transition">
                                     <i class="fa-solid fa-file-pdf"></i>
-                                    Download Surat Keterangan PDF
+                                    Lihat Surat Keterangan PDF
                                 </a>
                             @endif
                         </div>

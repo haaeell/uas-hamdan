@@ -6,6 +6,7 @@
         $schoolName = \App\Models\Setting::getSetting('school_name', 'Sekolah Menengah Atas');
         $loginHelpText = \App\Models\Setting::getSetting('login_help_text', 'Gunakan email admin atau NISN siswa untuk melanjutkan.');
         $supportContact = \App\Models\Setting::getSetting('support_contact', 'Hubungi admin sekolah');
+        $logoUrl = \App\Models\Setting::logoUrl();
     @endphp
     <div class="min-h-screen bg-slate-100 flex items-center justify-center px-4 py-10">
 
@@ -22,8 +23,8 @@
                 <div class="relative z-10 flex flex-col justify-between w-full">
                     <div>
                         <div
-                            class="w-16 h-16 rounded-3xl bg-white/15 backdrop-blur-xl border border-white/20 flex items-center justify-center shadow-xl">
-                            <i class="fa-solid fa-graduation-cap text-3xl"></i>
+                            class="w-16 h-16 rounded-3xl bg-white/15 backdrop-blur-xl border border-white/20 flex items-center justify-center shadow-xl overflow-hidden p-2">
+                            <img src="{{ $logoUrl }}" alt="Logo {{ $schoolName }}" class="w-full h-full object-contain">
                         </div>
 
                         <h1 class="text-4xl font-extrabold mt-8 leading-tight">
@@ -61,8 +62,8 @@
                     {{-- Mobile Logo --}}
                     <div class="lg:hidden flex justify-center mb-8">
                         <div
-                            class="w-16 h-16 rounded-3xl bg-blue-600 text-white flex items-center justify-center shadow-lg shadow-blue-200">
-                            <i class="fa-solid fa-graduation-cap text-3xl"></i>
+                            class="w-16 h-16 rounded-3xl bg-blue-600 text-white flex items-center justify-center shadow-lg shadow-blue-200 overflow-hidden p-2">
+                            <img src="{{ $logoUrl }}" alt="Logo {{ $schoolName }}" class="w-full h-full object-contain">
                         </div>
                     </div>
 

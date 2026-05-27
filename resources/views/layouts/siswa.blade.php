@@ -2,9 +2,14 @@
 <html lang="id">
 
 <head>
+    @php
+        $appName = \App\Models\Setting::getSetting('app_name', 'Sistem Pemilihan Jurusan');
+        $logoUrl = \App\Models\Setting::logoUrl();
+    @endphp
     <meta charset="UTF-8">
-    <title>Siswa - Pemilihan Jurusan</title>
+    <title>Siswa - {{ $appName }}</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" type="image/png" href="{{ $logoUrl }}">
 
     <script src="https://cdn.tailwindcss.com"></script>
 

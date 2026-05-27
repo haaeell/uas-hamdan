@@ -5,10 +5,12 @@
     @php
         $appName = \App\Models\Setting::getSetting('app_name', 'Sistem Pemilihan Jurusan');
         $schoolName = \App\Models\Setting::getSetting('school_name', 'Pemilihan Jurusan');
+        $logoUrl = \App\Models\Setting::logoUrl();
     @endphp
     <meta charset="UTF-8">
     <title>Admin - {{ $appName }}</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" type="image/png" href="{{ $logoUrl }}">
 
     {{-- Tailwind --}}
     <script src="https://cdn.tailwindcss.com"></script>
@@ -259,8 +261,8 @@
             {{-- Brand --}}
             <div class="h-20 px-6 flex items-center border-b border-slate-100">
                 <div
-                    class="w-11 h-11 rounded-2xl bg-gradient-to-br from-blue-600 to-blue-400 flex items-center justify-center text-white shadow-lg shadow-blue-200">
-                    <i class="fa-solid fa-graduation-cap text-lg"></i>
+                    class="w-11 h-11 rounded-2xl bg-gradient-to-br from-blue-600 to-blue-400 flex items-center justify-center text-white shadow-lg shadow-blue-200 overflow-hidden p-2">
+                    <img src="{{ $logoUrl }}" alt="Logo {{ $schoolName }}" class="w-full h-full object-contain">
                 </div>
 
                 <div class="ml-3">

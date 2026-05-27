@@ -2,10 +2,15 @@
 <html lang="id">
 
 <head>
+    @php
+        $appName = \App\Models\Setting::getSetting('app_name', 'Sistem Pemilihan Jurusan');
+        $logoUrl = \App\Models\Setting::logoUrl();
+    @endphp
     <meta charset="UTF-8">
-    <title>@yield('title', 'Sistem Pemilihan Jurusan')</title>
+    <title>@yield('title', $appName)</title>
 
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" type="image/png" href="{{ $logoUrl }}">
 
     {{-- Fonts --}}
     <link rel="preconnect" href="https://fonts.googleapis.com">

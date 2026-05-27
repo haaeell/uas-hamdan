@@ -67,10 +67,11 @@ class AnnouncementController extends Controller
 
         $response = AnnouncementResponse::where('announcement_id', $announcement->id)
             ->where('student_id', $student->id)
-            ->where('response', 'accepted')
             ->first();
 
-        abort_if(!$response, 403, 'Surat hanya tersedia setelah pengumuman diterima.');
+        if ($announcement->type !== 'final') {
+            abort_if(!$response || $response->response !== 'accepted', 403, 'Surat hanya tersedia setelah pengumuman diterima.');
+        }
 
         $classStudent = $student->classStudent()
             ->with('classGroup.package')
@@ -89,28 +90,11 @@ class AnnouncementController extends Controller
             'appName' => Setting::getSetting('app_name', 'Sistem Pemilihan Jurusan'),
             'supportContact' => Setting::getSetting('support_contact', 'Hubungi admin sekolah'),
             'issuedDate' => $today->translatedFormat('d F Y'),
-            'logoDataUri' => $this->imageDataUri(public_path('images/logo.png')),
+            'logoDataUri' => Setting::logoDataUri(),
         ])->setPaper('a4', 'portrait');
 
         $filename = 'surat_keterangan_penempatan_' . $student->nisn . '.pdf';
 
-        return $pdf->download($filename);
-    }
-
-    private function imageDataUri(string $path): ?string
-    {
-        if (!is_file($path)) {
-            return null;
-        }
-
-        $extension = strtolower(pathinfo($path, PATHINFO_EXTENSION));
-        $mimeType = match ($extension) {
-            'jpg', 'jpeg' => 'image/jpeg',
-            'gif' => 'image/gif',
-            'webp' => 'image/webp',
-            default => 'image/png',
-        };
-
-        return 'data:' . $mimeType . ';base64,' . base64_encode(file_get_contents($path));
+        return $pdf->stream($filename);
     }
 }

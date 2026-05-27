@@ -57,6 +57,7 @@ class ReportController extends Controller
             'schoolName' => Setting::getSetting('school_name', 'Sekolah Menengah Atas'),
             'appName' => Setting::getSetting('app_name', 'Sistem Pemilihan Jurusan'),
             'generatedAt' => now()->translatedFormat('d F Y H:i'),
+            'logoDataUri' => Setting::logoDataUri(),
         ])->setPaper('a4', 'landscape');
 
         return $pdf->download($report['filename'] . '.pdf');

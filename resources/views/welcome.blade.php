@@ -9,16 +9,16 @@
     <meta name="description" content="Cek pengumuman kelulusan siswa secara online dengan cepat dan mudah.">
     <meta name="keywords" content="kelulusan, siswa, pengumuman, sekolah">
     <meta name="author" content="Sekolah">
-    <link rel="icon" type="image/png" href="{{ asset('images/logo.png') }}">
+    <link rel="icon" type="image/png" href="{{ \App\Models\Setting::logoUrl() }}">
     <meta property="og:title" content="Pengumuman Kelulusan Siswa">
     <meta property="og:description" content="Cek hasil kelulusanmu sekarang juga secara online.">
-    <meta property="og:image" content="{{ asset('images/logo.png') }}">
+    <meta property="og:image" content="{{ \App\Models\Setting::logoUrl() }}">
     <meta property="og:type" content="website">
     <meta property="og:locale" content="id_ID">
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="Pengumuman Kelulusan Siswa">
     <meta name="twitter:description" content="Cek hasil kelulusanmu sekarang juga.">
-    <meta name="twitter:image" content="{{ asset('images/logo.png') }}">
+    <meta name="twitter:image" content="{{ \App\Models\Setting::logoUrl() }}">
     <meta name="theme-color" content="#4f46e5">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link
@@ -153,7 +153,7 @@
 
     <header class="bg-white border-b border-gray-100 sticky top-0 z-50">
         <div class="max-w-6xl mx-auto px-4 sm:px-6 h-14 sm:h-16 flex items-center gap-3">
-            <img src="{{ asset('images/logo.png') }}"
+            <img src="{{ \App\Models\Setting::logoUrl() }}"
                 class="w-7 h-7 sm:w-8 sm:h-8 rounded-lg object-cover flex-shrink-0" alt="Logo">
             <span class="text-xs sm:text-sm font-semibold text-gray-800 truncate">SMA Plus Asthahannas — Pengumuman
                 Kelulusan</span>

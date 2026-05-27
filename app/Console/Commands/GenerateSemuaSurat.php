@@ -28,7 +28,7 @@ class GenerateSemuaSurat extends Command
                 'issued_at'      => '4 Mei 2026',
                 'kepala_sekolah' => 'Yanto Susanto, S.Pd., M.IP.',
                 'nip_kepsek'     => '...',
-                'logo_url' => 'data:image/png;base64,'  . base64_encode(file_get_contents(public_path('images/logo.png'))),
+                'logo_url' => \App\Models\Setting::logoDataUri(),
                 'cap_url'  => 'data:image/png;base64,'  . base64_encode(file_get_contents(public_path('images/cap.png'))),
                 'ttd_url'  => 'data:image/png;base64,'  . base64_encode(file_get_contents(public_path('images/ttd.png'))),
                 'kop'      => 'data:image/jpeg;base64,' . base64_encode(file_get_contents(public_path('images/kop.jpeg'))),

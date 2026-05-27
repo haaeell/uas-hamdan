@@ -16,9 +16,23 @@
         }
 
         .header {
+            width: 100%;
             border-bottom: 2px solid #0f172a;
             padding-bottom: 12px;
             margin-bottom: 18px;
+        }
+
+        .logo-cell {
+            width: 72px;
+            vertical-align: top;
+        }
+
+        .logo {
+            width: 58px;
+        }
+
+        .header-text {
+            padding-left: 10px;
         }
 
         .title {
@@ -70,11 +84,20 @@
 </head>
 <body>
     <div class="page">
-        <div class="header">
-            <div class="title">{{ $title }}</div>
-            <p class="subtitle">{{ $subtitle }}</p>
-            <div class="meta">{{ $schoolName }} | {{ $appName }} | Digenerate: {{ $generatedAt }}</div>
-        </div>
+        <table class="header">
+            <tr>
+                <td class="logo-cell">
+                    @if($logoDataUri)
+                        <img src="{{ $logoDataUri }}" alt="Logo sekolah" class="logo">
+                    @endif
+                </td>
+                <td class="header-text">
+                    <div class="title">{{ $title }}</div>
+                    <p class="subtitle">{{ $subtitle }}</p>
+                    <div class="meta">{{ $schoolName }} | {{ $appName }} | Digenerate: {{ $generatedAt }}</div>
+                </td>
+            </tr>
+        </table>
 
         <div class="summary">
             @foreach($summaryLines as $line)
