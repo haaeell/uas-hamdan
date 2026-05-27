@@ -22,7 +22,7 @@ class WizardController extends Controller
             'packageChoice',
         ])->firstOrFail();
 
-        if (!in_array($student->status, ['onboarding', 'biodata', 'package_choice', 'selfie'], true)) {
+        if (!in_array($student->status, ['onboarding', 'biodata', 'package_choice', 'selfie', 'waiting_session'], true)) {
             return redirect()->route($this->studentRoute($student));
         }
 
