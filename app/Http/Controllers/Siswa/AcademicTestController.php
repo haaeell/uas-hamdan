@@ -19,7 +19,7 @@ class AcademicTestController extends Controller
         $student = auth()->user()->student;
 
         abort_if(!$student->selfie, 403, 'Selfie wajib dilakukan sebelum tes.');
-        abort_if($student->status !== 'academic_test', 403, 'Tes akademik belum tersedia untuk status Anda.');
+        abort_if($student->status !== 'onboarding', 403, 'Tes akademik belum tersedia untuk status Anda.');
 
         $sessionState = $this->getSessionState($request, $student->id);
         $durationMinutes = Setting::getInt('academic_duration_minutes', 60);
@@ -59,7 +59,7 @@ class AcademicTestController extends Controller
         ]);
 
         $student = auth()->user()->student;
-        abort_if($student->status !== 'academic_test', 403, 'Tes akademik belum tersedia untuk status Anda.');
+        abort_if($student->status !== 'onboarding', 403, 'Tes akademik belum tersedia untuk status Anda.');
 
         $sessionState = $this->getSessionState($request, $student->id);
         abort_if($this->calculateRemainingSeconds($sessionState->academic_started_at, Setting::getInt('academic_duration_minutes', 60)) <= 0, 423, 'Waktu tes akademik sudah habis.');
@@ -88,7 +88,7 @@ class AcademicTestController extends Controller
     public function submit(Request $request)
     {
         $student = auth()->user()->student;
-        abort_if($student->status !== 'academic_test', 403, 'Tes akademik belum tersedia untuk status Anda.');
+        abort_if($student->status !== 'onboarding', 403, 'Tes akademik belum tersedia untuk status Anda.');
 
         $sessionState = $this->getSessionState($request, $student->id);
 
