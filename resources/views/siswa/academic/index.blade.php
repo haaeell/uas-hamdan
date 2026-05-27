@@ -19,10 +19,16 @@
                     <div class="text-xs font-semibold text-slate-500">Sisa Waktu</div>
                     <div class="inline-flex items-center gap-2 mt-1 px-4 py-2 rounded-2xl bg-blue-50 text-blue-700">
                         <i class="fa-solid fa-clock"></i>
-                        <span id="timer" class="text-2xl font-extrabold">60</span>
+                        <span id="timer" class="text-2xl font-extrabold">{{ str_pad((string) $cbtSettings['duration_minutes'], 2, '0', STR_PAD_LEFT) }}:00</span>
                     </div>
                 </div>
             </div>
+
+            @if(!empty($cbtSettings['student_help_text']))
+                <div class="mt-4 rounded-2xl border border-blue-100 bg-blue-50 px-4 py-3 text-sm text-blue-700">
+                    <i class="fa-solid fa-circle-info mr-2"></i>{{ $cbtSettings['student_help_text'] }}
+                </div>
+            @endif
         </div>
 
         {{-- Question Navigation --}}
@@ -124,16 +130,28 @@
             examType: 'academic',
             logUrl: '{{ route('siswa.violations.store') }}',
             submitUrl: '{{ route('siswa.academic.submit') }}',
-            csrf: '{{ csrf_token() }}'
+            csrf: '{{ csrf_token() }}',
+            maxViolations: {{ (int) $cbtSettings['violation_limit'] }},
+            warningMessage: @json($cbtSettings['warning_message']),
+            forceFullscreen: {{ $cbtSettings['force_fullscreen'] ? 'true' : 'false' }}
         });
 
         guard.init();
 
-        let remainingSeconds = 60;
+        let remainingSeconds = {{ (int) $cbtSettings['duration_minutes'] * 60 }};
+
+        function formatTime(totalSeconds) {
+            const minutes = Math.floor(totalSeconds / 60);
+            const seconds = totalSeconds % 60;
+
+            return String(minutes).padStart(2, '0') + ':' + String(seconds).padStart(2, '0');
+        }
+
+        $('#timer').text(formatTime(remainingSeconds));
 
         const timerInterval = setInterval(() => {
             remainingSeconds--;
-            $('#timer').text(remainingSeconds);
+            $('#timer').text(formatTime(Math.max(remainingSeconds, 0)));
 
             if (remainingSeconds <= 10) {
                 $('#timer').closest('div')

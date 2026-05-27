@@ -2,13 +2,17 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Exports\StudentsExport;
+use App\Exports\StudentsTemplateExport;
 use App\Http\Controllers\Controller;
+use App\Imports\StudentsImport;
 use App\Models\Student;
 use App\Models\User;
 use App\Services\ActivityLogService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Maatwebsite\Excel\Facades\Excel;
 
 class StudentController extends Controller
 {
@@ -152,115 +156,21 @@ class StudentController extends Controller
 
     public function downloadTemplate()
     {
-        $headers = [
-            'Content-Type' => 'text/csv',
-            'Content-Disposition' => 'attachment; filename="template_siswa.csv"',
-        ];
-
-        $callback = function () {
-            $file = fopen('php://output', 'w');
-
-            fputcsv($file, [
-                'name',
-                'nisn',
-                'nis',
-                'origin_class',
-                'password',
-            ]);
-
-            fputcsv($file, [
-                'Siswa Contoh',
-                '2025000001',
-                'NIS001',
-                'X A',
-                '12345678',
-            ]);
-
-            fclose($file);
-        };
-
-        return response()->stream($callback, 200, $headers);
+        return Excel::download(new StudentsTemplateExport(), 'template_siswa.xlsx');
     }
 
     public function export()
     {
-        $headers = [
-            'Content-Type' => 'text/csv',
-            'Content-Disposition' => 'attachment; filename="data_siswa.csv"',
-        ];
-
-        $callback = function () {
-            $file = fopen('php://output', 'w');
-
-            fputcsv($file, [
-                'name',
-                'nisn',
-                'nis',
-                'origin_class',
-                'status',
-                'is_active',
-            ]);
-
-            Student::with('user')->chunk(100, function ($students) use ($file) {
-                foreach ($students as $student) {
-                    fputcsv($file, [
-                        $student->name,
-                        $student->nisn,
-                        $student->nis,
-                        $student->origin_class,
-                        $student->status,
-                        $student->user?->is_active ? 'active' : 'inactive',
-                    ]);
-                }
-            });
-
-            fclose($file);
-        };
-
-        return response()->stream($callback, 200, $headers);
+        return Excel::download(new StudentsExport(), 'data_siswa.xlsx');
     }
 
     public function import(Request $request)
     {
         $request->validate([
-            'file' => ['required', 'file', 'mimes:csv,txt'],
+            'file' => ['required', 'file', 'mimes:xlsx,xls,csv,txt'],
         ]);
 
-        $file = fopen($request->file('file')->getRealPath(), 'r');
-        fgetcsv($file);
-
-        DB::transaction(function () use ($file) {
-            while (($row = fgetcsv($file)) !== false) {
-                [$name, $nisn, $nis, $originClass, $password] = $row;
-
-                if (!$name || !$nisn) {
-                    continue;
-                }
-
-                if (User::where('nisn', $nisn)->exists() || Student::where('nisn', $nisn)->exists()) {
-                    continue;
-                }
-
-                $user = User::create([
-                    'name' => $name,
-                    'nisn' => $nisn,
-                    'password' => Hash::make($password ?: '12345678'),
-                    'role' => 'siswa',
-                    'is_active' => true,
-                ]);
-
-                Student::create([
-                    'user_id' => $user->id,
-                    'nisn' => $nisn,
-                    'nis' => $nis,
-                    'name' => $name,
-                    'origin_class' => strtoupper($originClass),
-                    'status' => 'onboarding',
-                ]);
-            }
-        });
-
-        fclose($file);
+        Excel::import(new StudentsImport(), $request->file('file'));
 
         return back()->with('success', 'Import siswa berhasil.');
     }

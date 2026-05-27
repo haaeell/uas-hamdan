@@ -5,6 +5,9 @@
             this.logUrl = config.logUrl;
             this.submitUrl = config.submitUrl;
             this.csrf = config.csrf;
+            this.maxViolations = config.maxViolations || 3;
+            this.warningMessage = config.warningMessage || 'Aktivitas mencurigakan terdeteksi dan dicatat.';
+            this.forceFullscreenEnabled = config.forceFullscreen !== false;
             this.violationCount = 0;
             this.isSubmitting = false;
             this.storageKey = `backup_${this.examType}`;
@@ -19,6 +22,8 @@
         }
 
         forceFullscreen() {
+            if (!this.forceFullscreenEnabled) return;
+
             const el = document.documentElement;
 
             if (el.requestFullscreen) {
@@ -67,20 +72,32 @@
 
             this.violationCount++;
 
-            Swal.fire({
-                icon: 'warning',
-                title: 'Peringatan',
-                text: 'Aktivitas mencurigakan terdeteksi dan dicatat.',
-                allowOutsideClick: false,
-                confirmButtonText: 'Saya Mengerti'
-            });
-
             $.post(this.logUrl, {
                 _token: this.csrf,
                 exam_type: this.examType,
                 action: action,
                 violation_count: this.violationCount,
                 device_info: this.deviceInfo()
+            }).always(() => {
+                if (this.violationCount >= this.maxViolations) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Batas Pelanggaran Tercapai',
+                        text: `Ujian akan dikirim otomatis setelah ${this.maxViolations} pelanggaran.`,
+                        allowOutsideClick: false,
+                        confirmButtonText: 'Saya Mengerti'
+                    }).then(() => this.submitExam());
+
+                    return;
+                }
+
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Peringatan',
+                    text: this.warningMessage,
+                    allowOutsideClick: false,
+                    confirmButtonText: 'Saya Mengerti'
+                });
             });
         }
 

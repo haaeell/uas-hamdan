@@ -2,9 +2,9 @@
 
 @section('content')
     <div class="min-h-screen bg-slate-100 px-4 py-8">
-        <div class="max-w-3xl mx-auto">
+        <div class="max-w-2xl mx-auto">
 
-            <div class="bg-white border border-slate-200 rounded-[34px] p-6 md:p-10 text-center shadow-sm">
+            <div class="bg-white border border-slate-200 rounded-[34px] p-6 md:p-8 text-center shadow-sm">
 
                 <div class="w-20 h-20 rounded-3xl bg-blue-50 text-blue-600 flex items-center justify-center mx-auto mb-6">
                     <i class="fa-solid fa-clock text-4xl"></i>

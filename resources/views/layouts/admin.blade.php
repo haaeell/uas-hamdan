@@ -2,8 +2,12 @@
 <html lang="id">
 
 <head>
+    @php
+        $appName = \App\Models\Setting::getSetting('app_name', 'Sistem Pemilihan Jurusan');
+        $schoolName = \App\Models\Setting::getSetting('school_name', 'Pemilihan Jurusan');
+    @endphp
     <meta charset="UTF-8">
-    <title>Admin - Sistem Pemilihan Jurusan</title>
+    <title>Admin - {{ $appName }}</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     {{-- Tailwind --}}
@@ -261,7 +265,7 @@
 
                 <div class="ml-3">
                     <h1 class="font-extrabold text-slate-900 leading-tight">Admin Panel</h1>
-                    <p class="text-xs text-slate-400 font-medium">Pemilihan Jurusan</p>
+                    <p class="text-xs text-slate-400 font-medium">{{ $schoolName }}</p>
                 </div>
             </div>
 
@@ -346,6 +350,14 @@
                     class=" sidebar-link {{ request()->routeIs('admin.objections.*') ? 'active' : '' }}">
                     <i class="fa-solid fa-message"></i>
                     <span>Keberatan</span>
+                </a>
+
+                <div class="menu-title">Sistem</div>
+
+                <a href="{{ route('admin.settings.index') }}"
+                    class=" sidebar-link {{ request()->routeIs('admin.settings.*') ? 'active' : '' }}">
+                    <i class="fa-solid fa-gear"></i>
+                    <span>Settings</span>
                 </a>
             </nav>
 

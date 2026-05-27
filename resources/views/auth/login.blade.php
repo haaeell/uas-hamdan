@@ -1,6 +1,12 @@
 @extends('layouts.auth')
 
 @section('content')
+    @php
+        $appName = \App\Models\Setting::getSetting('app_name', 'Sistem Pemilihan Jurusan');
+        $schoolName = \App\Models\Setting::getSetting('school_name', 'Sekolah Menengah Atas');
+        $loginHelpText = \App\Models\Setting::getSetting('login_help_text', 'Gunakan email admin atau NISN siswa untuk melanjutkan.');
+        $supportContact = \App\Models\Setting::getSetting('support_contact', 'Hubungi admin sekolah');
+    @endphp
     <div class="min-h-screen bg-slate-100 flex items-center justify-center px-4 py-10">
 
         <div
@@ -21,12 +27,11 @@
                         </div>
 
                         <h1 class="text-4xl font-extrabold mt-8 leading-tight">
-                            Sistem Pemilihan Jurusan
+                            {{ $appName }}
                         </h1>
 
                         <p class="text-blue-100 mt-4 leading-relaxed max-w-md">
-                            Platform digital untuk membantu proses pemilihan jurusan siswa secara lebih tertata, aman, dan
-                            mudah digunakan.
+                            {{ $schoolName }} menggunakan platform ini untuk membuat proses pemilihan jurusan lebih tertata, aman, dan mudah digunakan.
                         </p>
                     </div>
 
@@ -71,7 +76,7 @@
                         </h2>
 
                         <p class="text-slate-500 mt-3">
-                            Gunakan email admin atau NISN siswa untuk melanjutkan.
+                            {{ $loginHelpText }}
                         </p>
                     </div>
 
@@ -142,7 +147,7 @@
                     </form>
 
                     <div class="mt-8 text-center text-sm text-slate-400">
-                        © {{ date('Y') }} Sistem Pemilihan Jurusan
+                        © {{ date('Y') }} {{ $appName }} · Bantuan: {{ $supportContact }}
                     </div>
                 </div>
             </div>

@@ -2,9 +2,9 @@
 
 @section('content')
     <div class="min-h-screen bg-slate-100 px-4 py-8">
-        <div class="max-w-3xl mx-auto">
+        <div class="max-w-2xl mx-auto">
 
-            <div class="bg-white border border-slate-200 rounded-[34px] p-6 md:p-10 shadow-sm">
+            <div class="bg-white border border-slate-200 rounded-[34px] p-6 md:p-8 shadow-sm">
 
                 <div class="flex items-start gap-4 mb-8">
                     <div class="w-16 h-16 rounded-3xl bg-blue-50 text-blue-600 flex items-center justify-center">
@@ -122,7 +122,7 @@
         </div>
 
         {{-- Navigation --}}
-        <div class="grid sm:grid-cols-2 gap-3 mt-8">
+        <div class="max-w-2xl mx-auto grid sm:grid-cols-2 gap-3 mt-8">
 
             {{-- Back To Wizard --}}
             <a href="{{ route('siswa.wizard.index') }}" class="inline-flex items-center justify-center gap-2 bg-white hover:bg-blue-50

@@ -20,7 +20,7 @@
 
         {{-- Header --}}
         <div class="sticky top-0 z-30 bg-white/90 backdrop-blur-xl border-b border-slate-200">
-            <div class="max-w-5xl mx-auto px-4 py-4">
+            <div class="max-w-4xl mx-auto px-4 py-4">
                 <div class="flex items-center justify-between mb-4">
                     <div class="flex items-center gap-3">
                         <div
@@ -59,10 +59,10 @@
         </div>
 
         {{-- Content --}}
-        <div class="max-w-5xl mx-auto p-4 md:p-6">
+        <div class="max-w-4xl mx-auto p-4 md:p-6">
 
             @if($student->status === 'onboarding')
-                <div class="bg-white border border-slate-200 rounded-[32px] p-8 shadow-sm">
+                <div class="max-w-3xl mx-auto bg-white border border-slate-200 rounded-[32px] p-7 md:p-8 shadow-sm">
                     <div class="w-20 h-20 rounded-3xl bg-blue-50 text-blue-600 flex items-center justify-center mx-auto mb-6">
                         <i class="fa-solid fa-graduation-cap text-4xl"></i>
                     </div>
@@ -85,7 +85,7 @@
 
             @if($student->status === 'biodata' || $student->status === 'onboarding')
                 <form id="biodataForm"
-                    class="bg-white border border-slate-200 rounded-[32px] p-6 md:p-8 shadow-sm space-y-5 {{ $student->status === 'onboarding' ? 'hidden mt-6' : '' }}">
+                    class="max-w-3xl mx-auto bg-white border border-slate-200 rounded-[32px] p-6 md:p-8 shadow-sm space-y-5 {{ $student->status === 'onboarding' ? 'hidden mt-6' : '' }}">
                     @csrf
 
                     <div class="mb-4">
@@ -127,7 +127,7 @@
                 <form id="packageForm" class="space-y-6">
                     @csrf
 
-                    <div class="bg-white border border-slate-200 rounded-[32px] p-6 md:p-8 shadow-sm">
+                    <div class="bg-white border border-slate-200 rounded-[32px] p-6 md:p-7 shadow-sm">
                         <h2 class="text-2xl font-extrabold text-slate-900">Pilih Jurusan</h2>
                         <p class="text-slate-500 mt-2">Pelajari jurusan yang tersedia, lalu tentukan pilihan pertama dan kedua.
                         </p>
@@ -160,7 +160,7 @@
                         </div>
                     </div>
 
-                    <div class="bg-white border border-slate-200 rounded-[32px] p-6 shadow-sm space-y-4">
+                    <div class="max-w-2xl mx-auto bg-white border border-slate-200 rounded-[32px] p-6 shadow-sm space-y-4">
                         <select name="first_package_id" class="input" required>
                             <option value="">Pilihan 1</option>
                             @foreach($packages as $package)
@@ -184,7 +184,7 @@
             @endif
 
             @if($student->status === 'selfie')
-                <div id="selfieStep" class="bg-white border border-slate-200 rounded-[32px] p-6 md:p-8 shadow-sm">
+                <div id="selfieStep" class="max-w-3xl mx-auto bg-white border border-slate-200 rounded-[32px] p-6 md:p-8 shadow-sm">
                     <h2 class="text-2xl font-extrabold text-slate-900">Verifikasi Selfie</h2>
                     <p class="text-slate-500 mt-2 mb-6">Pastikan wajah terlihat jelas dan pencahayaan cukup.</p>
 
@@ -216,7 +216,7 @@
             @endif
 
             @if($student->status === 'waiting_session')
-                <div class="text-center bg-white border border-slate-200 rounded-[32px] p-10 shadow-sm">
+                <div class="max-w-3xl mx-auto text-center bg-white border border-slate-200 rounded-[32px] p-8 md:p-10 shadow-sm">
                     <div class="w-20 h-20 rounded-3xl bg-blue-50 text-blue-600 flex items-center justify-center mx-auto mb-6">
                         <i class="fa-solid fa-clock text-4xl"></i>
                     </div>
@@ -235,7 +235,7 @@
             @endif
 
             @if($announcement)
-                <div class="mt-4">
+                <div class="max-w-3xl mx-auto mt-4">
                     <a href="{{ route('siswa.announcements.index') }}" class="flex items-center justify-between gap-4 bg-blue-600 hover:bg-blue-700
                     text-white rounded-2xl px-5 py-4 shadow-lg shadow-blue-200 transition-all duration-300">
 

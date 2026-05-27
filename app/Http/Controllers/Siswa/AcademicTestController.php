@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Siswa;
 use App\Http\Controllers\Controller;
 use App\Models\AcademicQuestion;
 use App\Models\AcademicQuestionOption;
+use App\Models\Setting;
 use App\Models\StudentAcademicAnswer;
 use App\Models\TestResult;
 use Illuminate\Http\Request;
@@ -27,7 +28,15 @@ class AcademicTestController extends Controller
             ->pluck('academic_question_option_id', 'academic_question_id')
             ->toArray();
 
-        return view('siswa.academic.index', compact('student', 'questions', 'answers'));
+        $cbtSettings = [
+            'duration_minutes' => Setting::getInt('academic_duration_minutes', 60),
+            'violation_limit' => Setting::getInt('cbt_auto_submit_violation_limit', 3),
+            'force_fullscreen' => Setting::getBool('cbt_force_fullscreen', true),
+            'warning_message' => Setting::getSetting('cbt_warning_message', 'Aktivitas mencurigakan terdeteksi dan dicatat.'),
+            'student_help_text' => Setting::getSetting('student_help_text', ''),
+        ];
+
+        return view('siswa.academic.index', compact('student', 'questions', 'answers', 'cbtSettings'));
     }
 
     public function autosave(Request $request)

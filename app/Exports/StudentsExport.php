@@ -2,17 +2,24 @@
 
 namespace App\Exports;
 
-use Maatwebsite\Excel\Concerns\FromArray;
-use Maatwebsite\Excel\Concerns\WithHeadings;
+use App\Models\Student;
+use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
+use Maatwebsite\Excel\Concerns\WithHeadings;
+use Maatwebsite\Excel\Concerns\WithMapping;
 use Maatwebsite\Excel\Concerns\WithStyles;
-use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use PhpOffice\PhpSpreadsheet\Style\Border;
 use PhpOffice\PhpSpreadsheet\Style\Fill;
+use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
-class StudentsTemplateExport implements FromArray, WithHeadings, WithStyles, ShouldAutoSize
+class StudentsExport implements FromCollection, ShouldAutoSize, WithHeadings, WithMapping, WithStyles
 {
+    public function collection()
+    {
+        return Student::with('user')->latest()->get();
+    }
+
     public function headings(): array
     {
         return [
@@ -20,29 +27,27 @@ class StudentsTemplateExport implements FromArray, WithHeadings, WithStyles, Sho
             'nisn',
             'nis',
             'origin_class',
-            'password',
+            'status',
             'is_active',
         ];
     }
 
-    public function array(): array
+    public function map($student): array
     {
         return [
-            [
-                'Siswa Contoh',
-                '2025000001',
-                'NIS001',
-                'X A',
-                '12345678',
-                'active',
-            ],
+            $student->name,
+            $student->nisn,
+            $student->nis,
+            $student->origin_class,
+            $student->status,
+            $student->user?->is_active ? 'active' : 'inactive',
         ];
     }
 
-    public function styles(Worksheet $sheet)
+    public function styles(Worksheet $sheet): void
     {
         $lastColumn = 'F';
-        $lastRow    = $sheet->getHighestRow();
+        $lastRow = $sheet->getHighestRow();
 
         $sheet->getStyle("A1:{$lastColumn}1")->applyFromArray([
             'font' => [
@@ -55,7 +60,7 @@ class StudentsTemplateExport implements FromArray, WithHeadings, WithStyles, Sho
             ],
             'alignment' => [
                 'horizontal' => Alignment::HORIZONTAL_CENTER,
-                'vertical'   => Alignment::VERTICAL_CENTER,
+                'vertical' => Alignment::VERTICAL_CENTER,
             ],
         ]);
 
@@ -71,7 +76,7 @@ class StudentsTemplateExport implements FromArray, WithHeadings, WithStyles, Sho
         $sheet->getStyle("B2:C{$lastRow}")
             ->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
 
-        $sheet->getStyle("F2:F{$lastRow}")
+        $sheet->getStyle("E2:F{$lastRow}")
             ->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
 
         $sheet->freezePane('A2');

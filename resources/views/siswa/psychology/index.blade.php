@@ -6,30 +6,46 @@
 <div class="min-h-screen bg-slate-100 px-4 py-4 pb-32">
 
     {{-- Header --}}
-    <div class="sticky top-4 z-30 bg-white/95 backdrop-blur-xl border border-slate-200 rounded-[28px] p-4 mb-5 shadow-sm">
-        <div class="flex justify-between items-center gap-4">
-            <div>
-                <p class="text-xs font-bold text-blue-600 uppercase tracking-wide">CBT Online</p>
-                <h1 class="font-extrabold text-xl text-slate-900">Tes Psikologi</h1>
-                <p class="text-xs text-slate-500 mt-1">Tidak ada jawaban benar atau salah</p>
+        <div class="sticky top-4 z-30 bg-white/95 backdrop-blur-xl border border-slate-200 rounded-[28px] p-4 mb-5 shadow-sm">
+            <div class="flex justify-between items-center gap-4">
+                <div>
+                    <p class="text-xs font-bold text-blue-600 uppercase tracking-wide">CBT Online</p>
+                    <h1 class="font-extrabold text-xl text-slate-900">Tes Psikologi</h1>
+                    <p class="text-xs text-slate-500 mt-1">Tidak ada jawaban benar atau salah</p>
+                </div>
+
+                <div class="flex items-center gap-3">
+                    <div class="text-right">
+                        <div class="text-xs font-semibold text-slate-500">Progress</div>
+                        <div class="inline-flex items-center gap-2 mt-1 px-4 py-2 rounded-2xl bg-blue-50 text-blue-700">
+                            <i class="fa-solid fa-chart-line"></i>
+                            <span id="progressText" class="text-2xl font-extrabold">0%</span>
+                        </div>
+                    </div>
+
+                    <div class="text-right">
+                        <div class="text-xs font-semibold text-slate-500">Sisa Waktu</div>
+                        <div class="inline-flex items-center gap-2 mt-1 px-4 py-2 rounded-2xl bg-blue-50 text-blue-700">
+                            <i class="fa-solid fa-clock"></i>
+                            <span id="timer" class="text-2xl font-extrabold">{{ str_pad((string) $cbtSettings['duration_minutes'], 2, '0', STR_PAD_LEFT) }}:00</span>
+                        </div>
+                    </div>
+                </div>
             </div>
 
-            <div class="text-right">
-                <div class="text-xs font-semibold text-slate-500">Progress</div>
-                <div class="inline-flex items-center gap-2 mt-1 px-4 py-2 rounded-2xl bg-blue-50 text-blue-700">
-                    <i class="fa-solid fa-chart-line"></i>
-                    <span id="progressText" class="text-2xl font-extrabold">0%</span>
+            @if(!empty($cbtSettings['student_help_text']))
+                <div class="mt-4 rounded-2xl border border-blue-100 bg-blue-50 px-4 py-3 text-sm text-blue-700">
+                    <i class="fa-solid fa-circle-info mr-2"></i>{{ $cbtSettings['student_help_text'] }}
+                </div>
+            @endif
+
+            <div class="mt-4 h-3 bg-slate-200 rounded-full overflow-hidden">
+                <div id="progressBar"
+                    class="h-3 bg-gradient-to-r from-blue-600 to-blue-400 rounded-full transition-all duration-500"
+                    style="width: 0%">
                 </div>
             </div>
         </div>
-
-        <div class="mt-4 h-3 bg-slate-200 rounded-full overflow-hidden">
-            <div id="progressBar"
-                class="h-3 bg-gradient-to-r from-blue-600 to-blue-400 rounded-full transition-all duration-500"
-                style="width: 0%">
-            </div>
-        </div>
-    </div>
 
     {{-- Question Navigation --}}
     <div class="bg-white border border-slate-200 rounded-[28px] p-4 mb-5 shadow-sm">
@@ -132,12 +148,23 @@ const guard = new CBTGuard({
     examType: 'psychology',
     logUrl: '{{ route("siswa.violations.store") }}',
     submitUrl: '{{ route("siswa.psychology.submit") }}',
-    csrf: '{{ csrf_token() }}'
+    csrf: '{{ csrf_token() }}',
+    maxViolations: {{ (int) $cbtSettings['violation_limit'] }},
+    warningMessage: @json($cbtSettings['warning_message']),
+    forceFullscreen: {{ $cbtSettings['force_fullscreen'] ? 'true' : 'false' }}
 });
 
 guard.init();
 
 const totalQuestions = {{ $questions->count() }};
+let remainingSeconds = {{ (int) $cbtSettings['duration_minutes'] * 60 }};
+
+function formatTime(totalSeconds) {
+    const minutes = Math.floor(totalSeconds / 60);
+    const seconds = totalSeconds % 60;
+
+    return String(minutes).padStart(2, '0') + ':' + String(seconds).padStart(2, '0');
+}
 
 function updateProgress() {
     const answered = $('.answer-option:checked').length;
@@ -148,6 +175,32 @@ function updateProgress() {
 }
 
 updateProgress();
+$('#timer').text(formatTime(remainingSeconds));
+
+const timerInterval = setInterval(() => {
+    remainingSeconds--;
+    $('#timer').text(formatTime(Math.max(remainingSeconds, 0)));
+
+    if (remainingSeconds <= 10) {
+        $('#timer').closest('div')
+            .removeClass('bg-blue-50 text-blue-700')
+            .addClass('bg-blue-600 text-white');
+    }
+
+    if (remainingSeconds <= 0) {
+        clearInterval(timerInterval);
+
+        Swal.fire({
+            icon: 'info',
+            title: 'Waktu Habis',
+            text: 'Jawaban akan dikirim otomatis.',
+            allowOutsideClick: false,
+            showConfirmButton: false,
+        });
+
+        setTimeout(() => guard.submitExam(), 1200);
+    }
+}, 1000);
 
 $('.answer-option').on('change', function () {
     const questionId = $(this).data('question-id');

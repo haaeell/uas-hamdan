@@ -7,6 +7,7 @@ use App\Http\Controllers\Admin\ClassDistributionController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\PackageController;
 use App\Http\Controllers\Admin\PsychologyQuestionController;
+use App\Http\Controllers\Admin\SettingController;
 use App\Http\Controllers\Admin\StudentController;
 use App\Http\Controllers\Admin\TestSessionController;
 use App\Http\Controllers\Admin\ObjectionController as AdminObjectionController;
@@ -197,6 +198,12 @@ Route::middleware(['auth', 'role:admin'])
 
         Route::get('/activity-logs', [ActivityLogController::class, 'index'])
             ->name('activity-logs.index');
+
+        Route::get('/settings', [SettingController::class, 'index'])
+            ->name('settings.index');
+
+        Route::put('/settings', [SettingController::class, 'update'])
+            ->name('settings.update');
     });
 
 /*

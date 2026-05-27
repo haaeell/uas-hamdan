@@ -85,8 +85,8 @@
                         <i class="fa-solid fa-file-import"></i>
                     </div>
                     <div>
-                        <h2 class="font-extrabold text-slate-900 text-lg">Import CSV</h2>
-                        <p class="text-sm text-slate-500">Upload data siswa massal</p>
+                        <h2 class="font-extrabold text-slate-900 text-lg">Import Excel</h2>
+                        <p class="text-sm text-slate-500">Upload data siswa massal dengan format profesional</p>
                     </div>
                 </div>
 
@@ -96,6 +96,10 @@
 
                     <input type="file" name="file" accept=".csv,.xlsx,.xls"
                         class="w-full px-4 py-3 rounded-2xl bg-slate-50 border border-slate-200 text-slate-700 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:bg-blue-600 file:text-white file:font-semibold">
+
+                    <div class="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-600">
+                        Format kolom: <span class="font-semibold text-slate-800">name, nisn, nis, origin_class, password, is_active</span>
+                    </div>
 
                     <button
                         class="w-full inline-flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-2xl font-bold shadow-lg shadow-blue-200 transition">
@@ -107,12 +111,12 @@
                 <div class="grid grid-cols-2 gap-3 mt-4">
                     <a href="{{ route('admin.students.template') }}"
                         class="text-center bg-blue-50 hover:bg-blue-100 text-blue-700 py-3 rounded-2xl font-bold transition">
-                        Template
+                        Template XLSX
                     </a>
 
                     <a href="{{ route('admin.students.export') }}"
                         class="text-center bg-blue-50 hover:bg-blue-100 text-blue-700 py-3 rounded-2xl font-bold transition">
-                        Export
+                        Export XLSX
                     </a>
                 </div>
             </div>

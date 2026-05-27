@@ -12,11 +12,22 @@ class TestSessionController extends Controller
 {
     public function index()
     {
+        $baseQuery = TestSession::query();
+
+        $summary = [
+            'total' => (clone $baseQuery)->count(),
+            'active' => (clone $baseQuery)->where('is_active', true)->count(),
+            'inactive' => (clone $baseQuery)->where('is_active', false)->count(),
+        ];
+
         $sessions = TestSession::with('classes')
-            ->latest()
+            ->withCount(['classes', 'students'])
+            ->orderByDesc('is_active')
+            ->orderBy('test_date')
+            ->orderBy('start_time')
             ->paginate(10);
 
-        return view('admin.test-sessions.index', compact('sessions'));
+        return view('admin.test-sessions.index', compact('sessions', 'summary'));
     }
 
     public function store(Request $request, ActivityLogService $logger)

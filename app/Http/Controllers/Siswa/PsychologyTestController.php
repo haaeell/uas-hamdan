@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Siswa;
 
 use App\Http\Controllers\Controller;
 use App\Models\PsychologyQuestion;
+use App\Models\Setting;
 use App\Models\StudentPsychologyAnswer;
 use App\Services\PsychologyScoringService;
 use Illuminate\Http\Request;
@@ -26,7 +27,15 @@ class PsychologyTestController extends Controller
             ->pluck('psychology_question_option_id', 'psychology_question_id')
             ->toArray();
 
-        return view('siswa.psychology.index', compact('student', 'questions', 'answers'));
+        $cbtSettings = [
+            'duration_minutes' => Setting::getInt('psychology_duration_minutes', 45),
+            'violation_limit' => Setting::getInt('cbt_auto_submit_violation_limit', 3),
+            'force_fullscreen' => Setting::getBool('cbt_force_fullscreen', true),
+            'warning_message' => Setting::getSetting('cbt_warning_message', 'Aktivitas mencurigakan terdeteksi dan dicatat.'),
+            'student_help_text' => Setting::getSetting('student_help_text', ''),
+        ];
+
+        return view('siswa.psychology.index', compact('student', 'questions', 'answers', 'cbtSettings'));
     }
 
     public function autosave(Request $request)
