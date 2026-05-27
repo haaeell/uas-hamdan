@@ -11,6 +11,8 @@
             this.violationCount = config.initialViolationCount || 0;
             this.isSubmitting = false;
             this.storageKey = `backup_${this.examType}`;
+            this.lastViolationAt = 0;
+            this.violationCooldownMs = 1500;
         }
 
         init() {
@@ -53,9 +55,14 @@
         }
         listenViolation() {
             window.addEventListener('blur', () => this.report('window_blur'));
+            window.addEventListener('pagehide', () => this.report('page_hide'));
+
+            document.addEventListener('freeze', () => this.report('page_freeze'));
 
             document.addEventListener('visibilitychange', () => {
-                if (document.hidden) this.report('visibility_hidden');
+                if (document.hidden) {
+                    this.report('visibility_hidden');
+                }
             });
 
             document.addEventListener('fullscreenchange', () => {
@@ -69,6 +76,14 @@
         report(action) {
             if (this.isSubmitting) return;
             if ($('.swal2-container').length) return;
+
+            const now = Date.now();
+
+            if (now - this.lastViolationAt < this.violationCooldownMs) {
+                return;
+            }
+
+            this.lastViolationAt = now;
 
             this.violationCount++;
 

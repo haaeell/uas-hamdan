@@ -22,14 +22,18 @@ class WizardController extends Controller
             'packageChoice',
         ])->firstOrFail();
 
+        $announcement = null;
+        if (in_array($student->status, ['completed'], true)) {
+            $announcement = Announcement::query()
+                ->where('is_published', true)
+                ->latest('published_at')
+                ->first();
+        }
 
-        $announcement = Announcement::query()
-            ->where('is_published', true)
-            ->latest('published_at')
-            ->first();
-
-
-        $packages = Package::where('is_active', true)->with('subjects')->get();
+        $packages = collect();
+        if ($student->status === 'package_choice') {
+            $packages = Package::where('is_active')->with('subjects')->get();
+        }
 
         return view('siswa.wizard.index', compact('student', 'packages', 'announcement'));
     }
@@ -61,6 +65,7 @@ class WizardController extends Controller
         return response()->json([
             'message' => 'Biodata berhasil disimpan.',
             'next_step' => 'package_choice',
+            'redirect_url' => route('siswa.wizard.index'),
         ]);
     }
 
@@ -93,6 +98,7 @@ class WizardController extends Controller
         return response()->json([
             'message' => 'Pilihan jurusan berhasil disimpan.',
             'next_step' => 'selfie',
+            'redirect_url' => route('siswa.wizard.index'),
         ]);
     }
 
@@ -131,6 +137,7 @@ class WizardController extends Controller
         return response()->json([
             'message' => 'Selfie berhasil disimpan.',
             'next_step' => 'waiting_session',
+            'redirect_url' => route('siswa.waiting-session'),
         ]);
     }
 

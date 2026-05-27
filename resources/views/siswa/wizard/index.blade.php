@@ -347,9 +347,8 @@
             button.prop('disabled', true).html('<i class="fa-solid fa-spinner fa-spin"></i> Memproses...');
 
             $.post('{{ route("siswa.wizard.biodata") }}', $(this).serialize())
-                .done(function () {
-                    Swal.fire('Berhasil', 'Biodata tersimpan.', 'success')
-                        .then(() => location.reload());
+                .done(function (response) {
+                    window.location.replace(response.redirect_url || '{{ route("siswa.wizard.index") }}');
                 })
                 .fail(function (xhr) {
                     button.prop('disabled', false).html('<i class="fa-solid fa-save"></i> Simpan Biodata');
@@ -372,9 +371,8 @@
             button.prop('disabled', true).html('<i class="fa-solid fa-spinner fa-spin"></i> Memproses...');
 
             $.post('{{ route("siswa.wizard.package-choice") }}', $(this).serialize())
-                .done(function () {
-                    Swal.fire('Berhasil', 'Pilihan jurusan tersimpan.', 'success')
-                        .then(() => location.reload());
+                .done(function (response) {
+                    window.location.replace(response.redirect_url || '{{ route("siswa.wizard.index") }}');
                 })
                 .fail(function (xhr) {
                     button.prop('disabled', false).html('<i class="fa-solid fa-check"></i> Simpan Pilihan');
@@ -446,9 +444,8 @@
                     screen: screen.width + 'x' + screen.height,
                     timezone: Intl.DateTimeFormat().resolvedOptions().timeZone
                 }
-            }).done(function () {
-                Swal.fire('Berhasil', 'Selfie tersimpan.', 'success')
-                    .then(() => location.reload());
+            }).done(function (response) {
+                window.location.replace(response.redirect_url || '{{ route("siswa.waiting-session") }}');
             }).fail(function (xhr) {
                 button.prop('disabled', false).html('<i class="fa-solid fa-upload"></i> Simpan Selfie');
                 Swal.fire('Gagal', xhr.responseJSON?.message ?? 'Upload selfie gagal.', 'error');
