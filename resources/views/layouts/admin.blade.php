@@ -433,30 +433,32 @@
 
             {{-- Content --}}
             <section class="p-6 md:p-8">
-
-                @if(session('success'))
-                    <div
-                        class="mb-6 flex items-start gap-3 p-4 rounded-2xl bg-blue-50 border border-blue-100 text-blue-700 shadow-sm">
-                        <div class="w-9 h-9 rounded-xl bg-blue-600 text-white flex items-center justify-center">
-                            <i class="fa-solid fa-check"></i>
-                        </div>
-                        <div>
-                            <p class="font-bold">Berhasil</p>
-                                <p class=" text-sm">{{ session('success') }}</p>
-                        </div>
-                            </div>
-                @endif
-
-                    <div class="bg-white rounded-[28px] border border-slate-200 shadow-sm p-5 md:p-6">
-                        @yield('content')
+                <div class="bg-white rounded-[28px] border border-slate-200 shadow-sm p-5 md:p-6">
+                    @yield('content')
                 </div>
-
             </section>
         </main>
     </div>
 
     <script>
         $(function () {
+            const toast = Swal.mixin({
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 3200,
+                timerProgressBar: true,
+                background: '#ffffff',
+                color: '#0f172a',
+                customClass: {
+                    popup: 'rounded-3xl shadow-xl border border-slate-200'
+                },
+                didOpen: (popup) => {
+                    popup.addEventListener('mouseenter', Swal.stopTimer);
+                    popup.addEventListener('mouseleave', Swal.resumeTimer);
+                }
+            });
+
             $('.datatable').DataTable({
                 responsive: true,
                 pageLength: 10,
@@ -482,7 +484,28 @@
                         $('#' + formId).submit();
                     }
                 });
-            }
+            };
+
+            @if(session('success'))
+                toast.fire({
+                    icon: 'success',
+                    title: @json(session('success'))
+                });
+            @endif
+
+            @if(session('error'))
+                toast.fire({
+                    icon: 'error',
+                    title: @json(session('error'))
+                });
+            @endif
+
+            @if(session('warning'))
+                toast.fire({
+                    icon: 'warning',
+                    title: @json(session('warning'))
+                });
+            @endif
         });
     </script>
 
