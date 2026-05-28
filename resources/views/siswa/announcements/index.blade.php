@@ -165,7 +165,7 @@
                                     <p class="font-extrabold text-slate-900 mt-1">{{ $testResult->recommendedPackage?->name ?: '-' }}</p>
                                 </div>
 
-                                <div class="rounded-2xl bg-slate-50 border border-slate-200 p-4">
+                                {{-- <div class="rounded-2xl bg-slate-50 border border-slate-200 p-4">
                                     <p class="font-semibold text-slate-500">Jurusan Final</p>
                                     <p class="font-extrabold text-slate-900 mt-1">{{ $testResult->finalPackage?->name ?: ($classStudent?->package?->name ?: '-') }}</p>
                                 </div>
@@ -173,7 +173,7 @@
                                 <div class="rounded-2xl bg-slate-50 border border-slate-200 p-4">
                                     <p class="font-semibold text-slate-500">Status Hasil</p>
                                     <p class="font-extrabold text-slate-900 mt-1">{{ $testResult->is_locked ? 'Sudah dikunci' : 'Belum dikunci' }}</p>
-                                </div>
+                                </div> --}}
                             </div>
 
                             <div class="rounded-2xl bg-slate-50 border border-slate-200 p-4">
