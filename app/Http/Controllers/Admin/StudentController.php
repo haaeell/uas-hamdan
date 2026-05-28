@@ -10,8 +10,11 @@ use App\Models\Student;
 use App\Models\User;
 use App\Services\ActivityLogService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\Rule;
 use Maatwebsite\Excel\Facades\Excel;
 
 class StudentController extends Controller
@@ -64,7 +67,13 @@ class StudentController extends Controller
     {
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:150'],
-            'nisn' => ['required', 'string', 'max:30', 'unique:students,nisn,' . $student->id],
+            'nisn' => [
+                'required',
+                'string',
+                'max:30',
+                Rule::unique('students', 'nisn')->ignore($student->id),
+                Rule::unique('users', 'nisn')->ignore($student->user_id),
+            ],
             'nis' => ['nullable', 'string', 'max:30'],
             'origin_class' => ['required', 'string', 'max:20'],
             'password' => ['nullable', 'string', 'min:6'],
@@ -101,28 +110,27 @@ class StudentController extends Controller
     {
         DB::transaction(function () use ($student, $logger) {
             $logger->log('student', 'delete', $student);
-
-            $student->user?->delete();
-            $student->delete();
+            $this->deleteStudents(collect([$student]));
         });
 
         return back()->with('success', 'Siswa berhasil dihapus.');
     }
 
-    public function bulkDelete(Request $request)
+    public function bulkDelete(Request $request, ActivityLogService $logger)
     {
         $validated = $request->validate([
             'ids' => ['required', 'array'],
             'ids.*' => ['exists:students,id'],
         ]);
 
-        $students = Student::whereIn('id', $validated['ids'])->with('user')->get();
+        $students = Student::whereIn('id', $validated['ids'])->with(['user', 'selfie'])->get();
 
-        DB::transaction(function () use ($students) {
+        DB::transaction(function () use ($students, $logger) {
             foreach ($students as $student) {
-                $student->user?->delete();
-                $student->delete();
+                $logger->log('student', 'delete', $student);
             }
+
+            $this->deleteStudents($students);
         });
 
         return back()->with('success', 'Siswa terpilih berhasil dihapus.');
@@ -170,8 +178,38 @@ class StudentController extends Controller
             'file' => ['required', 'file', 'mimes:xlsx,xls,csv,txt'],
         ]);
 
-        Excel::import(new StudentsImport(), $request->file('file'));
+        $import = new StudentsImport();
 
-        return back()->with('success', 'Import siswa berhasil.');
+        Excel::import($import, $request->file('file'));
+
+        if ($import->getImportedCount() > 0) {
+            $message = "Import siswa berhasil: {$import->getImportedCount()} data masuk";
+        } else {
+            $message = 'Import selesai: tidak ada data baru yang masuk';
+        }
+
+        if ($import->getSkippedCount() > 0) {
+            $message .= ", {$import->getSkippedCount()} baris dilewati karena kosong, duplikat, atau formatnya tidak valid.";
+        } else {
+            $message .= '.';
+        }
+
+        return back()->with('success', $message);
+    }
+
+    private function deleteStudents(Collection $students): void
+    {
+        foreach ($students as $student) {
+            if ($student->selfie?->path && Storage::disk('public')->exists($student->selfie->path)) {
+                Storage::disk('public')->delete($student->selfie->path);
+            }
+
+            if ($student->user) {
+                $student->user->delete();
+                continue;
+            }
+
+            $student->delete();
+        }
     }
 }
