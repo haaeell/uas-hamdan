@@ -73,6 +73,144 @@
                         </div>
                     </div>
 
+                    <div class="bg-white border border-slate-200 rounded-[28px] p-5 md:p-6 mb-6">
+                        <div class="flex items-center gap-3 mb-5">
+                            <div class="w-12 h-12 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center">
+                                <i class="fa-solid fa-id-card"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-lg font-extrabold text-slate-900">Data Diri</h3>
+                                <p class="text-sm text-slate-500">Pastikan identitas berikut sudah sesuai.</p>
+                            </div>
+                        </div>
+
+                        <div class="grid sm:grid-cols-2 gap-3 text-sm">
+                            <div class="rounded-2xl bg-slate-50 border border-slate-200 p-4">
+                                <p class="font-semibold text-slate-500">Nama</p>
+                                <p class="font-extrabold text-slate-900 mt-1">{{ $student->name }}</p>
+                            </div>
+
+                            <div class="rounded-2xl bg-slate-50 border border-slate-200 p-4">
+                                <p class="font-semibold text-slate-500">NISN / NIS</p>
+                                <p class="font-extrabold text-slate-900 mt-1">{{ $student->nisn }} / {{ $student->nis ?: '-' }}</p>
+                            </div>
+
+                            <div class="rounded-2xl bg-slate-50 border border-slate-200 p-4">
+                                <p class="font-semibold text-slate-500">Kelas Asal</p>
+                                <p class="font-extrabold text-slate-900 mt-1">{{ $student->origin_class ?: '-' }}</p>
+                            </div>
+
+                            <div class="rounded-2xl bg-slate-50 border border-slate-200 p-4">
+                                <p class="font-semibold text-slate-500">Jenis Kelamin</p>
+                                <p class="font-extrabold text-slate-900 mt-1">
+                                    {{ $student->biodata?->gender === 'L' ? 'Laki-laki' : ($student->biodata?->gender === 'P' ? 'Perempuan' : '-') }}
+                                </p>
+                            </div>
+
+                            <div class="rounded-2xl bg-slate-50 border border-slate-200 p-4">
+                                <p class="font-semibold text-slate-500">Tempat, Tanggal Lahir</p>
+                                <p class="font-extrabold text-slate-900 mt-1">
+                                    {{ $student->biodata?->birth_place ?: '-' }},
+                                    {{ $student->biodata?->birth_date?->translatedFormat('d F Y') ?: '-' }}
+                                </p>
+                            </div>
+
+                            <div class="rounded-2xl bg-slate-50 border border-slate-200 p-4">
+                                <p class="font-semibold text-slate-500">No HP Siswa</p>
+                                <p class="font-extrabold text-slate-900 mt-1">{{ $student->biodata?->phone ?: '-' }}</p>
+                            </div>
+
+                            <div class="rounded-2xl bg-slate-50 border border-slate-200 p-4 sm:col-span-2">
+                                <p class="font-semibold text-slate-500">Alamat</p>
+                                <p class="font-extrabold text-slate-900 mt-1">{{ $student->biodata?->address ?: '-' }}</p>
+                            </div>
+
+                            <div class="rounded-2xl bg-blue-50 border border-blue-100 p-4">
+                                <p class="font-semibold text-blue-600">Pilihan Jurusan 1</p>
+                                <p class="font-extrabold text-slate-900 mt-1">{{ $student->packageChoice?->firstPackage?->name ?: '-' }}</p>
+                            </div>
+
+                            <div class="rounded-2xl bg-blue-50 border border-blue-100 p-4">
+                                <p class="font-semibold text-blue-600">Pilihan Jurusan 2</p>
+                                <p class="font-extrabold text-slate-900 mt-1">{{ $student->packageChoice?->secondPackage?->name ?: '-' }}</p>
+                            </div>
+
+                            <div class="rounded-2xl bg-blue-50 border border-blue-100 p-4 sm:col-span-2">
+                                <p class="font-semibold text-blue-600">Rencana Setelah Lulus</p>
+                                <p class="font-extrabold text-slate-900 mt-1">{{ $student->packageChoice?->post_graduation_plan ?: '-' }}</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white border border-slate-200 rounded-[28px] p-5 md:p-6 mb-6">
+                        <div class="flex items-center gap-3 mb-5">
+                            <div class="w-12 h-12 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center">
+                                <i class="fa-solid fa-chart-simple"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-lg font-extrabold text-slate-900">Ringkasan Hasil Tes</h3>
+                                <p class="text-sm text-slate-500">Nilai dan rekomendasi yang menjadi dasar penempatan.</p>
+                            </div>
+                        </div>
+
+                        @if($testResult)
+                            <div class="grid sm:grid-cols-2 gap-3 text-sm mb-4">
+                                <div class="rounded-2xl bg-blue-600 text-white p-4">
+                                    <p class="font-semibold text-blue-100">Nilai Akademik</p>
+                                    <p class="text-3xl font-extrabold mt-1">{{ $testResult->academic_score }}</p>
+                                </div>
+
+                                <div class="rounded-2xl bg-blue-50 border border-blue-100 p-4">
+                                    <p class="font-semibold text-blue-600">Rekomendasi Jurusan</p>
+                                    <p class="font-extrabold text-slate-900 mt-1">{{ $testResult->recommendedPackage?->name ?: '-' }}</p>
+                                </div>
+
+                                <div class="rounded-2xl bg-slate-50 border border-slate-200 p-4">
+                                    <p class="font-semibold text-slate-500">Jurusan Final</p>
+                                    <p class="font-extrabold text-slate-900 mt-1">{{ $testResult->finalPackage?->name ?: ($classStudent?->package?->name ?: '-') }}</p>
+                                </div>
+
+                                <div class="rounded-2xl bg-slate-50 border border-slate-200 p-4">
+                                    <p class="font-semibold text-slate-500">Status Hasil</p>
+                                    <p class="font-extrabold text-slate-900 mt-1">{{ $testResult->is_locked ? 'Sudah dikunci' : 'Belum dikunci' }}</p>
+                                </div>
+                            </div>
+
+                            <div class="rounded-2xl bg-slate-50 border border-slate-200 p-4">
+                                <p class="font-bold text-slate-900 mb-3">Nilai Psikotes per Jurusan</p>
+
+                                @if($psychologyScores->isNotEmpty())
+                                    <div class="space-y-3">
+                                        @foreach($psychologyScores as $score)
+                                            @php
+                                                $scoreValue = (float) $score['score'];
+                                                $maxScore = max((float) $psychologyScores->max('score'), 1);
+                                                $percentage = min(100, round(($scoreValue / $maxScore) * 100));
+                                            @endphp
+
+                                            <div>
+                                                <div class="flex items-center justify-between gap-3 text-sm mb-1">
+                                                    <span class="font-bold text-slate-700">{{ $score['package'] }}</span>
+                                                    <span class="font-extrabold text-blue-600">{{ $score['score'] }}</span>
+                                                </div>
+                                                <div class="h-2.5 rounded-full bg-white border border-slate-200 overflow-hidden">
+                                                    <div class="h-full rounded-full bg-blue-600" style="width: {{ $percentage }}%"></div>
+                                                </div>
+                                            </div>
+                                        @endforeach
+                                    </div>
+                                @else
+                                    <p class="text-sm text-slate-500">Nilai psikotes belum tersedia.</p>
+                                @endif
+                            </div>
+                        @else
+                            <div class="rounded-2xl bg-blue-50 border border-blue-100 text-blue-700 p-4">
+                                <p class="font-bold">Hasil tes belum tersedia.</p>
+                                <p class="text-sm mt-1">Silakan cek kembali secara berkala atau hubungi admin sekolah.</p>
+                            </div>
+                        @endif
+                    </div>
+
                     @if($classStudent)
                         <div class="grid sm:grid-cols-2 gap-4 mb-6">
                             <div class="bg-white border border-slate-200 rounded-[26px] p-5 shadow-sm">
@@ -142,6 +280,35 @@
                                     <p class="text-sm mt-1">Dipublikasikan pada {{ $announcement->published_at->translatedFormat('d F Y H:i') }}</p>
                                 @endif
                             </div>
+
+                            @if($objection && $announcement->type === 'final')
+                                <div class="rounded-[28px] p-5 border {{ $objection->status === 'rejected' ? 'bg-red-50 border-red-100 text-red-700' : 'bg-blue-50 border-blue-100 text-blue-700' }}">
+                                    <p class="font-bold">
+                                        Status Keberatan:
+                                        {{ $objection->status === 'approved' ? 'Disetujui' : ($objection->status === 'rejected' ? 'Ditolak' : 'Menunggu review') }}
+                                    </p>
+
+                                    <p class="text-sm mt-2">
+                                        <span class="font-bold">Alasan Anda:</span>
+                                        {{ $objection->reason }}
+                                    </p>
+
+                                    @if($objection->admin_note)
+                                        <p class="text-sm mt-2">
+                                            <span class="font-bold">Catatan Admin:</span>
+                                            {{ $objection->admin_note }}
+                                        </p>
+                                    @elseif($objection->status === 'rejected')
+                                        <p class="text-sm mt-2">Admin belum menambahkan catatan penolakan.</p>
+                                    @endif
+
+                                    @if($objection->reviewed_at)
+                                        <p class="text-xs mt-3 opacity-80">
+                                            Ditinjau pada {{ $objection->reviewed_at->translatedFormat('d F Y H:i') }}
+                                        </p>
+                                    @endif
+                                </div>
+                            @endif
 
                             @if((($response && $response->response === 'accepted') || $announcement->type === 'final') && $classStudent)
                                 <a href="{{ route('siswa.announcements.letter', $announcement) }}"

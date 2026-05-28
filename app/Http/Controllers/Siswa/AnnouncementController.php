@@ -5,7 +5,10 @@ namespace App\Http\Controllers\Siswa;
 use App\Http\Controllers\Controller;
 use App\Models\Announcement;
 use App\Models\AnnouncementResponse;
+use App\Models\Objection;
+use App\Models\Package;
 use App\Models\Setting;
+use App\Models\TestResult;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Carbon;
 
@@ -13,7 +16,14 @@ class AnnouncementController extends Controller
 {
     public function index()
     {
-        $student = auth()->user()->student;
+        $student = auth()->user()->student()
+            ->with([
+                'biodata',
+                'packageChoice.firstPackage',
+                'packageChoice.secondPackage',
+            ])
+            ->firstOrFail();
+
         abort_if($student->status !== 'completed', 403, 'Pengumuman belum tersedia untuk status Anda.');
 
         $announcement = Announcement::where('is_published', true)
@@ -30,11 +40,37 @@ class AnnouncementController extends Controller
             ->first()
             : null;
 
+        $testResult = TestResult::with(['recommendedPackage', 'finalPackage'])
+            ->where('student_id', $student->id)
+            ->first();
+
+        $packageNames = Package::pluck('name', 'id');
+
+        $psychologyScores = collect($testResult?->psychology_scores ?? [])
+            ->map(function ($score, $packageId) use ($packageNames) {
+                return [
+                    'package' => $packageNames->get((int) $packageId, 'Jurusan #' . $packageId),
+                    'score' => $score,
+                ];
+            })
+            ->sortByDesc('score')
+            ->values();
+
+        $objection = $announcement
+            ? Objection::where('announcement_id', $announcement->id)
+                ->where('student_id', $student->id)
+                ->latest()
+                ->first()
+            : null;
+
         return view('siswa.announcements.index', compact(
             'student',
             'announcement',
             'classStudent',
-            'response'
+            'response',
+            'testResult',
+            'psychologyScores',
+            'objection'
         ));
     }
 

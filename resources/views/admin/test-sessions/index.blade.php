@@ -85,9 +85,12 @@
                             <label class="block text-sm font-semibold text-slate-700 mb-2">Tipe Tes</label>
                             <select name="test_type"
                                 class="w-full px-4 py-3 rounded-2xl bg-slate-50 border border-slate-200 text-slate-800 focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-100 outline-none transition">
-                                <option value="both" {{ old('test_type') === 'both' ? 'selected' : '' }}>Akademik + Psikologi</option>
-                                <option value="academic" {{ old('test_type') === 'academic' ? 'selected' : '' }}>Akademik saja</option>
-                                <option value="psychology" {{ old('test_type') === 'psychology' ? 'selected' : '' }}>Psikologi saja</option>
+                                <option value="both" {{ old('test_type') === 'both' ? 'selected' : '' }}>Akademik + Psikologi
+                                </option>
+                                <option value="academic" {{ old('test_type') === 'academic' ? 'selected' : '' }}>Akademik saja
+                                </option>
+                                <option value="psychology" {{ old('test_type') === 'psychology' ? 'selected' : '' }}>Psikologi
+                                    saja</option>
                             </select>
                         </div>
                     </div>
@@ -117,7 +120,8 @@
                             class="w-5 h-5 rounded border-slate-300 text-blue-600 focus:ring-blue-500">
                         <div>
                             <div class="font-bold text-slate-800">Aktifkan sesi ini</div>
-                            <div class="text-sm text-slate-500">Sesi aktif lebih mudah dikenali admin saat membagi kelas.</div>
+                            <div class="text-sm text-slate-500">Sesi aktif lebih mudah dikenali admin saat membagi kelas.
+                            </div>
                         </div>
                     </label>
 
@@ -136,25 +140,31 @@
                 <p class="text-sm text-slate-500 mt-1">Setelah sesi dibuat, tambahkan kelas di kartu sesi yang sesuai.</p>
             </div>
 
-            <div class="inline-flex items-center gap-2 rounded-2xl bg-white border border-slate-200 px-4 py-2.5 text-sm font-semibold text-slate-600 shadow-sm">
-                <span class="inline-flex items-center gap-2"><span class="w-2.5 h-2.5 rounded-full bg-blue-500"></span> Aktif</span>
-                <span class="inline-flex items-center gap-2"><span class="w-2.5 h-2.5 rounded-full bg-slate-300"></span> Nonaktif</span>
+            <div
+                class="inline-flex items-center gap-2 rounded-2xl bg-white border border-slate-200 px-4 py-2.5 text-sm font-semibold text-slate-600 shadow-sm">
+                <span class="inline-flex items-center gap-2"><span class="w-2.5 h-2.5 rounded-full bg-blue-500"></span>
+                    Aktif</span>
+                <span class="inline-flex items-center gap-2"><span class="w-2.5 h-2.5 rounded-full bg-slate-300"></span>
+                    Nonaktif</span>
             </div>
         </div>
 
         <div class="grid xl:grid-cols-2 gap-6">
             @forelse($sessions as $session)
-                <div class="bg-white border border-slate-200 rounded-[30px] p-6 shadow-sm hover:shadow-xl hover:shadow-blue-100 transition-all duration-300">
+                <div
+                    class="bg-white border border-slate-200 rounded-[30px] p-6 shadow-sm hover:shadow-xl hover:shadow-blue-100 transition-all duration-300">
                     <div class="flex flex-col md:flex-row md:items-start md:justify-between gap-4 mb-5">
                         <div class="flex items-start gap-4">
-                            <div class="w-14 h-14 rounded-2xl {{ $session->is_active ? 'bg-blue-50 text-blue-600' : 'bg-slate-100 text-slate-500' }} flex items-center justify-center">
+                            <div
+                                class="w-14 h-14 rounded-2xl {{ $session->is_active ? 'bg-blue-50 text-blue-600' : 'bg-slate-100 text-slate-500' }} flex items-center justify-center">
                                 <i class="fa-solid fa-calendar-days text-xl"></i>
                             </div>
 
                             <div>
                                 <div class="flex flex-wrap items-center gap-2 mb-2">
                                     <h3 class="text-xl font-extrabold text-slate-900">{{ $session->name }}</h3>
-                                    <span class="px-3 py-1 rounded-full text-xs font-extrabold {{ $session->is_active ? 'bg-blue-50 text-blue-700' : 'bg-slate-100 text-slate-600' }}">
+                                    <span
+                                        class="px-3 py-1 rounded-full text-xs font-extrabold {{ $session->is_active ? 'bg-blue-50 text-blue-700' : 'bg-slate-100 text-slate-600' }}">
                                         {{ $session->is_active ? 'AKTIF' : 'NONAKTIF' }}
                                     </span>
                                 </div>
@@ -193,7 +203,8 @@
 
                         <div class="flex flex-wrap gap-2 min-h-[42px]">
                             @forelse($session->classes as $class)
-                                <div class="group inline-flex items-center gap-2 bg-white text-slate-700 border border-slate-200 pl-3 pr-1.5 py-1.5 rounded-2xl text-sm font-bold">
+                                <div
+                                    class="group inline-flex items-center gap-2 bg-white text-slate-700 border border-slate-200 pl-3 pr-1.5 py-1.5 rounded-2xl text-sm font-bold">
                                     <i class="fa-solid fa-users text-xs text-blue-500"></i>
                                     <span>{{ $class->origin_class }}</span>
 
@@ -205,7 +216,8 @@
                                     </button>
                                 </div>
                             @empty
-                                <div class="text-sm text-slate-400">Belum ada kelas. Tambahkan minimal satu kelas agar sesi bisa dipakai dengan jelas.</div>
+                                <div class="text-sm text-slate-400">Belum ada kelas. Tambahkan minimal satu kelas agar sesi bisa
+                                    dipakai dengan jelas.</div>
                             @endforelse
                         </div>
 
@@ -227,13 +239,11 @@
                     <div class="flex flex-wrap items-center justify-end gap-2 mt-6 pt-5 border-t border-slate-100">
                         <button type="button"
                             class="editBtn group inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-2xl bg-blue-50 text-blue-700 border border-blue-100 hover:bg-blue-600 hover:text-white hover:border-blue-600 shadow-sm hover:shadow-lg hover:shadow-blue-200 transition-all duration-300"
-                            data-id="{{ $session->id }}"
-                            data-name="{{ e($session->name) }}"
+                            data-id="{{ $session->id }}" data-name="{{ e($session->name) }}"
                             data-test_date="{{ $session->test_date->format('Y-m-d') }}"
                             data-start_time="{{ \Illuminate\Support\Str::of($session->start_time)->substr(0, 5) }}"
                             data-end_time="{{ \Illuminate\Support\Str::of($session->end_time)->substr(0, 5) }}"
-                            data-test_type="{{ $session->test_type }}"
-                            data-is_active="{{ $session->is_active ? 1 : 0 }}">
+                            data-test_type="{{ $session->test_type }}" data-is_active="{{ $session->is_active ? 1 : 0 }}">
                             <i class="fa-solid fa-pen-to-square group-hover:scale-110 transition-transform"></i>
                             <span class="text-sm font-bold">Edit Sesi</span>
                         </button>
@@ -338,7 +348,8 @@
                         class="w-5 h-5 rounded border-slate-300 text-blue-600 focus:ring-blue-500">
                     <div>
                         <div class="font-bold text-slate-800">Sesi aktif</div>
-                        <div class="text-sm text-slate-500">Nonaktifkan jika sesi hanya ingin disimpan sebagai arsip atau draft.</div>
+                        <div class="text-sm text-slate-500">Nonaktifkan jika sesi hanya ingin disimpan sebagai arsip atau
+                            draft.</div>
                     </div>
                 </label>
 
