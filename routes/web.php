@@ -54,6 +54,9 @@ Route::middleware(['auth', 'role:admin'])
         Route::get('/dashboard', [DashboardController::class, 'index'])
             ->name('dashboard');
 
+        Route::post('/dashboard/reset-data', [DashboardController::class, 'resetData'])
+            ->name('dashboard.reset-data');
+
         Route::get('/exam-monitoring', [ExamMonitoringController::class, 'index'])
             ->name('exam-monitoring.index');
 

@@ -128,6 +128,34 @@
             </div>
         </div>
     </div>
+
+    <div class="mt-8 rounded-[28px] border border-red-100 bg-red-50 p-6 shadow-sm">
+        <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-5">
+            <div class="flex items-start gap-4">
+                <div class="w-12 h-12 rounded-2xl bg-white text-red-600 flex items-center justify-center shrink-0">
+                    <i class="fa-solid fa-triangle-exclamation"></i>
+                </div>
+
+                <div>
+                    <h2 class="text-xl font-extrabold text-slate-900">Reset Semua Data</h2>
+                    <p class="text-sm text-red-700 mt-2 max-w-3xl">
+                        Hapus seluruh data operasional seperti siswa, jurusan, soal, sesi tes, hasil, pengumuman, keberatan, pelanggaran, dan file upload. Akun admin dan pengaturan aplikasi tetap disimpan.
+                    </p>
+                </div>
+            </div>
+
+            <form id="resetAllDataForm" method="POST" action="{{ route('admin.dashboard.reset-data') }}">
+                @csrf
+                <input type="hidden" name="confirmation" id="resetConfirmation">
+
+                <button type="button" id="resetAllDataBtn"
+                    class="inline-flex items-center justify-center gap-2 bg-red-600 hover:bg-red-700 text-white px-5 py-3 rounded-2xl font-extrabold shadow-lg shadow-red-100 transition">
+                    <i class="fa-solid fa-rotate-left"></i>
+                    Reset Data
+                </button>
+            </form>
+        </div>
+    </div>
 @endsection
 
 @push('scripts')
@@ -230,6 +258,31 @@
                     }
                 }
             }
+        });
+
+        $('#resetAllDataBtn').on('click', function () {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Reset semua data?',
+                html: 'Aksi ini akan menghapus data siswa, jurusan, soal, sesi, hasil tes, pengumuman, keberatan, pelanggaran, dan file upload.<br><br>Ketik <b>RESET</b> untuk melanjutkan.',
+                input: 'text',
+                inputPlaceholder: 'Ketik RESET',
+                showCancelButton: true,
+                confirmButtonText: 'Reset Sekarang',
+                cancelButtonText: 'Batal',
+                confirmButtonColor: '#dc2626',
+                cancelButtonColor: '#64748b',
+                inputValidator: (value) => {
+                    if (value !== 'RESET') {
+                        return 'Ketik RESET dengan huruf kapital untuk konfirmasi.';
+                    }
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $('#resetConfirmation').val('RESET');
+                    $('#resetAllDataForm').submit();
+                }
+            });
         });
     </script>
 @endpush
