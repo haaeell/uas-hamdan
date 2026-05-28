@@ -213,23 +213,19 @@
                                                     </button>
 
                                                     {{-- Delete --}}
-                                                    <form id="delete-student-{{ $student->id }}" method="POST"
-                                                        action="{{ route('admin.students.destroy', $student) }}">
-                                                        @csrf
-                                                        @method('DELETE')
-
-                                                        <button type="button"
-                                                            onclick="confirmDelete('delete-student-{{ $student->id }}')" class="group inline-flex items-center justify-center gap-2 px-3.5 py-2.5 rounded-2xl
+                                                    <button type="button"
+                                                        class="deleteStudentBtn group inline-flex items-center justify-center gap-2 px-3.5 py-2.5 rounded-2xl
                                        bg-white text-slate-500 border border-slate-200
                                        hover:bg-blue-600 hover:text-white hover:border-blue-600
                                        shadow-sm hover:shadow-lg hover:shadow-blue-200
-                                       transition-all duration-300" title="Hapus siswa">
+                                       transition-all duration-300"
+                                                        data-action="{{ route('admin.students.destroy', $student) }}"
+                                                        title="Hapus siswa">
 
-                                                            <i
-                                                                class="fa-solid fa-trash-can text-sm group-hover:scale-110 transition-transform"></i>
-                                                            <span class="hidden xl:inline text-sm font-bold">Hapus</span>
-                                                        </button>
-                                                    </form>
+                                                        <i
+                                                            class="fa-solid fa-trash-can text-sm group-hover:scale-110 transition-transform"></i>
+                                                        <span class="hidden xl:inline text-sm font-bold">Hapus</span>
+                                                    </button>
 
                                                 </div>
                                             </td>
@@ -238,6 +234,11 @@
                         </tbody>
                     </table>
                 </div>
+            </form>
+
+            <form id="singleDeleteForm" method="POST" class="hidden">
+                @csrf
+                @method('DELETE')
             </form>
 
         </div>
@@ -369,6 +370,13 @@
                 $('#edit_is_active').prop('checked', Number($(this).data('is_active')) === 1);
 
                 $('#editModal').removeClass('hidden').addClass('flex');
+            });
+
+            $('.deleteStudentBtn').on('click', function () {
+                const action = $(this).data('action');
+
+                $('#singleDeleteForm').attr('action', action);
+                confirmDelete('singleDeleteForm');
             });
 
             function closeEditModal() {
