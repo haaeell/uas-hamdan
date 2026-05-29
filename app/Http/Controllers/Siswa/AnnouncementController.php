@@ -96,7 +96,13 @@ class AnnouncementController extends Controller
 
     public function downloadLetter(Announcement $announcement)
     {
-        $student = auth()->user()->student;
+        $student = auth()->user()->student()
+            ->with([
+                'biodata',
+                'result.recommendedPackage',
+                'result.finalPackage',
+            ])
+            ->firstOrFail();
 
         abort_if($student->status !== 'completed', 403, 'Surat belum tersedia untuk status Anda.');
         abort_if(!$announcement->is_published, 404);
@@ -110,12 +116,27 @@ class AnnouncementController extends Controller
         }
 
         $classStudent = $student->classStudent()
-            ->with('classGroup.package')
+            ->with(['classGroup.package', 'package'])
             ->first();
 
         abort_if(!$classStudent, 404, 'Data jurusan dan kelas belum tersedia.');
 
         $today = Carbon::now();
+        $assetDataUri = function (string $path): ?string {
+            if (!is_file($path)) {
+                return null;
+            }
+
+            $extension = strtolower(pathinfo($path, PATHINFO_EXTENSION));
+            $mimeType = match ($extension) {
+                'jpg', 'jpeg' => 'image/jpeg',
+                'gif' => 'image/gif',
+                'webp' => 'image/webp',
+                default => 'image/png',
+            };
+
+            return 'data:' . $mimeType . ';base64,' . base64_encode(file_get_contents($path));
+        };
 
         $pdf = Pdf::loadView('pdfs.student-announcement-letter', [
             'student' => $student,
@@ -126,10 +147,19 @@ class AnnouncementController extends Controller
             'appName' => Setting::getSetting('app_name', 'Sistem Pemilihan Jurusan'),
             'supportContact' => Setting::getSetting('support_contact', 'Hubungi admin sekolah'),
             'issuedDate' => $today->translatedFormat('d F Y'),
+            'letterNumber' => '400.3.8/' . $announcement->id . '/SMA-YAH/' . $today->format('Y'),
+            'principalName' => 'Yanto Susanto, S. Pd., M. IP.',
+            'principalIdentity' => 'NIKA. 19831205 200801 0031',
             'logoDataUri' => Setting::logoDataUri(),
+            'kopDataUri' => $assetDataUri(public_path('images/kop.jpeg')),
+            'footerDataUri' => $assetDataUri(public_path('images/footer.jpeg')),
+            'stampDataUri' => $assetDataUri(public_path('images/surat-pengumuman-cap.png'))
+                ?: $assetDataUri(public_path('images/cap.png')),
+            'signatureDataUri' => $assetDataUri(public_path('images/surat-pengumuman-ttd.png'))
+                ?: $assetDataUri(public_path('images/ttd.png')),
         ])->setPaper('a4', 'portrait');
 
-        $filename = 'surat_keterangan_penempatan_' . $student->nisn . '.pdf';
+        $filename = 'surat_pengumuman_peminatan_' . $student->nisn . '.pdf';
 
         return $pdf->stream($filename);
     }

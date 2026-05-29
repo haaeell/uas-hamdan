@@ -2,90 +2,99 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <title>Surat Keterangan Penempatan</title>
+    <title>Surat Pengumuman Peminatan</title>
     <style>
+        @page {
+            margin: 18px 38px 34px;
+        }
+
         body {
             font-family: DejaVu Sans, sans-serif;
-            color: #0f172a;
+            color: #111827;
             font-size: 12px;
-            line-height: 1.55;
+            line-height: 1.45;
             margin: 0;
         }
 
         .page {
-            padding: 36px 44px;
-        }
-
-        .header {
             width: 100%;
-            border-bottom: 2px solid #0f172a;
-            padding-bottom: 16px;
-            margin-bottom: 28px;
         }
 
-        .logo {
-            width: 72px;
-            vertical-align: top;
+        .kop {
+            width: 100%;
+            margin-bottom: 16px;
         }
 
-        .header-text {
-            padding-left: 14px;
-        }
-
-        .school-name {
-            font-size: 20px;
-            font-weight: bold;
-            margin: 0 0 4px;
-        }
-
-        .app-name {
-            font-size: 11px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            color: #334155;
-            margin: 0 0 6px;
+        .footer {
+            position: fixed;
+            left: 0;
+            right: 0;
+            bottom: -18px;
+            width: 100%;
         }
 
         .title {
             text-align: center;
-            margin: 24px 0 6px;
-            font-size: 18px;
+            font-size: 16px;
             font-weight: bold;
-            text-transform: uppercase;
+            text-decoration: underline;
+            margin: 0 0 2px;
         }
 
-        .subtitle {
+        .number {
             text-align: center;
-            margin: 0 0 24px;
-            color: #475569;
+            margin: 0 0 26px;
         }
 
-        .meta-table,
-        .signature-table {
+        p {
+            margin: 0 0 12px;
+            text-align: justify;
+        }
+
+        .recipient {
+            margin-bottom: 18px;
+        }
+
+        .section-title {
+            text-align: center;
+            font-weight: bold;
+            margin: 16px 0 10px;
+        }
+
+        table {
             width: 100%;
             border-collapse: collapse;
         }
 
-        .meta-table td {
-            padding: 4px 0;
+        .data-table {
+            margin-bottom: 14px;
+        }
+
+        .data-table td {
+            padding: 3px 0;
             vertical-align: top;
         }
 
         .label {
-            width: 160px;
+            width: 170px;
         }
 
-        .summary-box {
-            margin: 22px 0;
-            padding: 16px 18px;
-            border: 1px solid #cbd5e1;
-            background: #f8fafc;
+        .colon {
+            width: 14px;
         }
 
-        .footer-note {
+        .result-table {
+            margin: 8px 0 16px;
+            font-weight: bold;
+        }
+
+        .result-table td {
+            padding: 4px 0;
+            vertical-align: top;
+        }
+
+        .signature-table {
             margin-top: 24px;
-            font-size: 11px;
-            color: #475569;
         }
 
         .signature-table td {
@@ -93,98 +102,181 @@
             vertical-align: top;
         }
 
-        .signature-block {
-            padding-top: 32px;
-            text-align: right;
+        .signature {
+            position: relative;
+            text-align: left;
+            padding-left: 72px;
+        }
+
+        .signature-space {
+            height: 72px;
+        }
+
+        .stamp {
+            position: absolute;
+            left: 18px;
+            top: 48px;
+            width: 124px;
+            opacity: .88;
+            z-index: 1;
+        }
+
+        .signature-img {
+            position: absolute;
+            left: 80px;
+            top: 52px;
+            width: 150px;
+            z-index: 2;
+        }
+
+        .principal-name {
+            position: relative;
+            font-weight: bold;
+            text-decoration: underline;
+            z-index: 3;
         }
     </style>
 </head>
 <body>
-    <div class="page">
-        <table class="header">
-            <tr>
-                <td style="width: 84px;">
-                    @if($logoDataUri)
-                        <img src="{{ $logoDataUri }}" alt="Logo sekolah" class="logo">
-                    @endif
-                </td>
-                <td class="header-text">
-                    <p class="app-name">{{ $appName }}</p>
-                    <p class="school-name">{{ $schoolName }}</p>
-                    <p style="margin: 0;">Dokumen resmi hasil penempatan jurusan dan kelas siswa</p>
-                </td>
-            </tr>
-        </table>
+@php
+    $biodata = $student->biodata;
+    $testResult = $student->result;
+    $psychologyScores = collect($testResult?->psychology_scores ?? []);
+    $topPsychologyScore = $psychologyScores->isNotEmpty() ? $psychologyScores->max() : null;
+    $parentNames = collect([$biodata?->father_name, $biodata?->mother_name])
+        ->filter()
+        ->implode(' / ');
+    $academicScore = $testResult?->academic_score;
+    $psychologyResult = $testResult?->recommendedPackage?->name
+        ?: ($topPsychologyScore !== null ? 'Skor tertinggi: ' . $topPsychologyScore : '-');
+    $finalPackage = $classStudent->package?->name
+        ?: $testResult?->finalPackage?->name
+        ?: '-';
+@endphp
 
-        <div class="title">Surat Keterangan Penempatan</div>
-        <div class="subtitle">Nomor: {{ $announcement->id }}/SKP/{{ now()->format('Y') }}</div>
+    <div class="page">
+        @if($kopDataUri)
+            <img src="{{ $kopDataUri }}" alt="Kop surat" class="kop">
+        @endif
+
+        <div class="title">SURAT PENGUMUMAN</div>
+        <div class="number">Nomor: {{ $letterNumber }}</div>
+
+        <div class="recipient">
+            <div>Kepada Yth.</div>
+            <div>Bapak/Ibu Orang Tua/Wali Siswa</div>
+            <div>di Tempat</div>
+        </div>
+
+        <p>Assalamu'alaikum Wr. Wb, Shalom, Om Swastiastu, Namo Buddhaya, Salam Kebajikan.</p>
+
+        <p>Dengan hormat,</p>
 
         <p>
-            Yang bertanda tangan di bawah ini menerangkan bahwa siswa berikut telah menerima hasil penempatan
-            jurusan dan kelas sesuai pengumuman yang dipublikasikan oleh sekolah.
+            Berdasarkan hasil evaluasi akademik, psikotes, minat, bakat, serta pertimbangan kemampuan peserta didik
+            selama menempuh pendidikan di kelas X, maka {{ $schoolName }} menetapkan pemilihan paket peminatan untuk
+            peserta didik yang akan melanjutkan ke kelas XI Tahun Pelajaran 2026/2027.
         </p>
 
-        <table class="meta-table">
+        <p>Adapun data peserta didik sebagai berikut:</p>
+
+        <div class="section-title">DATA PESERTA DIDIK</div>
+
+        <table class="data-table">
             <tr>
-                <td class="label">Nama Siswa</td>
-                <td>: {{ $student->name }}</td>
-            </tr>
-            <tr>
-                <td class="label">NISN</td>
-                <td>: {{ $student->nisn }}</td>
-            </tr>
-            <tr>
-                <td class="label">NIS</td>
-                <td>: {{ $student->nis ?: '-' }}</td>
+                <td class="label">Nama Lengkap</td>
+                <td class="colon">:</td>
+                <td>{{ $student->name }}</td>
             </tr>
             <tr>
                 <td class="label">Kelas Asal</td>
-                <td>: {{ $student->origin_class ?: '-' }}</td>
+                <td class="colon">:</td>
+                <td>{{ $student->origin_class ?: '-' }}</td>
             </tr>
             <tr>
-                <td class="label">Jurusan Diterima</td>
-                <td>: {{ $classStudent->package->name }}</td>
+                <td class="label">NIS</td>
+                <td class="colon">:</td>
+                <td>{{ $student->nis ?: '-' }}</td>
             </tr>
             <tr>
-                <td class="label">Kelas Penempatan</td>
-                <td>: {{ $classStudent->classGroup->name }}</td>
+                <td class="label">NISN</td>
+                <td class="colon">:</td>
+                <td>{{ $student->nisn ?: '-' }}</td>
             </tr>
             <tr>
-                <td class="label">Judul Pengumuman</td>
-                <td>: {{ $announcement->title }}</td>
+                <td class="label">Nama Orang Tua/Wali</td>
+                <td class="colon">:</td>
+                <td>{{ $parentNames ?: '-' }}</td>
             </tr>
             <tr>
-                <td class="label">Tanggal Respons</td>
-                <td>: {{ optional($response->responded_at)->translatedFormat('d F Y H:i') }}</td>
+                <td class="label">Alamat Lengkap</td>
+                <td class="colon">:</td>
+                <td>{{ $biodata?->address ?: '-' }}</td>
+            </tr>
+            <tr>
+                <td class="label">Hasil Tes Psikotes</td>
+                <td class="colon">:</td>
+                <td>{{ $psychologyResult }}</td>
+            </tr>
+            <tr>
+                <td class="label">Hasil Tes Akademik</td>
+                <td class="colon">:</td>
+                <td>{{ $academicScore !== null ? $academicScore : '-' }}</td>
             </tr>
         </table>
 
-        <div class="summary-box">
-            <strong>Keterangan:</strong>
-            Siswa yang bersangkutan telah menyatakan <strong>menerima</strong> hasil penempatan jurusan
-            <strong>{{ $classStudent->package->name }}</strong> dan kelas
-            <strong>{{ $classStudent->classGroup->name }}</strong>.
-        </div>
+        <div class="section-title">HASIL PENETAPAN PEMINATAN</div>
+
+        <p>Berdasarkan hasil pertimbangan sekolah, peserta didik tersebut dinyatakan:</p>
+
+        <table class="result-table">
+            <tr>
+                <td class="label">TERPILIH PADA PAKET</td>
+                <td class="colon">:</td>
+                <td>{{ $finalPackage }}</td>
+            </tr>
+            <tr>
+                <td class="label">KELAS TERPILIH</td>
+                <td class="colon">:</td>
+                <td>{{ $classStudent->classGroup?->name ?: '-' }}</td>
+            </tr>
+        </table>
 
         <p>
-            Demikian surat keterangan ini dibuat untuk digunakan sebagaimana mestinya. Untuk informasi lebih lanjut,
-            dapat menghubungi {{ $supportContact ?: 'admin sekolah' }}.
+            Keputusan ini diharapkan dapat menjadi dasar dalam pengembangan potensi akademik serta minat dan bakat
+            peserta didik selama menempuh pendidikan di kelas XI.
         </p>
+
+        <p>
+            Demikian surat pengumuman ini disampaikan. Atas perhatian dan kerja sama Bapak/Ibu Orang Tua/Wali, kami
+            ucapkan terima kasih.
+        </p>
+
+        <p>Wassalamu'alaikum Wr. Wb, Shalom, Om Shanti Shanti Om, Namo Buddhaya, Salam Kebajikan.</p>
 
         <table class="signature-table">
             <tr>
                 <td></td>
-                <td class="signature-block">
-                    <div>{{ $issuedDate }}</div>
-                    <div style="margin-top: 8px;">Mengetahui,</div>
-                    <div style="margin-top: 52px; font-weight: bold;">Admin {{ $schoolName }}</div>
+                <td class="signature">
+                    <div>Subang, {{ $issuedDate }}</div>
+                    <div>{{ $schoolName }}</div>
+                    <div>Kepala Sekolah,</div>
+                    @if($stampDataUri)
+                        <img src="{{ $stampDataUri }}" alt="Cap sekolah" class="stamp">
+                    @endif
+                    @if($signatureDataUri)
+                        <img src="{{ $signatureDataUri }}" alt="Tanda tangan kepala sekolah" class="signature-img">
+                    @endif
+                    <div class="signature-space"></div>
+                    <div class="principal-name">{{ $principalName }}</div>
+                    <div>{{ $principalIdentity }}</div>
                 </td>
             </tr>
         </table>
-
-        <div class="footer-note">
-            Dokumen ini dibuat otomatis oleh sistem dan sah digunakan sebagai bukti penerimaan hasil penempatan.
-        </div>
     </div>
+
+    @if($footerDataUri)
+        <img src="{{ $footerDataUri }}" alt="Footer surat" class="footer">
+    @endif
 </body>
 </html>
