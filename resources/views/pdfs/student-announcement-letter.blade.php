@@ -1,18 +1,18 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
     <meta charset="UTF-8">
     <title>Surat Pengumuman Peminatan</title>
     <style>
         @page {
-            margin: 18px 38px 34px;
+            margin: 12px 60px 24px;
         }
 
         body {
-            font-family: DejaVu Sans, sans-serif;
+            font-family: Arial, sans-serif;
             color: #111827;
-            font-size: 12px;
-            line-height: 1.45;
+            font-size: 14px;
             margin: 0;
         }
 
@@ -22,20 +22,20 @@
 
         .kop {
             width: 100%;
-            margin-bottom: 16px;
+            margin-bottom: 6px;
         }
 
         .footer {
             position: fixed;
             left: 0;
             right: 0;
-            bottom: -18px;
+            bottom: -14px;
             width: 100%;
         }
 
         .title {
             text-align: center;
-            font-size: 16px;
+            font-size: 15px;
             font-weight: bold;
             text-decoration: underline;
             margin: 0 0 2px;
@@ -43,22 +43,24 @@
 
         .number {
             text-align: center;
-            margin: 0 0 26px;
+            margin: 0 0 10px;
+            font-size: 12px;
         }
 
         p {
-            margin: 0 0 12px;
+            margin: 0 0 7px;
             text-align: justify;
+            line-height: 1.05;
         }
 
         .recipient {
-            margin-bottom: 18px;
+            margin-bottom: 15px;
         }
 
         .section-title {
             text-align: center;
             font-weight: bold;
-            margin: 16px 0 10px;
+            margin: 15px 0 15px;
         }
 
         table {
@@ -67,12 +69,13 @@
         }
 
         .data-table {
-            margin-bottom: 14px;
+            margin-bottom: 7px;
         }
 
         .data-table td {
-            padding: 3px 0;
+            padding: .8px 0;
             vertical-align: top;
+            line-height: 1.05;
         }
 
         .label {
@@ -84,17 +87,18 @@
         }
 
         .result-table {
-            margin: 8px 0 16px;
+            margin: 4px 0 7px;
             font-weight: bold;
         }
 
         .result-table td {
-            padding: 4px 0;
+            padding: 1px 0;
             vertical-align: top;
+            line-height: 1.05;
         }
 
         .signature-table {
-            margin-top: 24px;
+            margin-top: 18px;
         }
 
         .signature-table td {
@@ -105,7 +109,7 @@
         .signature {
             position: relative;
             text-align: left;
-            padding-left: 72px;
+            padding-left: 64px;
         }
 
         .signature-space {
@@ -115,16 +119,16 @@
         .stamp {
             position: absolute;
             left: 18px;
-            top: 48px;
-            width: 124px;
+            top: 42px;
+            width: 128px;
             opacity: .88;
             z-index: 1;
         }
 
         .signature-img {
             position: absolute;
-            left: 80px;
-            top: 52px;
+            left: 72px;
+            top: 56px;
             width: 150px;
             z-index: 2;
         }
@@ -137,22 +141,23 @@
         }
     </style>
 </head>
+
 <body>
-@php
-    $biodata = $student->biodata;
-    $testResult = $student->result;
-    $psychologyScores = collect($testResult?->psychology_scores ?? []);
-    $topPsychologyScore = $psychologyScores->isNotEmpty() ? $psychologyScores->max() : null;
-    $parentNames = collect([$biodata?->father_name, $biodata?->mother_name])
-        ->filter()
-        ->implode(' / ');
-    $academicScore = $testResult?->academic_score;
-    $psychologyResult = $testResult?->recommendedPackage?->name
-        ?: ($topPsychologyScore !== null ? 'Skor tertinggi: ' . $topPsychologyScore : '-');
-    $finalPackage = $classStudent->package?->name
-        ?: $testResult?->finalPackage?->name
-        ?: '-';
-@endphp
+    @php
+        $biodata = $student->biodata;
+        $testResult = $student->result;
+        $psychologyScores = collect($testResult?->psychology_scores ?? []);
+        $topPsychologyScore = $psychologyScores->isNotEmpty() ? $psychologyScores->max() : null;
+        $parentNames = collect([$biodata?->father_name, $biodata?->mother_name])
+            ->filter()
+            ->implode(' / ');
+        $academicScore = $testResult?->academic_score;
+        $psychologyResult = $testResult?->recommendedPackage?->name
+            ?: ($topPsychologyScore !== null ? 'Skor tertinggi: ' . $topPsychologyScore : '-');
+        $finalPackage = $classStudent->package?->name
+            ?: $testResult?->finalPackage?->name
+            ?: '-';
+    @endphp
 
     <div class="page">
         @if($kopDataUri)
@@ -169,9 +174,9 @@
         </div>
 
         <p>Assalamu'alaikum Wr. Wb, Shalom, Om Swastiastu, Namo Buddhaya, Salam Kebajikan.</p>
-
+        <br>
         <p>Dengan hormat,</p>
-
+        <br>
         <p>
             Berdasarkan hasil evaluasi akademik, psikotes, minat, bakat, serta pertimbangan kemampuan peserta didik
             selama menempuh pendidikan di kelas X, maka {{ $schoolName }} menetapkan pemilihan paket peminatan untuk
@@ -241,6 +246,7 @@
                 <td>{{ $classStudent->classGroup?->name ?: '-' }}</td>
             </tr>
         </table>
+        <br>
 
         <p>
             Keputusan ini diharapkan dapat menjadi dasar dalam pengembangan potensi akademik serta minat dan bakat
@@ -279,4 +285,5 @@
         <img src="{{ $footerDataUri }}" alt="Footer surat" class="footer">
     @endif
 </body>
+
 </html>
