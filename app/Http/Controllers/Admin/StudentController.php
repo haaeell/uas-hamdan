@@ -256,6 +256,9 @@ class StudentController extends Controller
             'file' => ['required', 'file', 'mimes:xlsx,xls,csv,txt'],
         ]);
 
+        @set_time_limit(0);
+        @ini_set('max_execution_time', '0');
+
         $import = new StudentsImport();
 
         Excel::import($import, $request->file('file'));

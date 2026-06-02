@@ -6,6 +6,7 @@ use App\Models\Student;
 use App\Models\User;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Maatwebsite\Excel\Concerns\SkipsEmptyRows;
 use Maatwebsite\Excel\Concerns\ToCollection;
@@ -22,6 +23,8 @@ class StudentsImport implements ToCollection, WithChunkReading, WithHeadingRow, 
 
     public function collection(Collection $rows): void
     {
+        $now = now();
+
         $cleanRows = $rows
             ->map(function ($row) {
                 $row = $row->toArray();
@@ -58,45 +61,77 @@ class StudentsImport implements ToCollection, WithChunkReading, WithHeadingRow, 
         $existingStudentNisns = Student::whereIn('nisn', $nisns)->pluck('nisn')->all();
         $blockedNisns = array_flip(array_unique([...$existingUserNisns, ...$existingStudentNisns]));
 
-        DB::transaction(function () use ($cleanRows, &$blockedNisns) {
-            foreach ($cleanRows as $row) {
-                if (!$this->isRowValid($row)) {
-                    $this->skippedCount++;
-                    continue;
-                }
+        $rowsToInsert = [];
 
-                if (isset($blockedNisns[$row['nisn']]) || isset($this->seenNisns[$row['nisn']])) {
-                    $this->skippedCount++;
-                    continue;
-                }
+        foreach ($cleanRows as $row) {
+            if (!$this->isRowValid($row)) {
+                $this->skippedCount++;
+                continue;
+            }
 
-                $user = User::create([
+            if (isset($blockedNisns[$row['nisn']]) || isset($this->seenNisns[$row['nisn']])) {
+                $this->skippedCount++;
+                continue;
+            }
+
+            $rowsToInsert[] = $row;
+            $blockedNisns[$row['nisn']] = true;
+            $this->seenNisns[$row['nisn']] = true;
+        }
+
+        if (empty($rowsToInsert)) {
+            return;
+        }
+
+        DB::transaction(function () use ($rowsToInsert, $now) {
+            $userRows = [];
+
+            foreach ($rowsToInsert as $row) {
+                $userRows[] = [
                     'name' => $row['name'],
                     'nisn' => $row['nisn'],
-                    'password' => $row['password'],
+                    'password' => Hash::make($row['password']),
                     'role' => 'siswa',
                     'is_active' => $row['is_active'],
-                ]);
+                    'created_at' => $now,
+                    'updated_at' => $now,
+                ];
+            }
 
-                Student::create([
-                    'user_id' => $user->id,
+            DB::table('users')->insert($userRows);
+
+            $userIds = User::whereIn('nisn', collect($rowsToInsert)->pluck('nisn')->all())
+                ->pluck('id', 'nisn');
+
+            $studentRows = [];
+
+            foreach ($rowsToInsert as $row) {
+                if (!isset($userIds[$row['nisn']])) {
+                    continue;
+                }
+
+                $studentRows[] = [
+                    'user_id' => $userIds[$row['nisn']],
                     'nisn' => $row['nisn'],
                     'nis' => $row['nis'],
                     'name' => $row['name'],
                     'origin_class' => $row['origin_class'],
                     'status' => 'onboarding',
-                ]);
-
-                $blockedNisns[$row['nisn']] = true;
-                $this->seenNisns[$row['nisn']] = true;
+                    'created_at' => $now,
+                    'updated_at' => $now,
+                ];
                 $this->importedCount++;
+            }
+
+            if (!empty($studentRows)) {
+                DB::table('students')->insert($studentRows);
             }
         });
     }
 
     public function chunkSize(): int
     {
-        return 200;
+        return 500;
     }
 
     public function getImportedCount(): int
