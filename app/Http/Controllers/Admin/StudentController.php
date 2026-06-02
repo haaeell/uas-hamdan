@@ -99,6 +99,13 @@ class StudentController extends Controller
             ->toJson();
     }
 
+    public function show(Student $student)
+    {
+        return redirect()
+            ->route('admin.students.index')
+            ->with('warning', 'Halaman detail siswa tidak digunakan. Gunakan tombol Edit dari daftar.');
+    }
+
     public function store(Request $request, ActivityLogService $logger)
     {
         $validated = $request->validate([

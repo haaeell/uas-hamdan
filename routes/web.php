@@ -65,21 +65,12 @@ Route::middleware(['auth', 'role:admin'])
         | MASTER SISWA
         |--------------------------------------------------------------------------
         */
+        Route::get('/students/data', [StudentController::class, 'data'])->name('students.data');
         Route::resource('/students', StudentController::class);
-        Route::get('/students/data', [StudentController::class, 'data'])
-            ->name('students.data');
-
-        Route::post('/students/import', [StudentController::class, 'import'])
-            ->name('students.import');
-
-        Route::get('/students/export/excel', [StudentController::class, 'export'])
-            ->name('students.export');
-
-        Route::get('/students/template/download', [StudentController::class, 'downloadTemplate'])
-            ->name('students.template');
-
-        Route::post('/students/bulk-delete', [StudentController::class, 'bulkDelete'])
-            ->name('students.bulk-delete');
+        Route::post('/students/import', [StudentController::class, 'import'])->name('students.import');
+        Route::get('/students/export/excel', [StudentController::class, 'export'])->name('students.export');
+        Route::get('/students/template/download', [StudentController::class, 'downloadTemplate'])->name('students.template');
+        Route::post('/students/bulk-delete', [StudentController::class, 'bulkDelete'])->name('students.bulk-delete');
 
         Route::post('/students/bulk-activate', [StudentController::class, 'bulkActivate'])
             ->name('students.bulk-activate');
