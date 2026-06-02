@@ -66,6 +66,8 @@ Route::middleware(['auth', 'role:admin'])
         |--------------------------------------------------------------------------
         */
         Route::resource('/students', StudentController::class);
+        Route::get('/students/data', [StudentController::class, 'data'])
+            ->name('students.data');
 
         Route::post('/students/import', [StudentController::class, 'import'])
             ->name('students.import');

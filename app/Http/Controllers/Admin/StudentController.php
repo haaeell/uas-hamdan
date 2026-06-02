@@ -16,16 +16,87 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 use Maatwebsite\Excel\Facades\Excel;
+use Yajra\DataTables\Facades\DataTables;
 
 class StudentController extends Controller
 {
     public function index()
     {
-        $students = Student::with(['user', 'biodata', 'packageChoice.firstPackage', 'packageChoice.secondPackage'])
-            ->latest()
-            ->paginate(20);
+        $totalStudents = Student::count();
 
-        return view('admin.students.index', compact('students'));
+        return view('admin.students.index', compact('totalStudents'));
+    }
+
+    public function data()
+    {
+        $query = Student::query()
+            ->select('students.*')
+            ->with(['user'])
+            ->orderByDesc('students.created_at');
+
+        return DataTables::eloquent($query)
+            ->addColumn('checkbox', function (Student $student) {
+                return '
+                    <input type="checkbox"
+                        class="checkItem w-4 h-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500"
+                        value="' . e($student->id) . '">
+                ';
+            })
+            ->addColumn('name', function (Student $student) {
+                $activeBadge = $student->user?->is_active
+                    ? '<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 text-[10px] font-bold">Aktif</span>'
+                    : '<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-slate-100 text-slate-500 text-[10px] font-bold">Nonaktif</span>';
+
+                return '
+                    <div class="font-bold text-slate-800">' . e($student->name) . '</div>
+                    <div class="mt-1 flex flex-wrap items-center gap-2 text-xs text-slate-400 font-medium">
+                        <span>NIS: ' . e($student->nis ?? '-') . '</span>
+                        ' . $activeBadge . '
+                    </div>
+                ';
+            })
+            ->addColumn('nisn', function (Student $student) {
+                return e($student->nisn);
+            })
+            ->addColumn('origin_class', function (Student $student) {
+                return e($student->origin_class);
+            })
+            ->addColumn('aksi', function (Student $student) {
+                return '
+                    <div class="flex items-center gap-2">
+                        <button type="button"
+                            class="editBtn group inline-flex items-center justify-center gap-2 px-3.5 py-2.5 rounded-2xl
+                            bg-blue-50 text-blue-700 border border-blue-100
+                            hover:bg-blue-600 hover:text-white hover:border-blue-600
+                            shadow-sm hover:shadow-lg hover:shadow-blue-200
+                            transition-all duration-300"
+                            data-id="' . e($student->id) . '"
+                            data-name="' . e($student->name) . '"
+                            data-nisn="' . e($student->nisn) . '"
+                            data-nis="' . e($student->nis) . '"
+                            data-origin_class="' . e($student->origin_class) . '"
+                            data-is_active="' . ($student->user?->is_active ? 1 : 0) . '"
+                            title="Edit siswa">
+                            <i class="fa-solid fa-pen-to-square text-sm group-hover:scale-110 transition-transform"></i>
+                            <span class="hidden xl:inline text-sm font-bold">Edit</span>
+                        </button>
+
+                        <button type="button"
+                            class="deleteStudentBtn group inline-flex items-center justify-center gap-2 px-3.5 py-2.5 rounded-2xl
+                            bg-white text-slate-500 border border-slate-200
+                            hover:bg-blue-600 hover:text-white hover:border-blue-600
+                            shadow-sm hover:shadow-lg hover:shadow-blue-200
+                            transition-all duration-300"
+                            data-action="' . route('admin.students.destroy', $student) . '"
+                            title="Hapus siswa">
+                            <i class="fa-solid fa-trash-can text-sm group-hover:scale-110 transition-transform"></i>
+                            <span class="hidden xl:inline text-sm font-bold">Hapus</span>
+                        </button>
+                    </div>
+                ';
+            })
+            ->rawColumns(['checkbox', 'name', 'aksi'])
+            ->toJson();
     }
 
     public function store(Request $request, ActivityLogService $logger)

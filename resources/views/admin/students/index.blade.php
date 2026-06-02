@@ -131,7 +131,7 @@
                 </div>
 
                 <div class="text-sm font-semibold text-blue-700 bg-blue-50 px-4 py-2 rounded-2xl">
-                    Total: {{ $students->total() ?? $students->count() }} siswa
+                    Total: {{ $totalStudents }} siswa
                 </div>
             </div>
 
@@ -163,7 +163,7 @@
                 </div>
 
                 <div class="overflow-x-auto">
-                    <table class=" datatable w-full text-sm">
+                    <table id="studentsTable" class="w-full text-sm">
                         <thead>
                             <tr class="text-slate-600">
                                 <th>
@@ -176,62 +176,7 @@
                                 <th>Aksi</th>
                             </tr>
                         </thead>
-
-                        <tbody>
-                            @foreach($students as $student)
-                                        <tr class="align-top">
-                                            <td>
-                                                <input type="checkbox" name="ids[]" value="{{ $student->id }}"
-                                                    class="checkItem w-4 h-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500">
-                                            </td>
-
-                                            <td class="font-bold text-slate-800">
-                                                {{ $student->name }}
-                                                <div class="text-xs text-slate-400 font-medium">NIS: {{ $student->nis ?? '-' }}</div>
-                                            </td>
-
-                                            <td>{{ $student->nisn }}</td>
-                                            <td>{{ $student->origin_class }}</td>
-
-
-                                            <td>
-                                                <div class="flex items-center gap-2">
-
-                                                    {{-- Edit --}}
-                                                    <button type="button" class="editBtn group inline-flex items-center justify-center gap-2 px-3.5 py-2.5 rounded-2xl
-                                   bg-blue-50 text-blue-700 border border-blue-100
-                                   hover:bg-blue-600 hover:text-white hover:border-blue-600
-                                   shadow-sm hover:shadow-lg hover:shadow-blue-200
-                                   transition-all duration-300" data-id="{{ $student->id }}" data-name="{{ e($student->name) }}"
-                                                        data-nisn="{{ e($student->nisn) }}" data-nis="{{ e($student->nis) }}"
-                                                        data-origin_class="{{ e($student->origin_class) }}"
-                                                        data-is_active="{{ $student->user?->is_active ? 1 : 0 }}" title="Edit siswa">
-
-                                                        <i
-                                                            class="fa-solid fa-pen-to-square text-sm group-hover:scale-110 transition-transform"></i>
-                                                        <span class="hidden xl:inline text-sm font-bold">Edit</span>
-                                                    </button>
-
-                                                    {{-- Delete --}}
-                                                    <button type="button"
-                                                        class="deleteStudentBtn group inline-flex items-center justify-center gap-2 px-3.5 py-2.5 rounded-2xl
-                                       bg-white text-slate-500 border border-slate-200
-                                       hover:bg-blue-600 hover:text-white hover:border-blue-600
-                                       shadow-sm hover:shadow-lg hover:shadow-blue-200
-                                       transition-all duration-300"
-                                                        data-action="{{ route('admin.students.destroy', $student) }}"
-                                                        title="Hapus siswa">
-
-                                                        <i
-                                                            class="fa-solid fa-trash-can text-sm group-hover:scale-110 transition-transform"></i>
-                                                        <span class="hidden xl:inline text-sm font-bold">Hapus</span>
-                                                    </button>
-
-                                                </div>
-                                            </td>
-                                        </tr>
-                            @endforeach
-                        </tbody>
+                        <tbody></tbody>
                     </table>
                 </div>
             </form>
@@ -315,24 +260,84 @@
     <script>
         $(function () {
             const editUrlTemplate = "{{ route('admin.students.update', ':id') }}";
+            const dataUrl = @json(route('admin.students.data'));
+            const selectedIds = new Set();
+            const bulkForm = $('#bulkForm');
 
-            $('#checkAll').on('change', function () {
-                $('.checkItem').prop('checked', $(this).is(':checked'));
+            const table = $('#studentsTable').DataTable({
+                processing: true,
+                serverSide: true,
+                responsive: false,
+                pageLength: 20,
+                ajax: dataUrl,
+                dom: '<"dt-top"l f>rt<"dt-bottom"i p>',
+                order: [[1, 'asc']],
+                columns: [
+                    { data: 'checkbox', name: 'checkbox', orderable: false, searchable: false },
+                    { data: 'name', name: 'students.name' },
+                    { data: 'nisn', name: 'students.nisn' },
+                    { data: 'origin_class', name: 'students.origin_class' },
+                    { data: 'aksi', name: 'aksi', orderable: false, searchable: false },
+                ],
+                drawCallback: function () {
+                    $('input.checkItem').each(function () {
+                        const id = String($(this).val());
+                        $(this).prop('checked', selectedIds.has(id));
+                    });
+
+                    const visible = $('input.checkItem').length;
+                    const checked = $('input.checkItem:checked').length;
+                    $('#checkAll').prop('checked', visible > 0 && visible === checked);
+                },
+                language: {
+                    search: '',
+                    searchPlaceholder: 'Cari nama, NISN, atau kelas...',
+                    lengthMenu: 'Tampilkan _MENU_ data',
+                    info: 'Menampilkan _START_ - _END_ dari _TOTAL_ data',
+                    infoEmpty: 'Tidak ada data',
+                    zeroRecords: 'Data tidak ditemukan',
+                    paginate: {
+                        previous: '<',
+                        next: '>'
+                    }
+                }
             });
 
-            $(document).on('change', '.checkItem', function () {
-                const total = $('.checkItem').length;
-                const checked = $('.checkItem:checked').length;
-                $('#checkAll').prop('checked', total > 0 && total === checked);
+            $('#checkAll').on('change', function () {
+                const checked = $(this).is(':checked');
+
+                $('input.checkItem').each(function () {
+                    const id = String($(this).val());
+                    $(this).prop('checked', checked);
+
+                    if (checked) {
+                        selectedIds.add(id);
+                    } else {
+                        selectedIds.delete(id);
+                    }
+                });
+            });
+
+            $(document).on('change', '#studentsTable .checkItem', function () {
+                const id = String($(this).val());
+
+                if ($(this).is(':checked')) {
+                    selectedIds.add(id);
+                } else {
+                    selectedIds.delete(id);
+                }
+
+                const visible = $('input.checkItem').length;
+                const checked = $('input.checkItem:checked').length;
+                $('#checkAll').prop('checked', visible > 0 && visible === checked);
             });
 
             $('.bulkBtn').on('click', function () {
-                const checked = $('.checkItem:checked').length;
                 const action = $(this).data('action');
                 const title = $(this).data('title') || 'Proses data terpilih?';
                 const text = $(this).data('text') || 'Pastikan data yang dipilih sudah benar.';
 
-                if (checked === 0) {
+                if (selectedIds.size === 0) {
                     Swal.fire({
                         icon: 'warning',
                         title: 'Pilih siswa',
@@ -353,12 +358,16 @@
                     cancelButtonColor: '#64748b'
                 }).then((result) => {
                     if (result.isConfirmed) {
+                        bulkForm.find('input[name="ids[]"]').remove();
+                        [...selectedIds].forEach((id) => {
+                            bulkForm.append(`<input type="hidden" name="ids[]" value="${id}">`);
+                        });
                         $('#bulkForm').attr('action', action).submit();
                     }
                 });
             });
 
-            $('.editBtn').on('click', function () {
+            $(document).on('click', '.editBtn', function () {
                 const id = $(this).data('id');
                 const updateUrl = editUrlTemplate.replace(':id', id);
 
@@ -372,7 +381,7 @@
                 $('#editModal').removeClass('hidden').addClass('flex');
             });
 
-            $('.deleteStudentBtn').on('click', function () {
+            $(document).on('click', '.deleteStudentBtn', function () {
                 const action = $(this).data('action');
 
                 $('#singleDeleteForm').attr('action', action);
