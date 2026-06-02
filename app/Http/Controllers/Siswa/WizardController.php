@@ -150,13 +150,7 @@ class WizardController extends Controller
             return redirect()->route($this->studentRoute($student));
         }
 
-        $session = TestSession::where('is_active', true)
-            ->whereHas('classes', function ($query) use ($student) {
-                $query->where('origin_class', $student->origin_class);
-            })
-            ->orderBy('test_date')
-            ->orderBy('start_time')
-            ->first();
+        $session = TestSession::activeForOriginClass($student->origin_class);
 
         return view('siswa.waiting-session', compact('student', 'session'));
     }

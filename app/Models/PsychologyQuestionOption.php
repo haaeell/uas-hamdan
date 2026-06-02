@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Cache;
 
 class PsychologyQuestionOption extends Model
 {
@@ -11,6 +12,14 @@ class PsychologyQuestionOption extends Model
         'label',
         'option_text',
     ];
+
+    protected static function booted(): void
+    {
+        $flush = fn () => Cache::store('file')->forget('exam.questions.psychology.active.v1');
+
+        static::saved($flush);
+        static::deleted($flush);
+    }
 
     public function question()
     {

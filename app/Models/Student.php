@@ -62,6 +62,12 @@ class Student extends Model
                 'started_at',
                 'finished_at',
                 'status',
+                'academic_started_at',
+                'psychology_started_at',
+                'academic_submitted_at',
+                'psychology_submitted_at',
+                'academic_violation_count',
+                'psychology_violation_count',
             ])
             ->withTimestamps();
     }

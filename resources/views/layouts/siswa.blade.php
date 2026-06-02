@@ -14,9 +14,12 @@
     <script src="https://cdn.tailwindcss.com"></script>
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
 
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
 </head>
 
 <body class="bg-slate-950 text-white">
@@ -59,6 +62,40 @@
         </script>
     @endif
     @yield('content')
+
+    <script>
+        window.renderMathBlocks = function (root = document) {
+            if (typeof renderMathInElement !== 'function') {
+                return;
+            }
+
+            const targets = [];
+
+            if (root.classList && root.classList.contains('math-render')) {
+                targets.push(root);
+            }
+
+            if (root.querySelectorAll) {
+                targets.push(...root.querySelectorAll('.math-render'));
+            }
+
+            [...new Set(targets)].forEach((element) => {
+                renderMathInElement(element, {
+                    delimiters: [
+                        {left: '$$', right: '$$', display: true},
+                        {left: '$', right: '$', display: false},
+                        {left: '\\(', right: '\\)', display: false},
+                        {left: '\\[', right: '\\]', display: true},
+                    ],
+                    throwOnError: false,
+                });
+            });
+        };
+
+        document.addEventListener('DOMContentLoaded', function () {
+            window.renderMathBlocks();
+        });
+    </script>
 
     @stack('scripts')
 </body>

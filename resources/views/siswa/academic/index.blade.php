@@ -71,9 +71,9 @@
                                 Soal {{ $index + 1 }}
                             </p>
 
-                            <h2 class="font-extrabold text-lg md:text-xl text-slate-900 leading-relaxed">
-                                {{ $question->question }}
-                            </h2>
+                            <div class="font-extrabold text-lg md:text-xl text-slate-900 leading-relaxed math-render">
+                                {!! $question->rendered_question !!}
+                            </div>
 
                             @if($question->image_path)
                                 <img src="{{ asset('storage/' . $question->image_path) }}" alt="Gambar soal {{ $index + 1 }}"
@@ -105,8 +105,8 @@
                                     </div>
 
                                     <div class="pt-1">
-                                        <div class="text-slate-800 font-semibold leading-relaxed">
-                                            {{ $option->option_text }}
+                                        <div class="text-slate-800 font-semibold leading-relaxed math-render">
+                                            {!! $option->rendered_option_text !!}
                                         </div>
                                     </div>
                                 </div>

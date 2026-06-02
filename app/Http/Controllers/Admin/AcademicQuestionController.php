@@ -45,15 +45,20 @@ class AcademicQuestionController extends Controller
             'is_active' => ['nullable', 'boolean'],
         ]);
 
-        DB::transaction(function () use ($validated, $request, $logger) {
+        $questionText = $this->normalizeQuestionInput($validated['question']);
+        $optionTexts = collect($validated['options'])
+            ->map(fn ($text) => $this->normalizeQuestionInput($text))
+            ->all();
+
+        DB::transaction(function () use ($validated, $request, $logger, $questionText, $optionTexts) {
             $question = AcademicQuestion::create([
-                'question' => $validated['question'],
+                'question' => $questionText,
                 'image_path' => app(QuestionImageService::class)->storeUploaded($request->file('image')),
                 'order' => AcademicQuestion::max('order') + 1,
                 'is_active' => $request->boolean('is_active'),
             ]);
 
-            foreach ($validated['options'] as $label => $text) {
+            foreach ($optionTexts as $label => $text) {
                 $question->options()->create([
                     'label' => $label,
                     'option_text' => $text,
@@ -82,14 +87,19 @@ class AcademicQuestionController extends Controller
             'is_active' => ['nullable', 'boolean'],
         ]);
 
-        DB::transaction(function () use ($validated, $request, $academicQuestion, $logger) {
+        $questionText = $this->normalizeQuestionInput($validated['question']);
+        $optionTexts = collect($validated['options'])
+            ->map(fn ($text) => $this->normalizeQuestionInput($text))
+            ->all();
+
+        DB::transaction(function () use ($validated, $request, $academicQuestion, $logger, $questionText, $optionTexts) {
             $academicQuestion->update([
-                'question' => $validated['question'],
+                'question' => $questionText,
                 'image_path' => app(QuestionImageService::class)->storeUploaded($request->file('image'), $academicQuestion->image_path),
                 'is_active' => $request->boolean('is_active'),
             ]);
 
-            foreach ($validated['options'] as $label => $text) {
+            foreach ($optionTexts as $label => $text) {
                 $academicQuestion->options()->updateOrCreate(
                     ['label' => $label],
                     [
@@ -132,6 +142,11 @@ class AcademicQuestionController extends Controller
             new AcademicQuestionsTemplateExport(),
             'template_soal_akademik.xlsx'
         );
+    }
+
+    private function normalizeQuestionInput(?string $value): string
+    {
+        return trim(strip_tags((string) $value));
     }
 
     public function export()

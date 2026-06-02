@@ -20,7 +20,6 @@ class AcademicTestController extends Controller
 
         abort_if(!$student->selfie, 403, 'Selfie wajib dilakukan sebelum tes.');
 
-
         $sessionState = $this->getSessionState($request, $student->id);
         $durationMinutes = Setting::getInt('academic_duration_minutes', 60);
         $remainingSeconds = $this->calculateRemainingSeconds($sessionState->academic_started_at, $durationMinutes);
@@ -29,10 +28,7 @@ class AcademicTestController extends Controller
             return $this->finalizeAcademic($student, $sessionState->test_session_id, true);
         }
 
-        $questions = AcademicQuestion::where('is_active', true)
-            ->with('options')
-            ->orderBy('order')
-            ->get();
+        $questions = AcademicQuestion::activeForTest();
 
         $questions = $this->applyStableRandomOrder(
             $questions,
@@ -66,12 +62,12 @@ class AcademicTestController extends Controller
         ]);
 
         $student = auth()->user()->student;
-
-
         $sessionState = $this->getSessionState($request, $student->id);
         abort_if($this->calculateRemainingSeconds($sessionState->academic_started_at, Setting::getInt('academic_duration_minutes', 60)) <= 0, 423, 'Waktu tes akademik sudah habis.');
 
-        $option = AcademicQuestionOption::where('id', $validated['academic_question_option_id'])
+        $option = AcademicQuestionOption::query()
+            ->select(['id', 'academic_question_id', 'is_correct'])
+            ->where('id', $validated['academic_question_option_id'])
             ->where('academic_question_id', $validated['academic_question_id'])
             ->firstOrFail();
 
@@ -96,7 +92,6 @@ class AcademicTestController extends Controller
     {
         $student = auth()->user()->student;
 
-
         $sessionState = $this->getSessionState($request, $student->id);
 
         return $this->finalizeAcademic($student, $sessionState->test_session_id);
@@ -104,6 +99,12 @@ class AcademicTestController extends Controller
 
     private function getSessionState(Request $request, int $studentId): object
     {
+        $state = $request->attributes->get('active_test_session_state');
+
+        if ($state) {
+            return $state;
+        }
+
         $sessionId = $request->attributes->get('active_test_session_id');
 
         abort_if(!$sessionId, 403, 'Sesi tes tidak ditemukan.');
@@ -130,7 +131,7 @@ class AcademicTestController extends Controller
     private function finalizeAcademic($student, int $sessionId, bool $expired = false)
     {
         DB::transaction(function () use ($student, $sessionId) {
-            $total = AcademicQuestion::where('is_active', true)->count();
+            $total = AcademicQuestion::activeForTest()->count();
 
             $correct = $student->academicAnswers()
                 ->where('is_correct', true)

@@ -16,15 +16,7 @@ class EnsureStudentTestSessionIsOpen
 
         abort_if(!$student, 403);
 
-        $session = TestSession::query()
-            ->where('is_active', true)
-            ->whereDate('test_date', today())
-            ->whereTime('start_time', '<=', now()->format('H:i:s'))
-            ->whereTime('end_time', '>=', now()->format('H:i:s'))
-            ->whereHas('classes', function ($query) use ($student) {
-                $query->where('origin_class', $student->origin_class);
-            })
-            ->first();
+        $session = TestSession::activeForOriginClass($student->origin_class);
 
         if (!$session) {
             return redirect()
@@ -58,6 +50,19 @@ class EnsureStudentTestSessionIsOpen
                 'created_at' => $now,
                 'updated_at' => $now,
             ]);
+
+            $pivot = (object) [
+                'student_id' => $student->id,
+                'test_session_id' => $session->id,
+                'started_at' => $now,
+                'academic_started_at' => $examType === 'academic' ? $now : null,
+                'psychology_started_at' => $examType === 'psychology' ? $now : null,
+                'academic_submitted_at' => null,
+                'psychology_submitted_at' => null,
+                'academic_violation_count' => 0,
+                'psychology_violation_count' => 0,
+                'status' => 'in_progress',
+            ];
         } else {
             $updates = [
                 'status' => 'in_progress',
@@ -80,9 +85,14 @@ class EnsureStudentTestSessionIsOpen
                 ->where('student_id', $student->id)
                 ->where('test_session_id', $session->id)
                 ->update($updates);
+
+            foreach ($updates as $key => $value) {
+                $pivot->{$key} = $value;
+            }
         }
 
         $request->attributes->set('active_test_session_id', $session->id);
+        $request->attributes->set('active_test_session_state', $pivot);
 
         return $next($request);
     }

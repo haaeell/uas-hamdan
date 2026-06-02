@@ -27,10 +27,7 @@ class PsychologyTestController extends Controller
             return $this->finalizePsychology($student, $sessionState->test_session_id, app(PsychologyScoringService::class), true);
         }
 
-        $questions = PsychologyQuestion::where('is_active', true)
-            ->with('options')
-            ->orderBy('order')
-            ->get();
+        $questions = PsychologyQuestion::activeForTest();
 
         $questions = $this->applyStableRandomOrder(
             $questions,
@@ -97,6 +94,12 @@ class PsychologyTestController extends Controller
 
     private function getSessionState(Request $request, int $studentId): object
     {
+        $state = $request->attributes->get('active_test_session_state');
+
+        if ($state) {
+            return $state;
+        }
+
         $sessionId = $request->attributes->get('active_test_session_id');
 
         abort_if(!$sessionId, 403, 'Sesi tes tidak ditemukan.');

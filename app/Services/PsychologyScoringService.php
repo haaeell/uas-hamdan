@@ -14,7 +14,22 @@ class PsychologyScoringService
             $scores = [];
 
             $answers = $student->psychologyAnswers()
-                ->with('option.weights.package')
+                ->select(['id', 'student_id', 'psychology_question_id', 'psychology_question_option_id'])
+                ->with([
+                    'option' => function ($query) {
+                        $query->select(['id'])
+                            ->with([
+                                'weights' => function ($weightQuery) {
+                                    $weightQuery->select([
+                                        'id',
+                                        'psychology_question_option_id',
+                                        'package_id',
+                                        'weight',
+                                    ]);
+                                },
+                            ]);
+                    },
+                ])
                 ->get();
 
             foreach ($answers as $answer) {

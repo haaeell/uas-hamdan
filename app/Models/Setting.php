@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Support\Collection;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
 
 class Setting extends Model
@@ -15,6 +16,11 @@ class Setting extends Model
     ];
 
     protected static ?Collection $cachedSettings = null;
+
+    protected static function cacheKey(): string
+    {
+        return 'settings.all_keyed.v1';
+    }
 
     public static function definitions(): array
     {
@@ -128,7 +134,10 @@ class Setting extends Model
     public static function allKeyed(): Collection
     {
         if (static::$cachedSettings === null) {
-            static::$cachedSettings = static::query()->pluck('value', 'key');
+            static::$cachedSettings = Cache::store('file')->rememberForever(
+                static::cacheKey(),
+                fn () => static::query()->pluck('value', 'key')
+            );
         }
 
         return static::$cachedSettings;
@@ -173,6 +182,7 @@ class Setting extends Model
         }
 
         static::$cachedSettings = null;
+        Cache::store('file')->forget(static::cacheKey());
     }
 
     public static function logoUrl(): string

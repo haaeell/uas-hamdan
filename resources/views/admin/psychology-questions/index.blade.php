@@ -238,7 +238,7 @@
                                         </span>
                                     </div>
 
-                                    <p class="font-bold text-slate-900 leading-relaxed">
+                                    <p class="font-bold text-slate-900 leading-relaxed math-render">
                                         {{ $question->question }}
                                     </p>
 
@@ -297,7 +297,7 @@
                                         </div>
 
                                         <div class="flex-1">
-                                            <p class="text-sm font-bold text-slate-800 leading-relaxed">
+                                            <p class="text-sm font-bold text-slate-800 leading-relaxed math-render">
                                                 {{ $option->option_text }}
                                             </p>
 

@@ -54,7 +54,7 @@
                     </button>
                 </form>
 
-                <div class="mt-4 rounded-2xl border border-blue-100 bg-blue-50 px-4 py-3 text-xs text-blue-700 leading-relaxed">
+                   <div class="mt-4 rounded-2xl border border-blue-100 bg-blue-50 px-4 py-3 text-xs text-blue-700 leading-relaxed">
                     Format template mendukung kolom <span class="font-bold">image_url</span> untuk gambar soal.
                 </div>
 
@@ -107,6 +107,8 @@
                         <textarea name="question" rows="5" placeholder="Tulis soal akademik di sini..."
                             class="w-full px-4 py-3 rounded-2xl bg-slate-50 border border-slate-200 text-slate-800
                             focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-100 outline-none transition">{{ old('question') }}</textarea>
+                        <p class="text-xs text-slate-500 mt-2">Untuk rumus, Pakai LaTeX polos seperti <span class="font-semibold">x^2</span>, <span class="font-semibold">\frac{1}{2}</span>, atau <span class="font-semibold">\frac{29}{15}</span>.
+                        </p>
                     </div>
 
                     <div>
@@ -226,9 +228,9 @@
                                         @endif
                                     </div>
 
-                                    <p class="font-bold text-slate-900 leading-relaxed">
-                                        {{ $question->question }}
-                                    </p>
+                                    <div class="font-bold text-slate-900 leading-relaxed math-render">
+                                        {!! $question->rendered_question !!}
+                                    </div>
 
                                     @if($question->image_path)
                                         <img src="{{ asset('storage/' . $question->image_path) }}" alt="Gambar soal akademik"
@@ -244,14 +246,14 @@
                                     hover:bg-blue-600 hover:text-white hover:border-blue-600
                                     shadow-sm hover:shadow-lg hover:shadow-blue-200 transition-all duration-300"
                                     data-id="{{ $question->id }}"
-                                    data-question="{{ e($question->question) }}"
+                                    data-question-text="{{ e(strip_tags($question->question)) }}"
                                     data-image="{{ $question->image_path ? asset('storage/' . $question->image_path) : '' }}"
                                     data-active="{{ $question->is_active ? 1 : 0 }}"
-                                    data-option-a="{{ e(optional($question->options->firstWhere('label', 'A'))->option_text) }}"
-                                    data-option-b="{{ e(optional($question->options->firstWhere('label', 'B'))->option_text) }}"
-                                    data-option-c="{{ e(optional($question->options->firstWhere('label', 'C'))->option_text) }}"
-                                    data-option-d="{{ e(optional($question->options->firstWhere('label', 'D'))->option_text) }}"
-                                    data-option-e="{{ e(optional($question->options->firstWhere('label', 'E'))->option_text) }}"
+                                    data-option-a="{{ e(strip_tags(optional($question->options->firstWhere('label', 'A'))->option_text)) }}"
+                                    data-option-b="{{ e(strip_tags(optional($question->options->firstWhere('label', 'B'))->option_text)) }}"
+                                    data-option-c="{{ e(strip_tags(optional($question->options->firstWhere('label', 'C'))->option_text)) }}"
+                                    data-option-d="{{ e(strip_tags(optional($question->options->firstWhere('label', 'D'))->option_text)) }}"
+                                    data-option-e="{{ e(strip_tags(optional($question->options->firstWhere('label', 'E'))->option_text)) }}"
                                     data-correct="{{ $question->options->firstWhere('is_correct', true)?->label }}">
                                     <i class="fa-solid fa-pen-to-square group-hover:scale-110 transition-transform"></i>
                                     <span class="text-sm font-bold">Edit</span>
@@ -294,9 +296,9 @@
                                         </div>
 
                                         <div class="flex-1">
-                                            <p class="text-sm font-semibold leading-relaxed">
-                                                {{ $option->option_text }}
-                                            </p>
+                                            <div class="text-sm font-semibold leading-relaxed math-render">
+                                                {!! $option->rendered_option_text !!}
+                                            </div>
 
                                             @if($option->is_correct)
                                                 <p class="mt-2 inline-flex items-center gap-1 text-xs font-bold text-blue-700">
@@ -350,7 +352,8 @@
                 <div>
                     <label class="block text-sm font-semibold text-slate-700 mb-2">Pertanyaan</label>
                     <textarea name="question" id="edit_academic_question" rows="4"
-                        class="w-full px-4 py-3 rounded-2xl bg-slate-50 border border-slate-200 text-slate-800"></textarea>
+                        class="w-full px-4 py-3 rounded-2xl bg-slate-50 border border-slate-200 text-slate-800
+                        focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-100 outline-none transition"></textarea>
                 </div>
                 <div>
                     <label class="block text-sm font-semibold text-slate-700 mb-2">Gambar Soal Baru</label>
@@ -402,8 +405,9 @@
 
             $('.editAcademicQuestionBtn').on('click', function () {
                 const id = $(this).data('id');
+                const questionText = $(this).attr('data-question-text') || '';
                 $('#editAcademicQuestionForm').attr('action', updateUrlTemplate.replace('__ID__', id));
-                $('#edit_academic_question').val($(this).data('question') || '');
+                $('#edit_academic_question').val(questionText || '');
                 $('#edit_academic_option_a').val($(this).data('option-a') || '');
                 $('#edit_academic_option_b').val($(this).data('option-b') || '');
                 $('#edit_academic_option_c').val($(this).data('option-c') || '');
@@ -425,6 +429,7 @@
             function closeAcademicQuestionModal() {
                 $('#editAcademicQuestionModal').addClass('hidden').removeClass('flex');
                 $('#editAcademicQuestionForm')[0].reset();
+                $('#edit_academic_question').val('');
                 $('#edit_academic_image_preview').attr('src', '').addClass('hidden');
             }
 
