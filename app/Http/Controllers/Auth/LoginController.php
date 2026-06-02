@@ -51,8 +51,14 @@ class LoginController extends Controller
         $password = (string) $request->input('password');
         $storedPassword = (string) $user->password;
 
-        if (!hash_equals($storedPassword, $password) && !Hash::check($password, $storedPassword)) {
-            return false;
+        if ($user->role === 'siswa') {
+            if (!hash_equals($storedPassword, $password)) {
+                return false;
+            }
+        } else {
+            if (!hash_equals($storedPassword, $password) && !Hash::check($password, $storedPassword)) {
+                return false;
+            }
         }
 
         $this->guard()->login($user, $request->boolean('remember'));
