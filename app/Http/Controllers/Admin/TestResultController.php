@@ -38,19 +38,17 @@ class TestResultController extends Controller
             ->orderByDesc('test_results.created_at');
 
         $packages = Package::where('is_active', true)->get();
-        $searchValue = trim((string) request()->input('search.value', ''));
-
-        if ($searchValue !== '') {
-            $query->whereHas('student', function ($studentQuery) use ($searchValue) {
-                $studentQuery->where(function ($inner) use ($searchValue) {
-                    $inner->where('name', 'like', '%' . $searchValue . '%')
-                        ->orWhere('nisn', 'like', '%' . $searchValue . '%')
-                        ->orWhere('origin_class', 'like', '%' . $searchValue . '%');
-                });
-            });
-        }
 
         return DataTables::eloquent($query)
+            ->filterColumn('student_info', function ($query, $keyword) {
+                $query->whereHas('student', function ($studentQuery) use ($keyword) {
+                    $studentQuery->where(function ($inner) use ($keyword) {
+                        $inner->where('name', 'like', '%' . $keyword . '%')
+                            ->orWhere('nisn', 'like', '%' . $keyword . '%')
+                            ->orWhere('origin_class', 'like', '%' . $keyword . '%');
+                    });
+                });
+            })
             ->addColumn('student_info', function ($result) {
                 $student = $result->student;
 

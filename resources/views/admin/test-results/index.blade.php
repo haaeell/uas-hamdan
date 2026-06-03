@@ -95,9 +95,9 @@
                 dom: '<"dt-top"l f>rt<"dt-bottom"i p>',
                 ajax: '{{ route('admin.test-results.data') }}',
                 columns: [
-                    { data: 'student_info', name: 'test_results.id', orderable: false },
+                    { data: 'student_info', name: 'student_info', orderable: false, searchable: true },
                     { data: 'foto', name: 'foto', orderable: false, searchable: false },
-                    { data: 'nilai', name: 'test_results.academic_score' },
+                    { data: 'nilai', name: 'test_results.academic_score', searchable: false },
                     { data: 'rekomendasi', name: 'rekomendasi', orderable: false, searchable: false },
                     { data: 'final', name: 'final', orderable: false, searchable: false },
                     { data: 'kelas', name: 'kelas', orderable: false, searchable: false },
