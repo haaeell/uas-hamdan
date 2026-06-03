@@ -61,9 +61,8 @@ class StudentsImport implements ToCollection, WithChunkReading, WithHeadingRow, 
         }
 
         $nisns = $cleanRows->pluck('nisn')->unique()->values();
-        $existingUserNisns = User::whereIn('nisn', $nisns)->pluck('nisn')->all();
         $existingStudentNisns = Student::whereIn('nisn', $nisns)->pluck('nisn')->all();
-        $blockedNisns = array_flip(array_unique([...$existingUserNisns, ...$existingStudentNisns]));
+        $blockedNisns = array_flip($existingStudentNisns);
 
         $rowsToInsert = [];
 
@@ -89,8 +88,22 @@ class StudentsImport implements ToCollection, WithChunkReading, WithHeadingRow, 
 
         DB::transaction(function () use ($rowsToInsert, $now) {
             $userRows = [];
+            $existingUsers = User::whereIn('nisn', collect($rowsToInsert)->pluck('nisn')->all())
+                ->get()
+                ->keyBy('nisn');
 
             foreach ($rowsToInsert as $row) {
+                if ($existingUsers->has($row['nisn'])) {
+                    $existingUsers[$row['nisn']]->update([
+                        'name' => $row['name'],
+                        'password' => $row['password'],
+                        'role' => 'siswa',
+                        'is_active' => $row['is_active'],
+                    ]);
+
+                    continue;
+                }
+
                 $userRows[] = [
                     'name' => $row['name'],
                     'nisn' => $row['nisn'],
@@ -102,7 +115,9 @@ class StudentsImport implements ToCollection, WithChunkReading, WithHeadingRow, 
                 ];
             }
 
-            DB::table('users')->insert($userRows);
+            if (!empty($userRows)) {
+                DB::table('users')->insert($userRows);
+            }
 
             $userIds = User::whereIn('nisn', collect($rowsToInsert)->pluck('nisn')->all())
                 ->pluck('id', 'nisn');

@@ -297,12 +297,12 @@ class StudentController extends Controller
                 Storage::disk('public')->delete($student->selfie->path);
             }
 
-            if ($student->user) {
-                $student->user->delete();
-                continue;
-            }
-
+            $user = $student->user;
             $student->delete();
+
+            if ($user) {
+                $user->delete();
+            }
         }
     }
 }
