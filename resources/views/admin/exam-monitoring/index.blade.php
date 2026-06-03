@@ -266,6 +266,15 @@
                         </tbody>
                     </table>
                 </div>
+
+                <div class="flex items-center justify-between gap-3 border-t border-slate-200 px-4 py-3">
+                    <div class="text-sm font-semibold text-slate-500">
+                        Halaman {{ $recentSubmissions->currentPage() }} dari {{ $recentSubmissions->lastPage() }}
+                    </div>
+                    <div>
+                        {{ $recentSubmissions->links() }}
+                    </div>
+                </div>
             @endif
         </div>
     </div>

@@ -256,19 +256,22 @@ class ExamMonitoringController extends Controller
                 sts.psychology_submit_type as submit_type
             ");
 
-        return DB::query()
+        $recentSubmissions = DB::query()
             ->fromSub($academicSubmissions->unionAll($psychologySubmissions), 'submissions')
             ->orderByDesc('submitted_at')
-            ->limit(20)
-            ->get()
-            ->map(function ($submission) {
-                $submission->duration_label = $submission->duration_seconds !== null
-                    ? $this->formatDuration((int) $submission->duration_seconds)
-                    : '-';
-                $submission->submit_type_label = $this->formatSubmitType($submission->submit_type, true);
+            ->paginate(20, ['*'], 'submissions_page')
+            ->withQueryString();
 
-                return $submission;
-            });
+        $recentSubmissions->getCollection()->transform(function ($submission) {
+            $submission->duration_label = $submission->duration_seconds !== null
+                ? $this->formatDuration((int) $submission->duration_seconds)
+                : '-';
+            $submission->submit_type_label = $this->formatSubmitType($submission->submit_type, true);
+
+            return $submission;
+        });
+
+        return $recentSubmissions;
     }
 
     private function formatDuration(int $seconds): string
