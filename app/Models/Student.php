@@ -66,6 +66,10 @@ class Student extends Model
                 'psychology_started_at',
                 'academic_submitted_at',
                 'psychology_submitted_at',
+                'academic_duration_seconds',
+                'psychology_duration_seconds',
+                'academic_submit_type',
+                'psychology_submit_type',
                 'academic_violation_count',
                 'psychology_violation_count',
             ])

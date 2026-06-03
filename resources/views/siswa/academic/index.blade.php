@@ -194,7 +194,7 @@
                     showConfirmButton: false,
                 });
 
-                setTimeout(() => guard.submitExam(), 1200);
+                setTimeout(() => guard.submitExam('timeout'), 1200);
             }
         }, 1000);
 
@@ -228,7 +228,7 @@
             }).fail(function (xhr) {
                 if (xhr.status === 423) {
                     Swal.fire('Waktu Habis', 'Jawaban akan dikirim otomatis.', 'info')
-                        .then(() => guard.submitExam());
+                        .then(() => guard.submitExam('timeout'));
                 }
             });
 
@@ -256,7 +256,7 @@
                 confirmButtonColor: '#2563eb'
             }).then(result => {
                 if (result.isConfirmed) {
-                    guard.submitExam();
+                    guard.submitExam('manual');
                 }
             });
         });

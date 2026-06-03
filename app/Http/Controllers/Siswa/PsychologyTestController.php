@@ -82,14 +82,20 @@ class PsychologyTestController extends Controller
         ]);
     }
 
-    public function submit(PsychologyScoringService $scoringService)
+    public function submit(Request $request, PsychologyScoringService $scoringService)
     {
         $student = auth()->user()->student;
         abort_if($student->status !== 'psychology_test', 403, 'Tes psikologi belum tersedia untuk status Anda.');
 
-        $sessionState = $this->getSessionState(request(), $student->id);
+        $sessionState = $this->getSessionState($request, $student->id);
 
-        return $this->finalizePsychology($student, $sessionState->test_session_id, $scoringService);
+        return $this->finalizePsychology(
+            $student,
+            $sessionState->test_session_id,
+            $scoringService,
+            false,
+            $request->input('submit_type', 'manual')
+        );
     }
 
     private function getSessionState(Request $request, int $studentId): object
@@ -123,21 +129,35 @@ class PsychologyTestController extends Controller
         return max(0, ($durationMinutes * 60) - Carbon::parse($startedAt)->diffInSeconds(now()));
     }
 
-    private function finalizePsychology($student, int $sessionId, PsychologyScoringService $scoringService, bool $expired = false)
+    private function finalizePsychology($student, int $sessionId, PsychologyScoringService $scoringService, bool $expired = false, string $submitType = 'manual')
     {
-        DB::transaction(function () use ($student, $sessionId, $scoringService) {
+        $submitType = $expired ? 'timeout' : $this->normalizeSubmitType($submitType);
+
+        DB::transaction(function () use ($student, $sessionId, $scoringService, $submitType) {
             $scoringService->calculate($student);
 
             $student->update(['status' => 'completed']);
+
+            $sessionState = DB::table('student_test_sessions')
+                ->where('student_id', $student->id)
+                ->where('test_session_id', $sessionId)
+                ->first();
+
+            $submittedAt = now();
+            $durationSeconds = $sessionState?->psychology_started_at
+                ? max(0, Carbon::parse($sessionState->psychology_started_at)->diffInSeconds($submittedAt))
+                : null;
 
             DB::table('student_test_sessions')
                 ->where('student_id', $student->id)
                 ->where('test_session_id', $sessionId)
                 ->update([
-                    'psychology_submitted_at' => now(),
+                    'psychology_submitted_at' => $submittedAt,
+                    'psychology_duration_seconds' => $durationSeconds,
+                    'psychology_submit_type' => $submitType,
                     'status' => 'finished',
-                    'finished_at' => now(),
-                    'updated_at' => now(),
+                    'finished_at' => $submittedAt,
+                    'updated_at' => $submittedAt,
                 ]);
         });
 
@@ -151,6 +171,13 @@ class PsychologyTestController extends Controller
             'message' => 'Tes psikologi selesai.',
             'redirect_url' => route('siswa.announcements.index'),
         ]);
+    }
+
+    private function normalizeSubmitType(?string $submitType): string
+    {
+        return in_array($submitType, ['manual', 'timeout', 'violation'], true)
+            ? $submitType
+            : 'manual';
     }
 
     private function applyStableRandomOrder($questions, string $examType, int $studentId, int $sessionId)

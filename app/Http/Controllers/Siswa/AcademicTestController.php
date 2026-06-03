@@ -94,7 +94,12 @@ class AcademicTestController extends Controller
 
         $sessionState = $this->getSessionState($request, $student->id);
 
-        return $this->finalizeAcademic($student, $sessionState->test_session_id);
+        return $this->finalizeAcademic(
+            $student,
+            $sessionState->test_session_id,
+            false,
+            $request->input('submit_type', 'manual')
+        );
     }
 
     private function getSessionState(Request $request, int $studentId): object
@@ -128,9 +133,11 @@ class AcademicTestController extends Controller
         return max(0, ($durationMinutes * 60) - Carbon::parse($startedAt)->diffInSeconds(now()));
     }
 
-    private function finalizeAcademic($student, int $sessionId, bool $expired = false)
+    private function finalizeAcademic($student, int $sessionId, bool $expired = false, string $submitType = 'manual')
     {
-        DB::transaction(function () use ($student, $sessionId) {
+        $submitType = $expired ? 'timeout' : $this->normalizeSubmitType($submitType);
+
+        DB::transaction(function () use ($student, $sessionId, $submitType) {
             $total = AcademicQuestion::activeForTest()->count();
 
             $correct = $student->academicAnswers()
@@ -144,12 +151,24 @@ class AcademicTestController extends Controller
                 ['academic_score' => $score]
             );
 
+            $sessionState = DB::table('student_test_sessions')
+                ->where('student_id', $student->id)
+                ->where('test_session_id', $sessionId)
+                ->first();
+
+            $submittedAt = now();
+            $durationSeconds = $sessionState?->academic_started_at
+                ? max(0, Carbon::parse($sessionState->academic_started_at)->diffInSeconds($submittedAt))
+                : null;
+
             DB::table('student_test_sessions')
                 ->where('student_id', $student->id)
                 ->where('test_session_id', $sessionId)
                 ->update([
-                    'academic_submitted_at' => now(),
-                    'updated_at' => now(),
+                    'academic_submitted_at' => $submittedAt,
+                    'academic_duration_seconds' => $durationSeconds,
+                    'academic_submit_type' => $submitType,
+                    'updated_at' => $submittedAt,
                 ]);
 
             $student->update(['status' => 'psychology_test']);
@@ -165,6 +184,13 @@ class AcademicTestController extends Controller
             'message' => 'Tes akademik selesai.',
             'redirect_url' => route('siswa.psychology.index'),
         ]);
+    }
+
+    private function normalizeSubmitType(?string $submitType): string
+    {
+        return in_array($submitType, ['manual', 'timeout', 'violation'], true)
+            ? $submitType
+            : 'manual';
     }
 
     private function applyStableRandomOrder($questions, string $examType, int $studentId, int $sessionId)

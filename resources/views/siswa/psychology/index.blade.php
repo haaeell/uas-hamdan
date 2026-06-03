@@ -222,7 +222,7 @@ const timerInterval = setInterval(() => {
             showConfirmButton: false,
         });
 
-        setTimeout(() => guard.submitExam(), 1200);
+        setTimeout(() => guard.submitExam('timeout'), 1200);
     }
 }, 1000);
 
@@ -258,7 +258,7 @@ $('.answer-option').on('change', function () {
     }).fail(function (xhr) {
         if (xhr.status === 423) {
             Swal.fire('Waktu Habis', 'Jawaban akan dikirim otomatis.', 'info')
-                .then(() => guard.submitExam());
+                .then(() => guard.submitExam('timeout'));
         }
     });
 
@@ -298,7 +298,7 @@ $('.question-nav').on('click', function () {
                 confirmButtonColor: '#2563eb'
             }).then(result => {
                 if (result.isConfirmed) {
-                    guard.submitExam();
+                    guard.submitExam('manual');
                 }
             });
         });

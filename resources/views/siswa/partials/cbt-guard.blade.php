@@ -137,7 +137,7 @@
                         text: `Ujian akan dikirim otomatis setelah ${this.maxViolations} pelanggaran.`,
                         allowOutsideClick: false,
                         confirmButtonText: 'Saya Mengerti'
-                    }).then(() => this.submitExam());
+                    }).then(() => this.submitExam('violation'));
 
                     return;
                 }
@@ -208,7 +208,7 @@
             });
         }
 
-        submitExam() {
+        submitExam(submitType = 'manual') {
             this.isSubmitting = true;
 
             if (this.focusMonitor) {
@@ -217,7 +217,8 @@
             }
 
             $.post(this.submitUrl, {
-                _token: this.csrf
+                _token: this.csrf,
+                submit_type: submitType
             }).done(res => {
                 localStorage.removeItem(this.storageKey);
                 window.location.href = res.redirect_url;

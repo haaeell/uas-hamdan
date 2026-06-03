@@ -15,6 +15,16 @@
                     Update terakhir: {{ now()->format('d M Y H:i:s') }}
                 </div>
 
+                <form method="GET" class="flex items-center gap-2 rounded-2xl bg-white border border-slate-200 px-3 py-2">
+                    <label for="per_page" class="text-sm font-semibold text-slate-500">Tampil</label>
+                    <select id="per_page" name="per_page" onchange="this.form.submit()"
+                        class="bg-transparent text-sm font-bold text-slate-800 focus:outline-none">
+                        @foreach([10, 30, 50, 100] as $size)
+                            <option value="{{ $size }}" @selected(request('per_page', 30) == $size)>{{ $size }}</option>
+                        @endforeach
+                    </select>
+                </form>
+
                 <button type="button" onclick="window.location.reload()"
                     class="inline-flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-3 rounded-2xl font-bold shadow-lg shadow-blue-200 transition">
                     <i class="fa-solid fa-rotate"></i>
@@ -55,6 +65,15 @@
                 <p class="text-slate-500 mt-2">Halaman ini akan menampilkan data otomatis saat ada sesi yang sedang berjalan.</p>
             </div>
         @else
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                <div class="text-sm font-semibold text-slate-500">
+                    Menampilkan {{ $students->firstItem() }}-{{ $students->lastItem() }} dari {{ $students->total() }} siswa aktif.
+                </div>
+                <div class="text-xs text-slate-400">
+                    Gunakan tombol Refresh untuk memperbarui data.
+                </div>
+            </div>
+
             <div class="grid xl:grid-cols-2 gap-6">
                 @foreach($students as $student)
                     <div class="bg-white border border-slate-200 rounded-[30px] p-6 shadow-sm">
@@ -86,7 +105,7 @@
                             </div>
                         </div>
 
-                        <div class="grid sm:grid-cols-3 gap-4 mb-5">
+                        <div class="grid sm:grid-cols-2 xl:grid-cols-4 gap-4">
                             <div class="rounded-2xl bg-slate-50 border border-slate-200 px-4 py-4">
                                 <div class="text-xs font-bold uppercase tracking-wide text-slate-500">Sesi</div>
                                 <div class="font-extrabold text-slate-900 mt-2">{{ $student->session_name }}</div>
@@ -101,6 +120,18 @@
                                 </div>
                             </div>
 
+                            <div class="rounded-2xl bg-slate-50 border border-slate-200 px-4 py-4">
+                                <div class="text-xs font-bold uppercase tracking-wide text-slate-500">Durasi</div>
+                                <div class="font-extrabold text-slate-900 mt-2">{{ $student->elapsed_label }}</div>
+                                <div class="text-xs text-slate-500 mt-1">Sedang mengerjakan</div>
+                            </div>
+
+                            <div class="rounded-2xl bg-slate-50 border border-slate-200 px-4 py-4">
+                                <div class="text-xs font-bold uppercase tracking-wide text-slate-500">Submit</div>
+                                <div class="font-extrabold text-slate-900 mt-2">{{ $student->submit_type_label }}</div>
+                                <div class="text-xs text-slate-500 mt-1">Tercatat setelah selesai</div>
+                            </div>
+
                             <div class="rounded-2xl {{ $student->violation_count > 0 ? 'bg-red-50 border-red-100' : 'bg-slate-50 border-slate-200' }} border px-4 py-4">
                                 <div class="text-xs font-bold uppercase tracking-wide {{ $student->violation_count > 0 ? 'text-red-600' : 'text-slate-500' }}">Pelanggaran</div>
                                 <div class="font-extrabold {{ $student->violation_count > 0 ? 'text-red-700' : 'text-slate-900' }} text-2xl mt-2">
@@ -111,26 +142,65 @@
                                 </div>
                             </div>
                         </div>
-
-                        <div>
-                            <div class="flex items-center justify-between mb-2">
-                                <div class="text-sm font-bold text-slate-700">Progress Waktu Ujian</div>
-                                <div class="text-sm font-extrabold text-blue-600">{{ $student->progress_percent }}%</div>
-                            </div>
-
-                            <div class="w-full h-3 rounded-full bg-slate-200 overflow-hidden">
-                                <div class="h-3 rounded-full bg-gradient-to-r from-blue-600 to-blue-400" style="width: {{ $student->progress_percent }}%"></div>
-                            </div>
-                        </div>
                     </div>
                 @endforeach
             </div>
+
+            <div>
+                {{ $students->links() }}
+            </div>
         @endif
+
+        <div class="bg-white border border-slate-200 rounded-[30px] p-6 shadow-sm">
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-5">
+                <div>
+                    <h2 class="text-xl font-extrabold text-slate-900">Riwayat Submit Terakhir</h2>
+                    <p class="text-sm text-slate-500 mt-1">Menampilkan 20 submit terbaru yang sudah tercatat.</p>
+                </div>
+            </div>
+
+            @if($recentSubmissions->isEmpty())
+                <div class="rounded-2xl bg-slate-50 border border-slate-200 px-4 py-5 text-sm font-semibold text-slate-500">
+                    Belum ada siswa yang submit.
+                </div>
+            @else
+                <div class="overflow-x-auto">
+                    <table class="w-full text-sm">
+                        <thead>
+                            <tr class="border-b border-slate-200 text-left text-xs uppercase tracking-wide text-slate-500">
+                                <th class="py-3 pr-4">Siswa</th>
+                                <th class="py-3 pr-4">Tes</th>
+                                <th class="py-3 pr-4">Durasi</th>
+                                <th class="py-3 pr-4">Submit</th>
+                                <th class="py-3 pr-4">Waktu</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100">
+                            @foreach($recentSubmissions as $submission)
+                                <tr>
+                                    <td class="py-3 pr-4">
+                                        <div class="font-extrabold text-slate-900">{{ $submission->name }}</div>
+                                        <div class="text-xs text-slate-500">{{ $submission->nisn }} - {{ $submission->origin_class }}</div>
+                                    </td>
+                                    <td class="py-3 pr-4">
+                                        <div class="font-bold text-slate-800">{{ $submission->exam_name }}</div>
+                                        <div class="text-xs text-slate-500">{{ $submission->session_name }}</div>
+                                    </td>
+                                    <td class="py-3 pr-4 font-semibold text-slate-700">{{ $submission->duration_label }}</td>
+                                    <td class="py-3 pr-4">
+                                        <span class="inline-flex rounded-full px-3 py-1 text-xs font-extrabold {{ $submission->submit_type === 'manual' ? 'bg-blue-50 text-blue-700' : 'bg-amber-50 text-amber-700' }}">
+                                            {{ $submission->submit_type_label }}
+                                        </span>
+                                    </td>
+                                    <td class="py-3 pr-4 font-semibold text-slate-700">
+                                        {{ \Carbon\Carbon::parse($submission->submitted_at)->format('d M Y H:i:s') }}
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+            @endif
+        </div>
     </div>
 @endsection
-
-@push('scripts')
-    <script>
-        setTimeout(() => window.location.reload(), 15000);
-    </script>
-@endpush
