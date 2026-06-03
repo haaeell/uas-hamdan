@@ -112,7 +112,7 @@ class StudentController extends Controller
             'nisn' => ['required', 'string', 'max:30', 'unique:users,nisn', 'unique:students,nisn'],
             'nis' => ['nullable', 'string', 'max:30'],
             'origin_class' => ['required', 'string', 'max:20'],
-            'password' => ['required', 'string', 'min:6'],
+            'password' => ['required', 'string'],
             'is_active' => ['nullable', 'boolean'],
         ]);
 
@@ -153,7 +153,7 @@ class StudentController extends Controller
             ],
             'nis' => ['nullable', 'string', 'max:30'],
             'origin_class' => ['required', 'string', 'max:20'],
-            'password' => ['nullable', 'string', 'min:6'],
+            'password' => ['nullable', 'string'],
             'is_active' => ['nullable', 'boolean'],
         ]);
 

@@ -173,7 +173,7 @@ class StudentsImport implements ToCollection, WithChunkReading, WithHeadingRow, 
             'nisn' => ['required', 'string', 'max:30'],
             'nis' => ['nullable', 'string', 'max:30'],
             'origin_class' => ['required', 'string', 'max:20'],
-            'password' => ['required', 'string', 'min:6'],
+            'password' => ['required', 'string'],
             'is_active' => ['required', 'boolean'],
         ])->passes();
     }
@@ -215,5 +215,4 @@ class StudentsImport implements ToCollection, WithChunkReading, WithHeadingRow, 
 
         return null;
     }
-
 }
