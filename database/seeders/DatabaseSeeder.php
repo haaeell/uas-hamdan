@@ -222,22 +222,22 @@ class DatabaseSeeder extends Seeder
             [
                 'question' => 'Nilai dari 3x - 7 = 20 adalah ...',
                 'correct' => 'B',
-                'options' => ['A' => '7', 'B' => '9', 'C' => '11', 'D' => '13'],
+                'options' => ['A' => '7', 'B' => '9', 'C' => '11', 'D' => '13', 'E' => '15'],
             ],
             [
                 'question' => 'Jika fungsi f(x) = 2x + 5, maka nilai f(4) adalah ...',
                 'correct' => 'D',
-                'options' => ['A' => '9', 'B' => '11', 'C' => '12', 'D' => '13'],
+                'options' => ['A' => '9', 'B' => '11', 'C' => '12', 'D' => '13', 'E' => '14'],
             ],
             [
                 'question' => 'Sebuah segitiga memiliki alas 12 cm dan tinggi 8 cm. Luas segitiga tersebut adalah ...',
                 'correct' => 'C',
-                'options' => ['A' => '32 cm2', 'B' => '40 cm2', 'C' => '48 cm2', 'D' => '96 cm2'],
+                'options' => ['A' => '32 cm2', 'B' => '40 cm2', 'C' => '48 cm2', 'D' => '96 cm2', 'E' => '24 cm2'],
             ],
             [
                 'question' => 'Persamaan garis yang melalui titik (0, 3) dan (2, 7) memiliki gradien ...',
                 'correct' => 'A',
-                'options' => ['A' => '2', 'B' => '3', 'C' => '4', 'D' => '5'],
+                'options' => ['A' => '2', 'B' => '3', 'C' => '4', 'D' => '5', 'E' => '6'],
             ],
             [
                 'question' => 'Hukum Newton I menjelaskan bahwa benda akan tetap diam atau bergerak lurus beraturan jika ...',
@@ -247,137 +247,8 @@ class DatabaseSeeder extends Seeder
                     'B' => 'resultan gaya yang bekerja padanya nol',
                     'C' => 'memiliki massa yang besar',
                     'D' => 'bergerak pada lintasan melingkar',
+                    'E' => 'selalu dipercepat oleh gaya luar',
                 ],
-            ],
-            [
-                'question' => 'Satuan gaya dalam Sistem Internasional adalah ...',
-                'correct' => 'C',
-                'options' => ['A' => 'Joule', 'B' => 'Watt', 'C' => 'Newton', 'D' => 'Pascal'],
-            ],
-            [
-                'question' => 'Perubahan energi yang terjadi pada lampu listrik adalah ...',
-                'correct' => 'D',
-                'options' => [
-                    'A' => 'kimia menjadi gerak',
-                    'B' => 'panas menjadi cahaya',
-                    'C' => 'gerak menjadi listrik',
-                    'D' => 'listrik menjadi cahaya dan panas',
-                ],
-            ],
-            [
-                'question' => 'Planet yang dikenal sebagai planet merah adalah ...',
-                'correct' => 'A',
-                'options' => ['A' => 'Mars', 'B' => 'Venus', 'C' => 'Jupiter', 'D' => 'Merkurius'],
-            ],
-            [
-                'question' => 'pH larutan yang bersifat netral adalah ...',
-                'correct' => 'B',
-                'options' => ['A' => '3', 'B' => '7', 'C' => '9', 'D' => '12'],
-            ],
-            [
-                'question' => 'Partikel penyusun inti atom adalah ...',
-                'correct' => 'C',
-                'options' => [
-                    'A' => 'elektron dan proton',
-                    'B' => 'elektron dan neutron',
-                    'C' => 'proton dan neutron',
-                    'D' => 'proton dan positron',
-                ],
-            ],
-            [
-                'question' => 'Fotosintesis pada tumbuhan terutama berlangsung di bagian ...',
-                'correct' => 'D',
-                'options' => ['A' => 'akar', 'B' => 'batang', 'C' => 'bunga', 'D' => 'daun'],
-            ],
-            [
-                'question' => 'Fungsi utama hemoglobin dalam darah adalah ...',
-                'correct' => 'A',
-                'options' => [
-                    'A' => 'mengikat dan mengangkut oksigen',
-                    'B' => 'membunuh kuman',
-                    'C' => 'membekukan darah',
-                    'D' => 'menghasilkan hormon',
-                ],
-            ],
-            [
-                'question' => 'Organisme yang dapat membuat makanan sendiri disebut ...',
-                'correct' => 'B',
-                'options' => ['A' => 'heterotrof', 'B' => 'autotrof', 'C' => 'parasit', 'D' => 'dekomposer'],
-            ],
-            [
-                'question' => 'Urutan organisasi kehidupan dari yang paling kecil ke paling besar adalah ...',
-                'correct' => 'C',
-                'options' => [
-                    'A' => 'sel - jaringan - organel - organ',
-                    'B' => 'jaringan - sel - organ - sistem organ',
-                    'C' => 'sel - jaringan - organ - sistem organ',
-                    'D' => 'organel - sel - organ - jaringan',
-                ],
-            ],
-            [
-                'question' => 'Salah satu dampak pemanasan global adalah ...',
-                'correct' => 'D',
-                'options' => [
-                    'A' => 'penipisan lapisan tanah',
-                    'B' => 'bertambahnya kandungan oksigen',
-                    'C' => 'musim selalu tetap',
-                    'D' => 'naiknya permukaan air laut',
-                ],
-            ],
-            [
-                'question' => 'Kegiatan ekonomi yang menghasilkan barang disebut kegiatan ...',
-                'correct' => 'A',
-                'options' => ['A' => 'produksi', 'B' => 'distribusi', 'C' => 'konsumsi', 'D' => 'investasi'],
-            ],
-            [
-                'question' => 'Permintaan akan suatu barang cenderung naik ketika harga barang tersebut ...',
-                'correct' => 'C',
-                'options' => ['A' => 'naik', 'B' => 'tetap', 'C' => 'turun', 'D' => 'langka'],
-            ],
-            [
-                'question' => 'Tokoh yang dikenal sebagai Proklamator Indonesia adalah ...',
-                'correct' => 'B',
-                'options' => [
-                    'A' => 'Ki Hajar Dewantara dan Ahmad Dahlan',
-                    'B' => 'Ir. Soekarno dan Drs. Mohammad Hatta',
-                    'C' => 'Jenderal Sudirman dan Bung Tomo',
-                    'D' => 'Mohammad Yamin dan Soepomo',
-                ],
-            ],
-            [
-                'question' => 'Interaksi sosial akan terjadi jika memenuhi syarat kontak sosial dan ...',
-                'correct' => 'D',
-                'options' => ['A' => 'imitasi', 'B' => 'identifikasi', 'C' => 'motivasi', 'D' => 'komunikasi'],
-            ],
-            [
-                'question' => 'Peta yang menggambarkan satu jenis kenampakan tertentu disebut peta ...',
-                'correct' => 'A',
-                'options' => ['A' => 'tematik', 'B' => 'umum', 'C' => 'kadaster', 'D' => 'korografi'],
-            ],
-            [
-                'question' => 'Kalimat yang efektif harus memenuhi unsur hemat, jelas, dan ...',
-                'correct' => 'C',
-                'options' => ['A' => 'bertele-tele', 'B' => 'puitis', 'C' => 'logis', 'D' => 'ambigu'],
-            ],
-            [
-                'question' => 'Sinonim dari kata "cermat" adalah ...',
-                'correct' => 'B',
-                'options' => ['A' => 'lalai', 'B' => 'teliti', 'C' => 'marah', 'D' => 'santai'],
-            ],
-            [
-                'question' => 'Simple present tense digunakan untuk menyatakan ...',
-                'correct' => 'D',
-                'options' => [
-                    'A' => 'kegiatan yang sedang berlangsung saat ini',
-                    'B' => 'rencana masa depan yang pasti',
-                    'C' => 'peristiwa lampau yang telah selesai',
-                    'D' => 'kebiasaan atau fakta umum',
-                ],
-            ],
-            [
-                'question' => 'Ungkapan "The library is across from the mosque" berarti perpustakaan berada ... masjid.',
-                'correct' => 'A',
-                'options' => ['A' => 'di seberang', 'B' => 'di belakang', 'C' => 'di antara', 'D' => 'di dalam'],
             ],
         ];
 
@@ -410,6 +281,7 @@ class DatabaseSeeder extends Seeder
                     'B' => ['text' => 'mencermati kebutuhan anggota tim dan menjaga kerja sama tetap sehat', 'focus' => 'HEALTH'],
                     'C' => ['text' => 'menyusun argumen dan melihat dampak keputusan bagi banyak orang', 'focus' => 'SOSHUM'],
                     'D' => ['text' => 'menyampaikan ide, mempresentasikan hasil, atau membuat narasi yang menarik', 'focus' => 'LANG'],
+                    'E' => ['text' => 'menunggu arahan lalu ikut membantu bagian yang paling dibutuhkan', 'focus' => 'HEALTH'],
                 ],
             ],
             [
@@ -419,6 +291,7 @@ class DatabaseSeeder extends Seeder
                     'B' => ['text' => 'tubuh manusia, kesehatan, dan gaya hidup sehat', 'focus' => 'HEALTH'],
                     'C' => ['text' => 'masalah sosial, perilaku masyarakat, dan ekonomi', 'focus' => 'SOSHUM'],
                     'D' => ['text' => 'bahasa, budaya, dan cara orang berkomunikasi', 'focus' => 'LANG'],
+                    'E' => ['text' => 'hal-hal praktis yang langsung bisa diterapkan', 'focus' => 'STEM'],
                 ],
             ],
             [
@@ -428,6 +301,7 @@ class DatabaseSeeder extends Seeder
                     'B' => ['text' => 'membuat edukasi tentang kesehatan atau lingkungan hidup', 'focus' => 'HEALTH'],
                     'C' => ['text' => 'meneliti kebiasaan masyarakat dan menyusun laporannya', 'focus' => 'SOSHUM'],
                     'D' => ['text' => 'membuat artikel, video presentasi, atau karya bilingual', 'focus' => 'LANG'],
+                    'E' => ['text' => 'menyusun proyek yang rapi dan punya banyak langkah jelas', 'focus' => 'STEM'],
                 ],
             ],
             [
@@ -437,6 +311,7 @@ class DatabaseSeeder extends Seeder
                     'B' => ['text' => 'melihat dampaknya terhadap orang lain dan mencari solusi yang aman', 'focus' => 'HEALTH'],
                     'C' => ['text' => 'mempertimbangkan kondisi sosial, aturan, dan kepentingan bersama', 'focus' => 'SOSHUM'],
                     'D' => ['text' => 'mendiskusikan, menuliskan, atau mengomunikasikan inti masalahnya', 'focus' => 'LANG'],
+                    'E' => ['text' => 'mengamati dulu situasinya sebelum memutuskan langkah berikutnya', 'focus' => 'SOSHUM'],
                 ],
             ],
             [
@@ -446,69 +321,7 @@ class DatabaseSeeder extends Seeder
                     'B' => ['text' => 'PMR, kader kesehatan, atau kegiatan kepedulian', 'focus' => 'HEALTH'],
                     'C' => ['text' => 'debat sosial, OSIS, atau kewirausahaan', 'focus' => 'SOSHUM'],
                     'D' => ['text' => 'english club, jurnalistik, atau teater', 'focus' => 'LANG'],
-                ],
-            ],
-            [
-                'question' => 'Saat membaca berita, saya biasanya paling tertarik pada bagian ...',
-                'weights' => [
-                    'A' => ['text' => 'inovasi teknologi, penemuan, atau data ilmiah', 'focus' => 'STEM'],
-                    'B' => ['text' => 'kesehatan publik, lingkungan, atau gizi', 'focus' => 'HEALTH'],
-                    'C' => ['text' => 'ekonomi, pendidikan, atau kebijakan sosial', 'focus' => 'SOSHUM'],
-                    'D' => ['text' => 'bahasa, budaya populer, atau opini publik', 'focus' => 'LANG'],
-                ],
-            ],
-            [
-                'question' => 'Guru biasanya mengenali saya sebagai siswa yang ...',
-                'weights' => [
-                    'A' => ['text' => 'suka hitung-hitungan, eksperimen, dan pemecahan masalah', 'focus' => 'STEM'],
-                    'B' => ['text' => 'teliti, sabar, dan peduli pada orang sekitar', 'focus' => 'HEALTH'],
-                    'C' => ['text' => 'aktif bertanya tentang fenomena sosial dan kehidupan nyata', 'focus' => 'SOSHUM'],
-                    'D' => ['text' => 'cukup ekspresif dalam berbicara atau menulis', 'focus' => 'LANG'],
-                ],
-            ],
-            [
-                'question' => 'Ketika diberikan banyak informasi, saya lebih mudah memahami materi jika ...',
-                'weights' => [
-                    'A' => ['text' => 'disusun dalam rumus, tabel, diagram, atau langkah sistematis', 'focus' => 'STEM'],
-                    'B' => ['text' => 'dijelaskan melalui contoh nyata yang dekat dengan kehidupan', 'focus' => 'HEALTH'],
-                    'C' => ['text' => 'dikaitkan dengan peristiwa sosial, ekonomi, atau sejarah', 'focus' => 'SOSHUM'],
-                    'D' => ['text' => 'dikemas dalam cerita, diskusi, atau presentasi verbal', 'focus' => 'LANG'],
-                ],
-            ],
-            [
-                'question' => 'Pekerjaan yang paling mudah membuat saya bersemangat adalah pekerjaan yang ...',
-                'weights' => [
-                    'A' => ['text' => 'menantang logika dan ketelitian saya', 'focus' => 'STEM'],
-                    'B' => ['text' => 'bermanfaat langsung bagi kesehatan atau kesejahteraan orang lain', 'focus' => 'HEALTH'],
-                    'C' => ['text' => 'melibatkan analisis masyarakat, organisasi, atau keputusan publik', 'focus' => 'SOSHUM'],
-                    'D' => ['text' => 'melibatkan komunikasi, bahasa, dan kreativitas', 'focus' => 'LANG'],
-                ],
-            ],
-            [
-                'question' => 'Jika harus memilih kegiatan akhir pekan, saya cenderung memilih ...',
-                'weights' => [
-                    'A' => ['text' => 'mencoba eksperimen sederhana, puzzle logika, atau belajar aplikasi baru', 'focus' => 'STEM'],
-                    'B' => ['text' => 'mengikuti kegiatan sosial, olahraga sehat, atau peduli lingkungan', 'focus' => 'HEALTH'],
-                    'C' => ['text' => 'mengamati fenomena masyarakat, usaha kecil, atau diskusi isu terkini', 'focus' => 'SOSHUM'],
-                    'D' => ['text' => 'membaca, menonton, menulis, atau belajar bahasa asing', 'focus' => 'LANG'],
-                ],
-            ],
-            [
-                'question' => 'Dalam situasi presentasi, saya biasanya lebih nyaman ketika ...',
-                'weights' => [
-                    'A' => ['text' => 'menjelaskan data, grafik, atau hasil pengamatan secara runtut', 'focus' => 'STEM'],
-                    'B' => ['text' => 'membawakan topik tentang kesehatan, manusia, atau layanan', 'focus' => 'HEALTH'],
-                    'C' => ['text' => 'menyampaikan analisis masalah sosial dan kemungkinan solusinya', 'focus' => 'SOSHUM'],
-                    'D' => ['text' => 'mengolah kata, gaya bicara, dan interaksi dengan audiens', 'focus' => 'LANG'],
-                ],
-            ],
-            [
-                'question' => 'Ketika melihat tantangan baru, saya paling terdorong karena ...',
-                'weights' => [
-                    'A' => ['text' => 'ingin membuktikan solusi yang paling efektif dan akurat', 'focus' => 'STEM'],
-                    'B' => ['text' => 'ingin membantu orang lain dengan cara yang tepat', 'focus' => 'HEALTH'],
-                    'C' => ['text' => 'ingin memahami pengaruhnya terhadap kelompok atau masyarakat', 'focus' => 'SOSHUM'],
-                    'D' => ['text' => 'ingin menyampaikan gagasan saya dengan cara yang menarik', 'focus' => 'LANG'],
+                    'E' => ['text' => 'kegiatan yang melatih kerja sama dan keterampilan umum', 'focus' => 'HEALTH'],
                 ],
             ],
         ];

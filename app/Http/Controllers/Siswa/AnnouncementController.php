@@ -58,9 +58,9 @@ class AnnouncementController extends Controller
 
         $objection = $announcement
             ? Objection::where('announcement_id', $announcement->id)
-                ->where('student_id', $student->id)
-                ->latest()
-                ->first()
+            ->where('student_id', $student->id)
+            ->latest()
+            ->first()
             : null;
 
         return view('siswa.announcements.index', compact(
@@ -147,7 +147,7 @@ class AnnouncementController extends Controller
             'appName' => Setting::getSetting('app_name', 'Sistem Pemilihan Jurusan'),
             'supportContact' => Setting::getSetting('support_contact', 'Hubungi admin sekolah'),
             'issuedDate' => $today->translatedFormat('d F Y'),
-            'letterNumber' => '400.3.8/' . $announcement->id . '/SMA-YAH/' . $today->format('Y'),
+            'letterNumber' => '400.3.8/241' . '/SMA-YAH/' . $today->format('Y'),
             'principalName' => 'Yanto Susanto, S. Pd., M. IP.',
             'principalIdentity' => 'NIKA. 19831205 200801 0031',
             'logoDataUri' => Setting::logoDataUri(),
