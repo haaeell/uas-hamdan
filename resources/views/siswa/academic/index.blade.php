@@ -7,28 +7,33 @@
 
         {{-- Header --}}
         <div
-            class="sticky top-4 z-30 bg-white/95 backdrop-blur-xl border border-slate-200 rounded-[28px] p-4 mb-5 shadow-sm">
-            <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
+            class="sticky top-2 sm:top-4 z-30 bg-white/95 backdrop-blur-xl border border-slate-200 rounded-2xl sm:rounded-[28px] p-3 sm:p-4 mb-4 sm:mb-5 shadow-sm">
+            <div class="flex items-start justify-between gap-3">
                 <div>
-                    <p class="text-xs font-bold text-blue-600 uppercase tracking-wide">CBT Online</p>
-                    <h1 class="font-extrabold text-xl text-slate-900">Tes Akademik</h1>
-                    <p class="text-xs text-slate-500 mt-1">Jawaban tersimpan otomatis</p>
+                    <p class="text-[10px] sm:text-xs font-bold text-blue-600 uppercase tracking-wide">CBT Online</p>
+                    <h1 class="font-extrabold text-lg sm:text-xl leading-tight text-slate-900">Tes Akademik</h1>
+                    <p class="text-[10px] sm:text-xs text-slate-500 mt-1 leading-tight">Jawaban tersimpan otomatis</p>
                 </div>
 
                 <div class="text-right">
-                    <div class="text-xs font-semibold text-slate-500">Sisa Waktu</div>
-                    <div class="inline-flex items-center gap-2 mt-1 px-4 py-2 rounded-2xl bg-blue-50 text-blue-700">
+                    <div class="text-[10px] sm:text-xs font-semibold text-slate-500">Sisa Waktu</div>
+                    <div class="inline-flex items-center gap-2 mt-1 px-3 py-1.5 sm:px-4 rounded-2xl bg-blue-50 text-blue-700">
                         <i class="fa-solid fa-clock"></i>
-                        <span id="timer" class="text-2xl font-extrabold">{{ str_pad((string) $cbtSettings['duration_minutes'], 2, '0', STR_PAD_LEFT) }}:00</span>
+                        <span id="timer" class="text-base sm:text-2xl font-extrabold leading-none">{{ str_pad((string) $cbtSettings['duration_minutes'], 2, '0', STR_PAD_LEFT) }}:00</span>
                     </div>
                 </div>
             </div>
 
-            <div class="mt-4 rounded-2xl border border-blue-100 bg-blue-50 px-4 py-3 text-sm text-blue-700">
-                <div class="font-bold mb-1">
-                    Perhatian: jika melakukan pelanggaran sebanyak {{ (int) $cbtSettings['violation_limit'] }} kali, sistem akan mengirim jawaban Anda secara otomatis.
+            <div class="mt-2 sm:mt-3 rounded-2xl border border-blue-100 bg-blue-50 px-3 sm:px-4 py-2 text-[10px] sm:text-sm leading-4 sm:leading-6 text-blue-700">
+                <button type="button" class="warning-toggle flex w-full items-center justify-between gap-2 text-left font-bold">
+                    <span class="sm:hidden">Pelanggaran {{ (int) $cbtSettings['violation_limit'] }}x = auto submit.</span>
+                    <span class="hidden sm:inline">Perhatian: jika melakukan pelanggaran sebanyak {{ (int) $cbtSettings['violation_limit'] }} kali, sistem akan mengirim jawaban Anda secara otomatis.</span>
+                    <i class="fa-solid fa-chevron-down warning-icon shrink-0 transition-transform"></i>
+                </button>
+                <div class="warning-content hidden mt-2 pr-6 text-blue-700 font-normal">
+                    <div class="sm:hidden">Tetap di halaman ujian. Jangan pindah tab atau keluar fullscreen.</div>
+                    <div class="hidden sm:block">Hindari berpindah tab, keluar dari mode layar penuh, atau tindakan lain yang dianggap pelanggaran selama ujian berlangsung.</div>
                 </div>
-                <div>Hindari berpindah tab, keluar dari mode layar penuh, atau tindakan lain yang dianggap pelanggaran selama ujian berlangsung.</div>
             </div>
         </div>
 
@@ -254,6 +259,14 @@
                     guard.submitExam();
                 }
             });
+        });
+
+        $('.warning-toggle').on('click', function() {
+            const content = $(this).next('.warning-content');
+            const icon = $(this).find('.warning-icon');
+
+            content.toggleClass('hidden');
+            icon.toggleClass('rotate-180');
         });
     </script>
 @endpush

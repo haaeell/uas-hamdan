@@ -6,41 +6,46 @@
 <div class="min-h-screen bg-slate-100 px-4 py-4 pb-32">
 
     {{-- Header --}}
-        <div class="sticky top-4 z-30 bg-white/95 backdrop-blur-xl border border-slate-200 rounded-[28px] p-4 mb-5 shadow-sm">
-            <div class="flex flex-col lg:flex-row lg:justify-between lg:items-center gap-4">
+        <div class="sticky top-2 sm:top-4 z-30 bg-white/95 backdrop-blur-xl border border-slate-200 rounded-2xl sm:rounded-[28px] p-3 sm:p-4 mb-4 sm:mb-5 shadow-sm">
+            <div class="flex items-start justify-between gap-3">
                 <div>
-                    <p class="text-xs font-bold text-blue-600 uppercase tracking-wide">CBT Online</p>
-                    <h1 class="font-extrabold text-xl text-slate-900">Tes Psikologi</h1>
-                    <p class="text-xs text-slate-500 mt-1">Tidak ada jawaban benar atau salah</p>
+                    <p class="text-[10px] sm:text-xs font-bold text-blue-600 uppercase tracking-wide">CBT Online</p>
+                    <h1 class="font-extrabold text-lg sm:text-xl leading-tight text-slate-900">Tes Psikologi</h1>
+                    <p class="text-[10px] sm:text-xs text-slate-500 mt-1 leading-tight">Tidak ada jawaban benar atau salah</p>
                 </div>
 
-                <div class="grid grid-cols-2 gap-3 w-full lg:w-auto">
+                <div class="grid grid-cols-2 gap-2 sm:gap-3 w-full max-w-[190px] sm:max-w-none sm:w-auto">
                     <div class="text-left lg:text-right min-w-0">
-                        <div class="text-xs font-semibold text-slate-500">Progress</div>
-                        <div class="inline-flex w-full lg:w-auto items-center justify-center gap-2 mt-1 px-3 py-2 rounded-2xl bg-blue-50 text-blue-700">
+                        <div class="text-[10px] sm:text-xs font-semibold text-slate-500">Progress</div>
+                        <div class="inline-flex w-full sm:w-auto items-center justify-center gap-2 mt-1 px-3 py-1.5 rounded-2xl bg-blue-50 text-blue-700">
                             <i class="fa-solid fa-chart-line"></i>
-                            <span id="progressText" class="text-lg sm:text-2xl font-extrabold">0%</span>
+                            <span id="progressText" class="text-base sm:text-2xl font-extrabold">0%</span>
                         </div>
                     </div>
 
                     <div class="text-left lg:text-right min-w-0">
-                        <div class="text-xs font-semibold text-slate-500">Sisa Waktu</div>
-                        <div class="inline-flex w-full lg:w-auto items-center justify-center gap-2 mt-1 px-3 py-2 rounded-2xl bg-blue-50 text-blue-700">
+                        <div class="text-[10px] sm:text-xs font-semibold text-slate-500">Sisa Waktu</div>
+                        <div class="inline-flex w-full sm:w-auto items-center justify-center gap-2 mt-1 px-3 py-1.5 rounded-2xl bg-blue-50 text-blue-700">
                             <i class="fa-solid fa-clock"></i>
-                            <span id="timer" class="text-lg sm:text-2xl font-extrabold">{{ str_pad((string) $cbtSettings['duration_minutes'], 2, '0', STR_PAD_LEFT) }}:00</span>
+                            <span id="timer" class="text-base sm:text-2xl font-extrabold leading-none">{{ str_pad((string) $cbtSettings['duration_minutes'], 2, '0', STR_PAD_LEFT) }}:00</span>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <div class="mt-4 rounded-2xl border border-blue-100 bg-blue-50 px-4 py-3 text-sm text-blue-700">
-                <div class="font-bold mb-1">
-                    Perhatian: jika melakukan pelanggaran sebanyak {{ (int) $cbtSettings['violation_limit'] }} kali, sistem akan mengirim jawaban Anda secara otomatis.
+            <div class="mt-2 sm:mt-3 rounded-2xl border border-blue-100 bg-blue-50 px-3 sm:px-4 py-2 text-[10px] sm:text-sm leading-4 sm:leading-6 text-blue-700">
+                <button type="button" class="warning-toggle flex w-full items-center justify-between gap-2 text-left font-bold">
+                    <span class="sm:hidden">Pelanggaran {{ (int) $cbtSettings['violation_limit'] }}x = auto submit.</span>
+                    <span class="hidden sm:inline">Perhatian: jika melakukan pelanggaran sebanyak {{ (int) $cbtSettings['violation_limit'] }} kali, sistem akan mengirim jawaban Anda secara otomatis.</span>
+                    <i class="fa-solid fa-chevron-down warning-icon shrink-0 transition-transform"></i>
+                </button>
+                <div class="warning-content hidden mt-2 pr-6 text-blue-700 font-normal">
+                    <div class="sm:hidden">Tetap di halaman ujian. Jangan pindah tab atau keluar fullscreen.</div>
+                    <div class="hidden sm:block">Kerjakan tes dengan tertib, tetap di halaman ujian, dan hindari tindakan yang memicu pelanggaran sistem.</div>
                 </div>
-                <div>Kerjakan tes dengan tertib, tetap di halaman ujian, dan hindari tindakan yang memicu pelanggaran sistem.</div>
             </div>
 
-            <div class="mt-4 h-3 bg-slate-200 rounded-full overflow-hidden">
+            <div class="mt-3 sm:mt-4 h-3 bg-slate-200 rounded-full overflow-hidden">
                 <div id="progressBar"
                     class="h-3 bg-gradient-to-r from-blue-600 to-blue-400 rounded-full transition-all duration-500"
                     style="width: 0%">
@@ -270,32 +275,40 @@ $('.question-nav').on('click', function () {
     }, 300);
 });
 
-$('#submitPsychologyBtn').on('click', function () {
-    const answered = $('.answer-option:checked').length;
+        $('#submitPsychologyBtn').on('click', function () {
+            const answered = $('.answer-option:checked').length;
 
-    if (answered < totalQuestions) {
-        Swal.fire({
-            icon: 'warning',
-            title: 'Belum Lengkap',
-            text: 'Semua pernyataan wajib dijawab.',
-            confirmButtonColor: '#2563eb'
+            if (answered < totalQuestions) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Belum Lengkap',
+                    text: 'Semua pernyataan wajib dijawab.',
+                    confirmButtonColor: '#2563eb'
+                });
+                return;
+            }
+
+            Swal.fire({
+                icon: 'question',
+                title: 'Selesaikan Tes?',
+                text: 'Jawaban akan dikirim dan tidak bisa diubah.',
+                showCancelButton: true,
+                confirmButtonText: 'Selesai',
+                cancelButtonText: 'Cek Lagi',
+                confirmButtonColor: '#2563eb'
+            }).then(result => {
+                if (result.isConfirmed) {
+                    guard.submitExam();
+                }
+            });
         });
-        return;
-    }
 
-    Swal.fire({
-        icon: 'question',
-        title: 'Selesaikan Tes?',
-        text: 'Jawaban akan dikirim dan tidak bisa diubah.',
-        showCancelButton: true,
-        confirmButtonText: 'Selesai',
-        cancelButtonText: 'Cek Lagi',
-        confirmButtonColor: '#2563eb'
-    }).then(result => {
-        if (result.isConfirmed) {
-            guard.submitExam();
-        }
-    });
-});
-</script>
+        $('.warning-toggle').on('click', function() {
+            const content = $(this).next('.warning-content');
+            const icon = $(this).find('.warning-icon');
+
+            content.toggleClass('hidden');
+            icon.toggleClass('rotate-180');
+        });
+    </script>
 @endpush
