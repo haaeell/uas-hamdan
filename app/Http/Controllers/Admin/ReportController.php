@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Models\AnnouncementResponse;
 use App\Models\ClassStudent;
 use App\Models\Objection;
+use App\Models\Package;
 use App\Models\Setting;
 use App\Models\Student;
 use App\Models\TestResult;
@@ -166,6 +167,7 @@ class ReportController extends Controller
             'Nama',
             'NISN',
             'Nilai Akademik',
+            'Skor Psikotes',
             'Pilihan 1',
             'Pilihan 2',
             'Rekomendasi Psikotes',
@@ -177,11 +179,13 @@ class ReportController extends Controller
             $results,
             fn($result) => $result->student?->origin_class,
             function ($result) {
+                $packageMap = Package::pluck('code', 'id')->all();
                 return [
                     null,
                     $result->student?->name ?: '-',
                     $result->student?->nisn ?: '-',
                     (string) $result->academic_score,
+                    $this->psychologyScoreText($result->psychology_scores, $packageMap),
                     $result->student?->packageChoice?->firstPackage?->name ?: '-',
                     $result->student?->packageChoice?->secondPackage?->name ?: '-',
                     $result->recommendedPackage?->name ?: '-',

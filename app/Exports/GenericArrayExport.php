@@ -13,8 +13,7 @@ class GenericArrayExport implements FromArray, ShouldAutoSize, WithHeadings, Wit
     public function __construct(
         private readonly array $headings,
         private readonly array $rows
-    ) {
-    }
+    ) {}
 
     public function headings(): array
     {
@@ -23,13 +22,18 @@ class GenericArrayExport implements FromArray, ShouldAutoSize, WithHeadings, Wit
 
     public function array(): array
     {
-        return $this->rows;
+        return array_map(function ($row) {
+            if (isset($row['__group'])) {
+                return ['KELAS: ' . $row['__group']];
+            }
+            return array_values($row);
+        }, $this->rows);
     }
 
     public function styles(Worksheet $sheet): array
     {
         foreach ($this->rows as $index => $row) {
-            if (count($row) === 1 && str_starts_with((string) $row[0], 'KELAS: ')) {
+            if (isset($row['__group'])) {
                 $rowNumber = $index + 2;
                 $sheet->mergeCells('A' . $rowNumber . ':' . $this->columnLetter(count($this->headings)) . $rowNumber);
                 $sheet->getStyle('A' . $rowNumber)->getFont()->setBold(true);
