@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Support\OwnerContext;
 use Illuminate\Support\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Cache;
@@ -10,6 +11,7 @@ use Illuminate\Support\Facades\Storage;
 class Setting extends Model
 {
     protected $fillable = [
+        'owner_id',
         'key',
         'value',
         'group',
@@ -19,7 +21,7 @@ class Setting extends Model
 
     protected static function cacheKey(): string
     {
-        return 'settings.all_keyed.v1';
+        return 'settings.all_keyed.' . (OwnerContext::id() ?: session('exam_owner_id', 'global')) . '.v1';
     }
 
     public static function definitions(): array
@@ -49,6 +51,22 @@ class Setting extends Model
                 'rules' => ['nullable', 'string', 'max:150'],
                 'help' => 'Nomor WA, email, atau nama petugas yang bisa dihubungi.',
             ],
+            'whatsapp_number' => [
+                'label' => 'Nomor WhatsApp Pengumuman',
+                'group' => 'general',
+                'type' => 'text',
+                'default' => '6281200000000',
+                'rules' => ['nullable', 'string', 'max:30'],
+                'help' => 'Dipakai siswa untuk menghubungi owner saat pengumuman.',
+            ],
+            'theme_color' => [
+                'label' => 'Warna Tema',
+                'group' => 'general',
+                'type' => 'color',
+                'default' => '#2563eb',
+                'rules' => ['required', 'string', 'max:20'],
+                'help' => 'Warna utama panel, tombol, dan halaman siswa.',
+            ],
             'logo_path' => [
                 'label' => 'Logo Aplikasi',
                 'group' => 'general',
@@ -65,23 +83,14 @@ class Setting extends Model
                 'rules' => ['nullable', 'string', 'max:255'],
                 'help' => 'Muncul di halaman login sebagai petunjuk singkat.',
             ],
-            'academic_duration_minutes' => [
-                'label' => 'Durasi Tes Akademik',
-                'group' => 'cbt',
-                'type' => 'number',
-                'default' => '60',
-                'rules' => ['required', 'integer', 'min:1', 'max:300'],
-                'suffix' => 'menit',
-                'help' => 'Waktu hitung mundur otomatis untuk tes akademik.',
-            ],
             'psychology_duration_minutes' => [
-                'label' => 'Durasi Tes Psikologi',
+                'label' => 'Durasi Ujian',
                 'group' => 'cbt',
                 'type' => 'number',
                 'default' => '45',
                 'rules' => ['required', 'integer', 'min:1', 'max:300'],
                 'suffix' => 'menit',
-                'help' => 'Waktu hitung mundur otomatis untuk tes psikologi.',
+                'help' => 'Waktu hitung mundur otomatis untuk ujian psikologi.',
             ],
             'cbt_auto_submit_violation_limit' => [
                 'label' => 'Batas Pelanggaran Auto Submit',
@@ -136,7 +145,9 @@ class Setting extends Model
         if (static::$cachedSettings === null) {
             static::$cachedSettings = Cache::store('file')->rememberForever(
                 static::cacheKey(),
-                fn () => static::query()->pluck('value', 'key')
+                    fn () => static::query()
+                        ->when(OwnerContext::id() ?: session('exam_owner_id'), fn ($query, $ownerId) => $query->where('owner_id', $ownerId))
+                        ->pluck('value', 'key')
             );
         }
 
@@ -173,7 +184,10 @@ class Setting extends Model
                     : $currentValues->get($key, $definition['default'] ?? null));
 
             static::updateOrCreate(
-                ['key' => $key],
+                [
+                    'owner_id' => OwnerContext::id(),
+                    'key' => $key,
+                ],
                 [
                     'value' => is_bool($value) ? ($value ? '1' : '0') : (string) $value,
                     'group' => $definition['group'] ?? 'general',

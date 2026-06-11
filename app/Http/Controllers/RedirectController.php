@@ -28,7 +28,6 @@ class RedirectController extends Controller
     {
         return match ($student->status) {
             'waiting_session' => 'siswa.waiting-session',
-            'academic_test' => 'siswa.academic.index',
             'psychology_test' => 'siswa.psychology.index',
             'completed' => 'siswa.announcements.index',
             default => 'siswa.wizard.index',

@@ -37,7 +37,7 @@ class TestSessionController extends Controller
             'test_date' => ['required', 'date'],
             'start_time' => ['required'],
             'end_time' => ['required', 'after:start_time'],
-            'test_type' => ['required', 'in:academic,psychology,both'],
+            'test_type' => ['required', 'in:psychology,both'],
             'is_active' => ['nullable', 'boolean'],
         ]);
 
@@ -57,7 +57,7 @@ class TestSessionController extends Controller
             'test_date' => ['required', 'date'],
             'start_time' => ['required'],
             'end_time' => ['required', 'after:start_time'],
-            'test_type' => ['required', 'in:academic,psychology,both'],
+            'test_type' => ['required', 'in:psychology,both'],
             'is_active' => ['nullable', 'boolean'],
         ]);
 

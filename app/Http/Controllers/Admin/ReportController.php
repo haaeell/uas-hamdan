@@ -6,7 +6,6 @@ use App\Exports\GenericArrayExport;
 use App\Http\Controllers\Controller;
 use App\Models\AnnouncementResponse;
 use App\Models\ClassStudent;
-use App\Models\Objection;
 use App\Models\Package;
 use App\Models\Setting;
 use App\Models\Student;
@@ -166,7 +165,6 @@ class ReportController extends Controller
             'No',
             'Nama',
             'NISN',
-            'Nilai Akademik',
             'Skor Psikotes',
             'Pilihan 1',
             'Pilihan 2',
@@ -184,7 +182,6 @@ class ReportController extends Controller
                     null,
                     $result->student?->name ?: '-',
                     $result->student?->nisn ?: '-',
-                    (string) $result->academic_score,
                     $this->psychologyScoreText($result->psychology_scores, $packageMap),
                     $result->student?->packageChoice?->firstPackage?->name ?: '-',
                     $result->student?->packageChoice?->secondPackage?->name ?: '-',
@@ -197,14 +194,13 @@ class ReportController extends Controller
             fn($result) => [
                 $result->student?->origin_class ?: 'ZZZ',
                 $this->packageSortKey($result->recommendedPackage?->name),
-                - ((float) $result->academic_score),
                 $result->student?->name ?: 'ZZZ',
             ]
         );
 
         return [
             'title' => 'Laporan Hasil Tes Siswa',
-            'subtitle' => 'Nilai akademik, skor psikotes, dan rekomendasi penempatan.',
+            'subtitle' => 'Skor psikotes dan rekomendasi penempatan.',
             'filename' => 'laporan_hasil_tes_siswa',
             'headings' => $headings,
             'rows' => $this->flattenGroupedRows($groupedRows),
@@ -276,11 +272,6 @@ class ReportController extends Controller
             'announcement',
         ])->get();
 
-        $objections = Objection::with(['student', 'announcement'])
-            ->orderByDesc('created_at')
-            ->get()
-            ->keyBy(fn($objection) => $objection->announcement_id . '-' . $objection->student_id);
-
         $headings = [
             'No',
             'Nama',
@@ -290,16 +281,12 @@ class ReportController extends Controller
             'Tipe',
             'Respons',
             'Tanggal Respons',
-            'Status Keberatan',
-            'Alasan Keberatan',
         ];
 
         $groupedRows = $this->groupRowsByOriginClass(
             $responses,
             fn($response) => $response->student?->origin_class,
-            function ($response) use ($objections) {
-                $objection = $objections->get($response->announcement_id . '-' . $response->student_id);
-
+            function ($response) {
                 return [
                     null,
                     $response->student?->name ?: '-',
@@ -309,8 +296,6 @@ class ReportController extends Controller
                     $response->announcement?->type ?: '-',
                     $response->response,
                     optional($response->responded_at)->format('d-m-Y H:i') ?: '-',
-                    $objection?->status ?: '-',
-                    $objection?->reason ?: '-',
                 ];
             },
             count($headings),
@@ -323,7 +308,7 @@ class ReportController extends Controller
 
         return [
             'title' => 'Laporan Respons Pengumuman',
-            'subtitle' => 'Penerimaan hasil, keberatan siswa, dan status tindak lanjut.',
+            'subtitle' => 'Penerimaan hasil dan status respons siswa.',
             'filename' => 'laporan_respons_pengumuman',
             'headings' => $headings,
             'rows' => $this->flattenGroupedRows($groupedRows),
@@ -331,7 +316,6 @@ class ReportController extends Controller
             'summary_lines' => [
                 'Total respons: ' . $responses->count(),
                 'Menerima: ' . $responses->where('response', 'accepted')->count(),
-                'Mengajukan keberatan: ' . $responses->where('response', 'objected')->count(),
             ],
         ];
     }

@@ -27,20 +27,16 @@ class DashboardController extends Controller
         ])
             ->get();
 
-        $academicDistribution = [
-            '0-59' => TestResult::whereBetween('academic_score', [0, 59])->count(),
-            '60-69' => TestResult::whereBetween('academic_score', [60, 69])->count(),
-            '70-79' => TestResult::whereBetween('academic_score', [70, 79])->count(),
-            '80-89' => TestResult::whereBetween('academic_score', [80, 89])->count(),
-            '90-100' => TestResult::whereBetween('academic_score', [90, 100])->count(),
-        ];
+        $recommendationDistribution = Package::withCount('testResultsRecommended')
+            ->pluck('test_results_recommended_count', 'name')
+            ->all();
 
         return view('admin.dashboard.index', compact(
             'totalStudents',
             'completedStudents',
             'totalViolations',
             'packagePreferences',
-            'academicDistribution'
+            'recommendationDistribution'
         ));
     }
 

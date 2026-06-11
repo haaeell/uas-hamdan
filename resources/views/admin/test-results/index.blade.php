@@ -12,7 +12,7 @@
         <div>
             <h1 class="text-2xl font-extrabold text-slate-900">Hasil Tes Lengkap</h1>
             <p class="text-sm text-slate-500 mt-1">
-                Pantau hasil tes, rekomendasi, selfie, biodata, dan distribusi kelas siswa.
+                Pantau hasil tes, rekomendasi, biodata, dan distribusi kelas siswa.
             </p>
         </div>
 
@@ -29,8 +29,7 @@
                 <thead class="bg-slate-50 border-b border-slate-200">
                     <tr class="text-slate-500">
                         <th class="px-3 py-3 text-left font-bold">Siswa</th>
-                        <th class="px-3 py-3 text-left font-bold">Foto</th>
-                        <th class="px-3 py-3 text-left font-bold">Nilai</th>
+                        <th class="px-3 py-3 text-left font-bold">Status</th>
                         <th class="px-3 py-3 text-left font-bold">Rekomendasi</th>
                         <th class="px-3 py-3 text-left font-bold">Final</th>
                         <th class="px-3 py-3 text-left font-bold">Kelas</th>
@@ -96,8 +95,7 @@
                 ajax: '{{ route('admin.test-results.data') }}',
                 columns: [
                     { data: 'student_info', name: 'student_info', orderable: false, searchable: true },
-                    { data: 'foto', name: 'foto', orderable: false, searchable: false },
-                    { data: 'nilai', name: 'test_results.academic_score', searchable: false },
+                    { data: 'status_tes', name: 'status_tes', orderable: false, searchable: false },
                     { data: 'rekomendasi', name: 'rekomendasi', orderable: false, searchable: false },
                     { data: 'final', name: 'final', orderable: false, searchable: false },
                     { data: 'kelas', name: 'kelas', orderable: false, searchable: false },
@@ -168,23 +166,10 @@
         function openDetailModal(data) {
             document.getElementById('detailContent').innerHTML = `
                                                 <div class="grid lg:grid-cols-3 gap-5">
-                                                    <div>
-                                                        ${data.selfie
-                    ? `
-                                                                <a href="${data.selfie}" target="_blank">
-                                                                    <img src="${data.selfie}"
-                                                                        class="w-full max-h-[360px] object-cover rounded-3xl border border-slate-200 shadow-sm">
-                                                                </a>
-                                                                <div class="text-xs text-slate-500 mt-2">
-                                                                    Selfie: ${escapeHtml(data.selfie_date)}
-                                                                </div>
-                                                            `
-                    : `
-                                                                <div class="aspect-square rounded-3xl bg-slate-100 flex items-center justify-center text-slate-400">
-                                                                    <i class="fa-solid fa-user text-5xl"></i>
-                                                                </div>
-                                                            `
-                }
+                                                <div>
+                                                    <div class="aspect-square rounded-3xl bg-slate-100 flex items-center justify-center text-slate-400">
+                                                        <i class="fa-solid fa-user text-5xl"></i>
+                                                    </div>
                                                     </div>
 
                                                     <div class="lg:col-span-2 space-y-5">
@@ -228,9 +213,9 @@
                                                             </div>
 
                                                             <div class="bg-blue-50 rounded-2xl p-4">
-                                                                <div class="text-xs font-bold text-blue-500 mb-2">Nilai Akademik</div>
-                                                                <div class="text-4xl font-extrabold text-blue-700">
-                                                                    ${escapeHtml(data.academic_score ?? 0)}
+                                                                <div class="text-xs font-bold text-blue-500 mb-2">Status Tes</div>
+                                                                <div class="text-2xl font-extrabold text-blue-700">
+                                                                    Selesai
                                                                 </div>
                                                             </div>
 

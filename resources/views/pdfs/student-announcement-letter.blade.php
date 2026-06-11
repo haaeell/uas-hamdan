@@ -151,7 +151,6 @@
         $parentNames = collect([$biodata?->father_name, $biodata?->mother_name])
             ->filter()
             ->implode(' / ');
-        $academicScore = $testResult?->academic_score;
         $psychologyResult = $testResult?->recommendedPackage?->name
             ?: ($topPsychologyScore !== null ? 'Skor tertinggi: ' . $topPsychologyScore : '-');
         $finalPackage = $classStudent->package?->name
@@ -224,9 +223,9 @@
                 <td>{{ $psychologyResult }}</td>
             </tr>
             <tr>
-                <td class="label">Hasil Tes Akademik</td>
+                <td class="label">Status Tes</td>
                 <td class="colon">:</td>
-                <td>{{ $academicScore !== null ? $academicScore : '-' }}</td>
+                <td>Selesai</td>
             </tr>
         </table>
 

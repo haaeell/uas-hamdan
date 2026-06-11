@@ -52,6 +52,10 @@ class LoginController extends Controller
         $storedPassword = (string) $user->password;
 
         if ($user->role === 'siswa') {
+            if (session('exam_owner_id') && (int) $user->owner_id !== (int) session('exam_owner_id')) {
+                return false;
+            }
+
             if (!hash_equals($storedPassword, $password)) {
                 return false;
             }

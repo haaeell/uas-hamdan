@@ -89,9 +89,6 @@
                         <div class="font-extrabold text-slate-900">{{ $student->name }}</div>
                         <div class="text-xs text-slate-500 mt-1">
                             {{ $student->origin_class }}
-                            @if($student->result)
-                                · Nilai: {{ $student->result->academic_score }}
-                            @endif
                         </div>
                     </div>
                 @endforeach
@@ -166,7 +163,7 @@
 
                 <div class="student-list divide-y divide-slate-100 border border-slate-100 rounded-2xl overflow-hidden min-h-[120px] max-h-[360px] overflow-y-auto"
                     data-class-id="{{ $group->id }}">
-                    @forelse($group->students->sortByDesc(fn($item) => $item->student->result->academic_score ?? 0) as $index => $item)
+                    @forelse($group->students->sortBy(fn($item) => $item->student->name ?? '') as $index => $item)
                         <div class="student-card flex items-center gap-3 px-3 py-2 bg-white hover:bg-blue-50 cursor-move"
                             data-student-id="{{ $item->student->id }}">
 
@@ -186,9 +183,6 @@
 
                                 <div class="text-xs text-slate-500 truncate">
                                     {{ $item->student->origin_class }}
-                                    @if($item->student->result)
-                                        · Nilai: {{ $item->student->result->academic_score }}
-                                    @endif
                                 </div>
                             </div>
 

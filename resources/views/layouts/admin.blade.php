@@ -6,8 +6,8 @@
         $appName = \App\Models\Setting::getSetting('app_name', 'Sistem Pemilihan Jurusan');
         $schoolName = \App\Models\Setting::getSetting('school_name', 'Pemilihan Jurusan');
         $logoUrl = \App\Models\Setting::logoUrl();
+        $themeColor = \App\Models\Setting::getSetting('theme_color', '#2563eb');
 
-        $pendingObjectionsCount = \App\Models\Objection::where('status', 'pending')->count();
         $activeSessionsCount = \App\Models\TestSession::where('is_active', true)->count();
         $todaySessionsCount = \App\Models\TestSession::where('is_active', true)
             ->whereDate('test_date', now()->toDateString())
@@ -15,8 +15,7 @@
         $unpublishedAnnouncementsCount = \App\Models\Announcement::where('is_published', false)->count();
         $latestAnnouncement = \App\Models\Announcement::latest()->first();
 
-        $notificationCount = $pendingObjectionsCount
-            + $todaySessionsCount
+        $notificationCount = $todaySessionsCount
             + $unpublishedAnnouncementsCount;
 
         $adminSearchItems = [
@@ -24,15 +23,13 @@
             ['title' => 'Siswa', 'description' => 'Tambah, import, edit, hapus, dan aktivasi akun siswa', 'icon' => 'fa-users', 'url' => route('admin.students.index'), 'keywords' => 'murid peserta import akun kelas'],
             ['title' => 'Jurusan', 'description' => 'Kelola paket jurusan dan mapel pendukung', 'icon' => 'fa-layer-group', 'url' => route('admin.packages.index'), 'keywords' => 'paket peminatan mapel pilihan'],
             ['title' => 'Sesi Tes', 'description' => 'Atur jadwal, tipe tes, dan kelas peserta', 'icon' => 'fa-clock', 'url' => route('admin.test-sessions.index'), 'keywords' => 'jadwal ujian kelas waktu sesi'],
-            ['title' => 'Soal Akademik', 'description' => 'Kelola soal, opsi jawaban, import, dan gambar soal', 'icon' => 'fa-book-open', 'url' => route('admin.academic-questions.index'), 'keywords' => 'akademik pertanyaan kunci jawaban'],
             ['title' => 'Soal Psikologi', 'description' => 'Kelola pernyataan psikotes dan bobot jurusan', 'icon' => 'fa-brain', 'url' => route('admin.psychology-questions.index'), 'keywords' => 'psikotes psikologi bobot'],
             ['title' => 'Monitoring Ujian', 'description' => 'Pantau siswa yang sedang mengerjakan tes', 'icon' => 'fa-desktop', 'url' => route('admin.exam-monitoring.index'), 'keywords' => 'monitor ujian aktif real time'],
             ['title' => 'Pelanggaran CBT', 'description' => 'Lihat catatan pelanggaran selama ujian', 'icon' => 'fa-shield-halved', 'url' => route('admin.violations.index'), 'keywords' => 'violation pelanggaran fullscreen tab'],
-            ['title' => 'Hasil Tes', 'description' => 'Nilai, rekomendasi, biodata, selfie, dan penempatan', 'icon' => 'fa-square-poll-vertical', 'url' => route('admin.test-results.index'), 'keywords' => 'nilai hasil rekomendasi final'],
+            ['title' => 'Hasil Tes', 'description' => 'Rekomendasi, biodata, dan penempatan', 'icon' => 'fa-square-poll-vertical', 'url' => route('admin.test-results.index'), 'keywords' => 'hasil rekomendasi final'],
             ['title' => 'Distribusi Kelas', 'description' => 'Auto distribusi dan pindah siswa antar kelas', 'icon' => 'fa-random', 'url' => route('admin.class-distribution.index'), 'keywords' => 'kelas hasil pembagian final'],
             ['title' => 'Laporan', 'description' => 'Export laporan siswa, hasil tes, kelas, dan respons', 'icon' => 'fa-file-arrow-down', 'url' => route('admin.reports.index'), 'keywords' => 'report excel pdf export'],
             ['title' => 'Pengumuman', 'description' => 'Buat dan publish pengumuman sementara atau final', 'icon' => 'fa-bullhorn', 'url' => route('admin.announcements.index'), 'keywords' => 'announcement final temporary publish'],
-            ['title' => 'Keberatan', 'description' => 'Review alasan keberatan siswa dan beri catatan admin', 'icon' => 'fa-message', 'url' => route('admin.objections.index'), 'keywords' => 'tolak setuju objection respons'],
             ['title' => 'Audit Log', 'description' => 'Riwayat aktivitas admin pada sistem', 'icon' => 'fa-clock-rotate-left', 'url' => route('admin.activity-logs.index'), 'keywords' => 'log aktivitas riwayat'],
             ['title' => 'Settings', 'description' => 'Pengaturan aplikasi, sekolah, timer, dan CBT', 'icon' => 'fa-gear', 'url' => route('admin.settings.index'), 'keywords' => 'setting konfigurasi timer logo'],
         ];
@@ -67,6 +64,26 @@
             font-family: 'Inter', sans-serif;
         }
 
+        :root {
+            --theme-color: {{ $themeColor }};
+        }
+
+        .bg-blue-600,
+        .bg-blue-700,
+        .dt-container .dt-paging .dt-paging-button.current {
+            background: var(--theme-color) !important;
+        }
+
+        .text-blue-600,
+        .text-blue-700 {
+            color: var(--theme-color) !important;
+        }
+
+        .border-blue-100,
+        .border-blue-600 {
+            border-color: color-mix(in srgb, var(--theme-color) 30%, white) !important;
+        }
+
         .sidebar-link {
             display: flex;
             align-items: center;
@@ -81,12 +98,12 @@
 
         .sidebar-link:hover {
             background: #eff6ff;
-            color: #2563eb;
+            color: var(--theme-color);
             transform: translateX(3px);
         }
 
         .sidebar-link.active {
-            background: linear-gradient(135deg, #2563eb, #3b82f6);
+            background: var(--theme-color);
             color: white;
             box-shadow: 0 12px 24px rgba(37, 99, 235, .25);
         }
@@ -334,12 +351,6 @@
                     <span>Sesi Tes</span>
                 </a>
 
-                <a href="{{ route('admin.academic-questions.index') }}"
-                    class=" sidebar-link {{ request()->routeIs('admin.academic-questions.*') ? 'active' : '' }}">
-                    <i class="fa-solid fa-book-open"></i>
-                    <span>Soal Akademik</span>
-                </a>
-
                 <a href="{{ route('admin.psychology-questions.index') }}"
                     class=" sidebar-link {{ request()->routeIs('admin.psychology-questions.*') ? 'active' : '' }}">
                     <i class="fa-solid fa-brain"></i>
@@ -390,12 +401,6 @@
                     class=" sidebar-link {{ request()->routeIs('admin.announcements.*') ? 'active' : '' }}">
                     <i class="fa-solid fa-bullhorn"></i>
                     <span>Pengumuman</span>
-                </a>
-
-                <a href="{{ route('admin.objections.index') }}"
-                    class=" sidebar-link {{ request()->routeIs('admin.objections.*') ? 'active' : '' }}">
-                    <i class="fa-solid fa-message"></i>
-                    <span>Keberatan</span>
                 </a>
 
                 <div class="menu-title">Sistem</div>
@@ -488,23 +493,6 @@
                             </div>
 
                             <div class="p-2 max-h-[420px] overflow-y-auto">
-                                <a href="{{ route('admin.objections.index') }}"
-                                    class="flex items-start gap-3 rounded-2xl px-3 py-3 hover:bg-blue-50 transition">
-                                    <div
-                                        class="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center shrink-0">
-                                        <i class="fa-solid fa-message"></i>
-                                    </div>
-                                    <div class="min-w-0 flex-1">
-                                        <div class="flex items-center justify-between gap-3">
-                                            <p class="font-bold text-slate-900">Keberatan pending</p>
-                                            <span
-                                                class="text-xs font-extrabold text-blue-700">{{ $pendingObjectionsCount }}</span>
-                                        </div>
-                                        <p class="text-xs text-slate-500 mt-1">Review alasan siswa dan beri keputusan
-                                            admin.</p>
-                                    </div>
-                                </a>
-
                                 <a href="{{ route('admin.test-sessions.index') }}"
                                     class="flex items-start gap-3 rounded-2xl px-3 py-3 hover:bg-blue-50 transition">
                                     <div

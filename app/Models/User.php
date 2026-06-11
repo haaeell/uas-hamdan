@@ -10,12 +10,14 @@ class User extends Authenticatable
     use Notifiable;
 
     protected $fillable = [
+        'owner_id',
         'name',
         'nisn',
         'email',
         'password',
         'role',
         'is_active',
+        'exam_token',
     ];
 
     protected $hidden = [
@@ -31,6 +33,16 @@ class User extends Authenticatable
     public function student()
     {
         return $this->hasOne(Student::class);
+    }
+
+    public function owner()
+    {
+        return $this->belongsTo(User::class, 'owner_id');
+    }
+
+    public function ownedStudents()
+    {
+        return $this->hasMany(Student::class, 'owner_id');
     }
 
     public function publishedAnnouncements()

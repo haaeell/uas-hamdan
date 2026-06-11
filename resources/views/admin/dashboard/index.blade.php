@@ -93,9 +93,9 @@
         <div class="bg-white border border-slate-200 rounded-[28px] p-6 shadow-sm">
             <div class="flex items-center justify-between mb-6">
                 <div>
-                    <p class="text-sm font-semibold text-blue-600 uppercase tracking-wide">Akademik</p>
+                    <p class="text-sm font-semibold text-blue-600 uppercase tracking-wide">Psikologi</p>
                     <h2 class="text-xl font-extrabold text-slate-900 mt-1">
-                        Distribusi Nilai Akademik
+                        Distribusi Rekomendasi
                     </h2>
                 </div>
 
@@ -105,7 +105,7 @@
             </div>
 
             <div class="h-[320px]">
-                <canvas id="academicChart"></canvas>
+                <canvas id="recommendationChart"></canvas>
             </div>
         </div>
 
@@ -139,7 +139,7 @@
                 <div>
                     <h2 class="text-xl font-extrabold text-slate-900">Reset Semua Data</h2>
                     <p class="text-sm text-red-700 mt-2 max-w-3xl">
-                        Hapus seluruh data operasional seperti siswa, jurusan, soal, sesi tes, hasil, pengumuman, keberatan, pelanggaran, dan file upload. Akun admin dan pengaturan aplikasi tetap disimpan.
+                        Hapus seluruh data operasional seperti siswa, jurusan, soal psikologi, sesi tes, hasil, pengumuman, pelanggaran, dan file upload. Akun admin dan pengaturan aplikasi tetap disimpan.
                     </p>
                 </div>
             </div>
@@ -171,13 +171,13 @@
             '#0f172a'
         ];
 
-        new Chart(document.getElementById('academicChart'), {
+        new Chart(document.getElementById('recommendationChart'), {
             type: 'bar',
             data: {
-                labels: {!! json_encode(array_keys($academicDistribution)) !!},
+                labels: {!! json_encode(array_keys($recommendationDistribution)) !!},
                 datasets: [{
                     label: 'Jumlah Siswa',
-                    data: {!! json_encode(array_values($academicDistribution)) !!},
+                    data: {!! json_encode(array_values($recommendationDistribution)) !!},
                     backgroundColor: '#2563eb',
                     borderRadius: 14,
                     borderSkipped: false
@@ -264,7 +264,7 @@
             Swal.fire({
                 icon: 'warning',
                 title: 'Reset semua data?',
-                html: 'Aksi ini akan menghapus data siswa, jurusan, soal, sesi, hasil tes, pengumuman, keberatan, pelanggaran, dan file upload.<br><br>Ketik <b>RESET</b> untuk melanjutkan.',
+                html: 'Aksi ini akan menghapus data siswa, jurusan, soal psikologi, sesi, hasil tes, pengumuman, pelanggaran, dan file upload.<br><br>Ketik <b>RESET</b> untuk melanjutkan.',
                 input: 'text',
                 inputPlaceholder: 'Ketik RESET',
                 showCancelButton: true,

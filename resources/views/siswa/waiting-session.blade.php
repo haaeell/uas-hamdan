@@ -102,14 +102,8 @@
                 @endif
 
                 <div class="grid sm:grid-cols-2 gap-3">
-                    @php
-                        $sessionEntryRoute = $session?->test_type === 'psychology'
-                            ? route('siswa.psychology.index')
-                            : route('siswa.academic.index');
-                    @endphp
-
                     @if($sessionIsActive ?? false)
-                        <a href="{{ $sessionEntryRoute }}"
+                        <a href="{{ route('siswa.psychology.index') }}"
                             class="inline-flex items-center justify-center gap-2 w-full bg-blue-600 hover:bg-blue-700 text-white py-4 rounded-2xl font-extrabold shadow-lg shadow-blue-200 transition">
                             <i class="fa-solid fa-right-to-bracket"></i>
                             Masuk ke Sesi Tes

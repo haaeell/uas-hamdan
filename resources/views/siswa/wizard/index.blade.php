@@ -6,9 +6,7 @@
             'onboarding' => 10,
             'biodata' => 25,
             'package_choice' => 45,
-            'selfie' => 65,
             'waiting_session' => 80,
-            'academic_test' => 90,
             'psychology_test' => 95,
             'completed' => 100,
         ];
@@ -210,39 +208,6 @@
                 </form>
             @endif
 
-            @if($student->status === 'selfie')
-                <div id="selfieStep"
-                    class="max-w-3xl mx-auto bg-white border border-slate-200 rounded-[32px] p-6 md:p-8 shadow-sm">
-                    <h2 class="text-2xl font-extrabold text-slate-900">Verifikasi Selfie</h2>
-                    <p class="text-slate-500 mt-2 mb-6">Pastikan wajah terlihat jelas dan pencahayaan cukup.</p>
-
-                    <video id="video" autoplay playsinline
-                        class="w-full aspect-video object-cover rounded-[28px] bg-slate-900 mb-4">
-                    </video>
-
-                    <canvas id="canvas" class="hidden"></canvas>
-
-                    <img id="preview" class="hidden w-full aspect-video object-cover rounded-[28px] mb-4">
-
-                    <div class="grid grid-cols-2 gap-3">
-                        <button id="captureBtn" class="btn-primary" type="button">
-                            <i class="fa-solid fa-camera"></i>
-                            Ambil Foto
-                        </button>
-
-                        <button id="retakeBtn" class="btn-secondary hidden" type="button">
-                            <i class="fa-solid fa-rotate-left"></i>
-                            Ulangi
-                        </button>
-                    </div>
-
-                    <button id="uploadSelfieBtn" type="button" class="btn-primary mt-4 hidden">
-                        <i class="fa-solid fa-upload"></i>
-                        Simpan Selfie
-                    </button>
-                </div>
-            @endif
-
             @if($student->status === 'waiting_session')
                 <div
                     class="max-w-3xl mx-auto text-center bg-white border border-slate-200 rounded-[32px] p-8 md:p-10 shadow-sm">
@@ -259,7 +224,7 @@
                     <div class="mt-6 rounded-2xl border border-blue-100 bg-blue-50 px-5 py-4 text-left text-sm text-blue-700">
                         <p class="font-bold mb-2">Yang perlu Anda lakukan sambil menunggu:</p>
                         <div>1. Cek halaman ini secara berkala untuk melihat jadwal sesi yang aktif.</div>
-                        <div>2. Pastikan perangkat, jaringan internet, dan kamera siap digunakan.</div>
+                        <div>2. Pastikan perangkat dan jaringan internet siap digunakan.</div>
                         <div>3. Gunakan akun Anda sendiri dan jangan membagikan akses ke orang lain.</div>
                     </div>
 
@@ -422,76 +387,5 @@
                 });
         });
 
-        let stream = null;
-        let photoData = null;
-
-        async function startCamera() {
-            if (!$('#video').length) return;
-
-            try {
-                stream = await navigator.mediaDevices.getUserMedia({
-                    video: { facingMode: 'user' },
-                    audio: false
-                });
-
-                document.getElementById('video').srcObject = stream;
-            } catch (error) {
-                Swal.fire('Kamera Tidak Aktif', 'Izinkan akses kamera untuk melanjutkan verifikasi selfie.', 'warning');
-            }
-        }
-
-        startCamera();
-
-        $('#captureBtn').on('click', function () {
-            const video = document.getElementById('video');
-            const canvas = document.getElementById('canvas');
-
-            canvas.width = video.videoWidth;
-            canvas.height = video.videoHeight;
-
-            canvas.getContext('2d').drawImage(video, 0, 0);
-
-            photoData = canvas.toDataURL('image/jpeg', 0.9);
-
-            $('#preview').attr('src', photoData).removeClass('hidden');
-            $('#video').addClass('hidden');
-            $('#retakeBtn, #uploadSelfieBtn').removeClass('hidden');
-            $('#captureBtn').addClass('hidden');
-        });
-
-        $('#retakeBtn').on('click', function () {
-            photoData = null;
-
-            $('#preview').addClass('hidden');
-            $('#video').removeClass('hidden');
-            $('#retakeBtn, #uploadSelfieBtn').addClass('hidden');
-            $('#captureBtn').removeClass('hidden');
-        });
-
-        $('#uploadSelfieBtn').on('click', function () {
-            if (!photoData) {
-                Swal.fire('Foto belum ada', 'Ambil foto terlebih dahulu.', 'warning');
-                return;
-            }
-
-            const button = $(this);
-            button.prop('disabled', true).html('<i class="fa-solid fa-spinner fa-spin"></i> Mengupload...');
-
-            $.post('{{ route("siswa.wizard.selfie") }}', {
-                _token: '{{ csrf_token() }}',
-                photo: photoData,
-                device_info: {
-                    userAgent: navigator.userAgent,
-                    platform: navigator.platform,
-                    screen: screen.width + 'x' + screen.height,
-                    timezone: Intl.DateTimeFormat().resolvedOptions().timeZone
-                }
-            }).done(function (response) {
-                window.location.replace(response.redirect_url || '{{ route("siswa.waiting-session") }}');
-            }).fail(function (xhr) {
-                button.prop('disabled', false).html('<i class="fa-solid fa-upload"></i> Simpan Selfie');
-                Swal.fire('Gagal', xhr.responseJSON?.message ?? 'Upload selfie gagal.', 'error');
-            });
-        });
     </script>
 @endpush

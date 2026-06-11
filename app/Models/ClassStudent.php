@@ -2,11 +2,15 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\BelongsToOwner;
 use Illuminate\Database\Eloquent\Model;
 
 class ClassStudent extends Model
 {
+    use BelongsToOwner;
+
     protected $fillable = [
+        'owner_id',
         'class_group_id',
         'student_id',
         'package_id',

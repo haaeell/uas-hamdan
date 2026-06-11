@@ -28,7 +28,6 @@ class TestResultController extends Controller
             ->with([
                 'student.user',
                 'student.biodata',
-                'student.selfie',
                 'student.packageChoice.firstPackage',
                 'student.packageChoice.secondPackage',
                 'student.classStudent.classGroup',
@@ -58,32 +57,7 @@ class TestResultController extends Controller
                     <div class="text-[11px] text-slate-400">' . e($student?->origin_class ?? '-') . '</div>
                 ';
             })
-            ->addColumn('foto', function ($result) {
-                $selfie = $result->student?->selfie;
-
-                if (!$selfie) {
-                    return '
-                        <div class="w-11 h-11 rounded-xl bg-slate-100 flex items-center justify-center text-slate-400">
-                            <i class="fa-solid fa-user"></i>
-                        </div>
-                    ';
-                }
-
-                $url = asset('storage/' . $selfie->path);
-
-                return '
-                    <a href="' . $url . '" target="_blank">
-                        <img src="' . $url . '" class="w-11 h-11 rounded-xl object-cover border border-slate-200 hover:scale-105 transition">
-                    </a>
-                ';
-            })
-            ->addColumn('nilai', function ($result) {
-                return '
-                    <div class="text-lg font-extrabold text-blue-600">
-                        ' . e($result->academic_score ?? 0) . '
-                    </div>
-                ';
-            })
+            ->addColumn('status_tes', fn () => '<span class="inline-flex px-2.5 py-1 rounded-lg bg-green-50 text-green-700 text-[11px] font-bold">Selesai</span>')
             ->addColumn('rekomendasi', function ($result) {
                 return '
                     <span class="inline-flex px-2.5 py-1 rounded-lg bg-blue-50 text-blue-700 text-[11px] font-bold">
@@ -115,7 +89,6 @@ class TestResultController extends Controller
             ->addColumn('aksi', function ($result) use ($packages) {
                 $student = $result->student;
                 $biodata = $student?->biodata;
-                $selfie = $student?->selfie;
                 $classStudent = $student?->classStudent;
 
                 $detail = [
@@ -126,9 +99,6 @@ class TestResultController extends Controller
                     'origin_class' => $student?->origin_class,
                     'status' => $student?->status,
 
-                    'selfie' => $selfie ? asset('storage/' . $selfie->path) : null,
-                    'selfie_date' => $selfie?->captured_at?->format('d M Y H:i'),
-
                     'birth_place' => $biodata?->birth_place,
                     'birth_date' => $biodata?->birth_date?->format('d-m-Y'),
                     'gender' => $biodata?->gender,
@@ -136,8 +106,6 @@ class TestResultController extends Controller
                     'father_name' => $biodata?->father_name,
                     'mother_name' => $biodata?->mother_name,
                     'parent_phone' => $biodata?->parent_phone,
-
-                    'academic_score' => $result->academic_score,
 
                      'first_choice' => $student?->packageChoice?->firstPackage?->name,
                      'second_choice' => $student?->packageChoice?->secondPackage?->name,
@@ -170,8 +138,7 @@ class TestResultController extends Controller
             })
             ->rawColumns([
                 'student_info',
-                'foto',
-                'nilai',
+                'status_tes',
                 'rekomendasi',
                 'final',
                 'kelas',
@@ -226,7 +193,7 @@ class TestResultController extends Controller
                 'Nama',
                 'NISN',
                 'Kelas Asal',
-                'Nilai Akademik',
+                'Status Tes',
                 'Rekomendasi Psikotes',
                 'Jurusan Final',
                 'Pilihan 1',
@@ -245,7 +212,7 @@ class TestResultController extends Controller
                         $result->student?->name,
                         $result->student?->nisn,
                         $result->student?->origin_class,
-                        $result->academic_score,
+                        'Selesai',
                         $result->recommendedPackage?->name,
                         $result->finalPackage?->name,
                         $result->student?->packageChoice?->firstPackage?->name,

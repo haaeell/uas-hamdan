@@ -38,12 +38,12 @@
 
                 <div class="space-y-3">
                     <div class="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-4">
-                        <div class="text-xs font-bold uppercase tracking-wide text-slate-500">Durasi Akademik</div>
-                        <div class="text-2xl font-extrabold text-slate-900 mt-1">{{ $values['academic_duration_minutes'] }} menit</div>
+                        <div class="text-xs font-bold uppercase tracking-wide text-slate-500">Link Ujian Owner</div>
+                        <div class="text-sm font-extrabold text-slate-900 mt-1 break-all">{{ $examLink ?: '-' }}</div>
                     </div>
 
                     <div class="rounded-2xl border border-blue-100 bg-blue-50 px-4 py-4">
-                        <div class="text-xs font-bold uppercase tracking-wide text-blue-600">Durasi Psikologi</div>
+                        <div class="text-xs font-bold uppercase tracking-wide text-blue-600">Durasi Ujian</div>
                         <div class="text-2xl font-extrabold text-blue-700 mt-1">{{ $values['psychology_duration_minutes'] }} menit</div>
                     </div>
 
@@ -56,9 +56,9 @@
                 <div class="mt-5 rounded-[24px] border border-slate-200 bg-slate-50 p-4 text-sm text-slate-600">
                     <div class="font-bold text-slate-800 mb-2">Yang langsung terhubung</div>
                     <div class="space-y-2">
-                        <div>1. Timer tes akademik dan psikologi siswa.</div>
+                        <div>1. Timer ujian psikologi siswa.</div>
                         <div>2. Auto-submit saat batas pelanggaran tercapai.</div>
-                        <div>3. Branding aplikasi di area login dan admin.</div>
+                        <div>3. Branding aplikasi, warna tema, dan WhatsApp owner.</div>
                     </div>
                 </div>
             </div>

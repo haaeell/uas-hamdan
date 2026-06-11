@@ -5,6 +5,7 @@
     @php
         $appName = \App\Models\Setting::getSetting('app_name', 'Sistem Pemilihan Jurusan');
         $logoUrl = \App\Models\Setting::logoUrl();
+        $themeColor = \App\Models\Setting::getSetting('theme_color', '#2563eb');
     @endphp
     <meta charset="UTF-8">
     <title>@yield('title', $appName)</title>
@@ -80,8 +81,28 @@
             overflow-x: hidden;
         }
 
+        :root {
+            --theme-color: {{ $themeColor }};
+        }
+
+        .bg-blue-600,
+        .bg-blue-700,
+        .swal2-confirm {
+            background: var(--theme-color) !important;
+        }
+
+        .text-blue-600,
+        .text-blue-700 {
+            color: var(--theme-color) !important;
+        }
+
+        .border-blue-100,
+        .border-blue-600 {
+            border-color: color-mix(in srgb, var(--theme-color) 30%, white) !important;
+        }
+
         ::selection {
-            background: #2563eb;
+            background: var(--theme-color);
             color: white;
         }
 
@@ -122,7 +143,7 @@
         }
 
         .swal2-confirm {
-            background: #2563eb !important;
+            background: var(--theme-color) !important;
             border-radius: 14px !important;
             font-weight: 700 !important;
             padding: 12px 24px !important;

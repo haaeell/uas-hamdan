@@ -68,8 +68,8 @@
                         <div class="mt-3 space-y-2 text-sm text-slate-600 leading-relaxed">
                             <div>1. Baca hasil penempatan Anda dengan teliti hingga selesai.</div>
                             <div>2. Jika setuju, gunakan tombol penerimaan agar status Anda tercatat di sistem.</div>
-                            <div>3. Jika belum setuju, tuliskan alasan keberatan secara jelas dan lengkap agar admin mudah menindaklanjuti.</div>
-                            <div>4. Tetap cek halaman ini secara berkala untuk pembaruan status, keputusan keberatan, atau surat keterangan final.</div>
+                            <div>3. Jika ada pertanyaan atau data perlu dikonfirmasi, hubungi owner melalui WhatsApp.</div>
+                            <div>4. Tetap cek halaman ini secara berkala untuk pembaruan pengumuman.</div>
                         </div>
                     </div>
 
@@ -156,8 +156,8 @@
                         @if($testResult)
                             <div class="grid sm:grid-cols-2 gap-3 text-sm mb-4">
                                 <div class="rounded-2xl bg-blue-600 text-white p-4">
-                                    <p class="font-semibold text-blue-100">Nilai Akademik</p>
-                                    <p class="text-3xl font-extrabold mt-1">{{ $testResult->academic_score }}</p>
+                                    <p class="font-semibold text-blue-100">Status Tes</p>
+                                    <p class="text-3xl font-extrabold mt-1">Selesai</p>
                                 </div>
 
                                 <div class="rounded-2xl bg-blue-50 border border-blue-100 p-4">
@@ -253,23 +253,18 @@
                             </button>
                         </form>
 
-                        <form method="POST" action="{{ route('siswa.announcements.object', $announcement) }}" class="space-y-3">
-                            @csrf
-
-                            <textarea name="reason" rows="4" placeholder="Tulis alasan keberatan Anda secara jelas, misalnya alasan akademik, minat jurusan, atau data yang perlu ditinjau ulang"
-                                class="w-full p-4 rounded-2xl bg-white border border-slate-200 text-slate-800 focus:border-blue-500 focus:ring-4 focus:ring-blue-100 outline-none transition"></textarea>
-
-                            <button
+                        @if($whatsappUrl)
+                            <a href="{{ $whatsappUrl }}" target="_blank" rel="noopener"
                                 class="w-full inline-flex items-center justify-center gap-2 bg-white hover:bg-blue-50 text-blue-700 border border-blue-100 py-4 rounded-2xl font-extrabold transition">
-                                <i class="fa-solid fa-message"></i>
-                                Ajukan Keberatan
-                            </button>
-                        </form>
+                                <i class="fa-brands fa-whatsapp"></i>
+                                Hubungi WhatsApp
+                            </a>
+                        @endif
                     @elseif($response || ($announcement->type === 'final' && $classStudent))
                         <div class="space-y-4">
                             <div class="bg-blue-50 border border-blue-100 text-blue-700 rounded-[28px] p-5">
                                 @if($response)
-                                    <p class="font-bold">Respons Anda: {{ $response->response === 'accepted' ? 'Diterima' : 'Mengajukan keberatan' }}</p>
+                                    <p class="font-bold">Respons Anda: {{ $response->response === 'accepted' ? 'Diterima' : 'Sudah tercatat' }}</p>
                                 @else
                                     <p class="font-bold">Pengumuman final sudah tersedia.</p>
                                 @endif
@@ -281,41 +276,11 @@
                                 @endif
                             </div>
 
-                            @if($objection && $announcement->type === 'final')
-                                <div class="rounded-[28px] p-5 border {{ $objection->status === 'rejected' ? 'bg-red-50 border-red-100 text-red-700' : 'bg-blue-50 border-blue-100 text-blue-700' }}">
-                                    <p class="font-bold">
-                                        Status Keberatan:
-                                        {{ $objection->status === 'approved' ? 'Disetujui' : ($objection->status === 'rejected' ? 'Ditolak' : 'Menunggu review') }}
-                                    </p>
-
-                                    <p class="text-sm mt-2">
-                                        <span class="font-bold">Alasan Anda:</span>
-                                        {{ $objection->reason }}
-                                    </p>
-
-                                    @if($objection->admin_note)
-                                        <p class="text-sm mt-2">
-                                            <span class="font-bold">Catatan Admin:</span>
-                                            {{ $objection->admin_note }}
-                                        </p>
-                                    @elseif($objection->status === 'rejected')
-                                        <p class="text-sm mt-2">Admin belum menambahkan catatan penolakan.</p>
-                                    @endif
-
-                                    @if($objection->reviewed_at)
-                                        <p class="text-xs mt-3 opacity-80">
-                                            Ditinjau pada {{ $objection->reviewed_at->translatedFormat('d F Y H:i') }}
-                                        </p>
-                                    @endif
-                                </div>
-                            @endif
-
-                            @if((($response && $response->response === 'accepted') || $announcement->type === 'final') && $classStudent)
-                                <a href="{{ route('siswa.announcements.letter', $announcement) }}"
-                                    target="_blank" rel="noopener"
-                                    class="w-full inline-flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white py-4 rounded-2xl font-extrabold shadow-lg shadow-blue-200 transition">
-                                    <i class="fa-solid fa-file-pdf"></i>
-                                    Lihat Surat Keterangan PDF
+                            @if($whatsappUrl)
+                                <a href="{{ $whatsappUrl }}" target="_blank" rel="noopener"
+                                    class="w-full inline-flex items-center justify-center gap-2 bg-white hover:bg-blue-50 text-blue-700 border border-blue-100 py-4 rounded-2xl font-extrabold transition">
+                                    <i class="fa-brands fa-whatsapp"></i>
+                                    Hubungi WhatsApp
                                 </a>
                             @endif
                         </div>

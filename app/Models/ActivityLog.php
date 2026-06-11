@@ -2,11 +2,15 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\BelongsToOwner;
 use Illuminate\Database\Eloquent\Model;
 
 class ActivityLog extends Model
 {
+    use BelongsToOwner;
+
     protected $fillable = [
+        'owner_id',
         'user_id',
         'module',
         'action',

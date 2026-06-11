@@ -36,7 +36,7 @@ class ClassDistributionService
                 $package = $packages[$packageId];
 
                 $sortedResults = $packageResults
-                    ->sortByDesc(fn($result) => (float) $result->academic_score)
+                    ->sortByDesc(fn($result) => (float) ($result->psychology_scores[$packageId] ?? 0))
                     ->values();
 
                 foreach ($sortedResults->chunk($this->classCapacity) as $index => $chunk) {

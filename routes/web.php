@@ -1,6 +1,5 @@
 <?php
 
-use App\Http\Controllers\Admin\AcademicQuestionController;
 use App\Http\Controllers\Admin\ActivityLogController;
 use App\Http\Controllers\Admin\AnnouncementController;
 use App\Http\Controllers\Admin\ClassDistributionController;
@@ -12,14 +11,11 @@ use App\Http\Controllers\Admin\ReportController;
 use App\Http\Controllers\Admin\SettingController;
 use App\Http\Controllers\Admin\StudentController;
 use App\Http\Controllers\Admin\TestSessionController;
-use App\Http\Controllers\Admin\ObjectionController as AdminObjectionController;
 use App\Http\Controllers\Admin\TestResultController;
 use App\Http\Controllers\Admin\AdminViolationController;
 use App\Http\Controllers\RedirectController;
 
-use App\Http\Controllers\Siswa\AcademicTestController;
 use App\Http\Controllers\Siswa\AnnouncementController as SiswaAnnouncementController;
-use App\Http\Controllers\Siswa\ObjectionController;
 use App\Http\Controllers\Siswa\PsychologyTestController;
 use App\Http\Controllers\Siswa\ViolationController;
 use App\Http\Controllers\Siswa\WizardController;
@@ -36,10 +32,21 @@ Route::get('/', function () {
 });
 
 Auth::routes([
-    'register' => false,
+    'register' => true,
     'reset' => false,
     'verify' => false,
 ]);
+
+Route::get('/uji/{token}', function (string $token) {
+    $owner = \App\Models\User::where('role', 'admin')
+        ->where('is_active', true)
+        ->where('exam_token', $token)
+        ->firstOrFail();
+
+    session(['exam_owner_id' => $owner->id]);
+
+    return redirect()->route('login')->with('success', 'Link ujian aktif untuk ' . $owner->name . '.');
+})->name('owner.exam-link');
 
 Route::get('/redirect-after-login', RedirectController::class)
     ->middleware('auth')
@@ -110,25 +117,6 @@ Route::middleware(['auth', 'role:admin'])
 
         /*
         |--------------------------------------------------------------------------
-        | SOAL AKADEMIK
-        |--------------------------------------------------------------------------
-        */
-        Route::resource('/academic-questions', AcademicQuestionController::class);
-
-        Route::post('/academic-questions/import', [AcademicQuestionController::class, 'import'])
-            ->name('academic-questions.import');
-
-        Route::get('/academic-questions/export/excel', [AcademicQuestionController::class, 'export'])
-            ->name('academic-questions.export');
-
-        Route::get('/academic-questions/template/download', [AcademicQuestionController::class, 'downloadTemplate'])
-            ->name('academic-questions.template');
-
-        Route::post('/academic-questions/bulk-delete', [AcademicQuestionController::class, 'bulkDelete'])
-            ->name('academic-questions.bulk-delete');
-
-        /*
-        |--------------------------------------------------------------------------
         | SOAL PSIKOLOGI
         |--------------------------------------------------------------------------
         */
@@ -188,20 +176,6 @@ Route::middleware(['auth', 'role:admin'])
         Route::post('/announcements/{announcement}/lock-final', [AnnouncementController::class, 'lockFinal'])
             ->name('announcements.lock-final');
 
-        /*
-        |--------------------------------------------------------------------------
-        | KEBERATAN SISWA
-        |--------------------------------------------------------------------------
-        */
-        Route::get('/objections', [AdminObjectionController::class, 'index'])
-            ->name('objections.index');
-
-        Route::post('/objections/{objection}/approve', [AdminObjectionController::class, 'approve'])
-            ->name('objections.approve');
-
-        Route::post('/objections/{objection}/reject', [AdminObjectionController::class, 'reject'])
-            ->name('objections.reject');
-
         Route::get('/test-results', [TestResultController::class, 'index'])->name('test-results.index');
         Route::get('/test-results/data', [TestResultController::class, 'data'])->name('test-results.data');
         Route::post('/test-results/manual-update', [TestResultController::class, 'manualUpdate'])->name('test-results.manual-update');
@@ -253,27 +227,15 @@ Route::middleware(['auth', 'role:siswa'])
         Route::post('/wizard/package-choice', [WizardController::class, 'savePackageChoice'])
             ->name('wizard.package-choice');
 
-        Route::post('/wizard/selfie', [WizardController::class, 'saveSelfie'])
-            ->name('wizard.selfie');
-
         Route::get('/waiting-session', [WizardController::class, 'waitingSession'])
             ->name('waiting-session');
 
         /*
         |--------------------------------------------------------------------------
-        | CBT AKADEMIK
+        | CBT PSIKOLOGI
         |--------------------------------------------------------------------------
         */
         Route::middleware('test.session.open')->group(function () {
-            Route::get('/academic-test', [AcademicTestController::class, 'index'])
-                ->name('academic.index');
-
-            Route::post('/academic-test/autosave', [AcademicTestController::class, 'autosave'])
-                ->name('academic.autosave');
-
-            Route::post('/academic-test/submit', [AcademicTestController::class, 'submit'])
-                ->name('academic.submit');
-
             Route::get('/psychology-test', [PsychologyTestController::class, 'index'])
                 ->name('psychology.index');
 
@@ -298,9 +260,4 @@ Route::middleware(['auth', 'role:siswa'])
         Route::post('/announcements/{announcement}/accept', [SiswaAnnouncementController::class, 'accept'])
             ->name('announcements.accept');
 
-        Route::get('/announcements/{announcement}/letter', [SiswaAnnouncementController::class, 'downloadLetter'])
-            ->name('announcements.letter');
-
-        Route::post('/announcements/{announcement}/object', [ObjectionController::class, 'store'])
-            ->name('announcements.object');
     });

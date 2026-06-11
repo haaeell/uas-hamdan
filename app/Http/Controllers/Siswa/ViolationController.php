@@ -12,7 +12,7 @@ class ViolationController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'exam_type' => ['required', 'in:academic,psychology'],
+            'exam_type' => ['required', 'in:psychology'],
             'action' => ['required', 'string', 'max:100'],
             'device_info' => ['nullable', 'array'],
         ]);
@@ -22,9 +22,7 @@ class ViolationController extends Controller
 
         abort_if(!$sessionId, 403, 'Sesi tes tidak ditemukan.');
 
-        $column = $validated['exam_type'] === 'academic'
-            ? 'academic_violation_count'
-            : 'psychology_violation_count';
+        $column = 'psychology_violation_count';
 
         $totalViolations = DB::transaction(function () use ($student, $sessionId, $validated, $request, $column) {
             $pivot = DB::table('student_test_sessions')

@@ -24,7 +24,7 @@ class EnsureStudentTestSessionIsOpen
                 ->with('warning', 'Sesi tes Anda belum dibuka atau sudah berakhir.');
         }
 
-        $examType = $request->routeIs('siswa.psychology.*') ? 'psychology' : 'academic';
+        $examType = 'psychology';
 
         if (!in_array($session->test_type, [$examType, 'both'], true)) {
             return redirect()
@@ -44,8 +44,8 @@ class EnsureStudentTestSessionIsOpen
                 'student_id' => $student->id,
                 'test_session_id' => $session->id,
                 'started_at' => $now,
-                'academic_started_at' => $examType === 'academic' ? $now : null,
-                'psychology_started_at' => $examType === 'psychology' ? $now : null,
+                'academic_started_at' => null,
+                'psychology_started_at' => $now,
                 'status' => 'in_progress',
                 'created_at' => $now,
                 'updated_at' => $now,
@@ -55,8 +55,8 @@ class EnsureStudentTestSessionIsOpen
                 'student_id' => $student->id,
                 'test_session_id' => $session->id,
                 'started_at' => $now,
-                'academic_started_at' => $examType === 'academic' ? $now : null,
-                'psychology_started_at' => $examType === 'psychology' ? $now : null,
+                'academic_started_at' => null,
+                'psychology_started_at' => $now,
                 'academic_submitted_at' => null,
                 'psychology_submitted_at' => null,
                 'academic_violation_count' => 0,
@@ -73,11 +73,7 @@ class EnsureStudentTestSessionIsOpen
                 $updates['started_at'] = $now;
             }
 
-            if ($examType === 'academic' && !$pivot->academic_started_at) {
-                $updates['academic_started_at'] = $now;
-            }
-
-            if ($examType === 'psychology' && !$pivot->psychology_started_at) {
+            if (!$pivot->psychology_started_at) {
                 $updates['psychology_started_at'] = $now;
             }
 
@@ -93,6 +89,10 @@ class EnsureStudentTestSessionIsOpen
 
         $request->attributes->set('active_test_session_id', $session->id);
         $request->attributes->set('active_test_session_state', $pivot);
+
+        if ($student->status === 'waiting_session') {
+            $student->update(['status' => 'psychology_test']);
+        }
 
         return $next($request);
     }

@@ -25,15 +25,10 @@
         </div>
 
         <div class="bg-white border border-slate-200 rounded-lg shadow-sm overflow-hidden">
-            <div class="grid sm:grid-cols-2 xl:grid-cols-4 divide-y sm:divide-y-0 sm:divide-x divide-slate-200">
+            <div class="grid sm:grid-cols-3 divide-y sm:divide-y-0 sm:divide-x divide-slate-200">
                 <div class="px-5 py-4">
                     <div class="text-xs font-bold uppercase tracking-wide text-slate-500">Sedang Ujian</div>
                     <div class="text-3xl font-extrabold text-slate-900 mt-1">{{ $summary['active_students'] }}</div>
-                </div>
-
-                <div class="px-5 py-4">
-                    <div class="text-xs font-bold uppercase tracking-wide text-slate-500">Tes Akademik</div>
-                    <div class="text-3xl font-extrabold text-blue-700 mt-1">{{ $summary['academic'] }}</div>
                 </div>
 
                 <div class="px-5 py-4">
@@ -52,20 +47,13 @@
 
         <div class="bg-white border border-slate-200 rounded-lg shadow-sm overflow-hidden">
             <div class="border-b border-slate-200 p-4">
-                <form method="GET" class="grid lg:grid-cols-[1fr_auto_auto_auto] gap-3">
+                <form method="GET" class="grid lg:grid-cols-[1fr_auto_auto] gap-3">
                     <div class="relative">
                         <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"></i>
                         <input type="search" name="q" value="{{ $search }}"
                             placeholder="Cari nama, NISN, atau kelas"
                             class="w-full rounded-lg border border-slate-200 pl-10 pr-3 py-2.5 text-sm font-semibold text-slate-800 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100">
                     </div>
-
-                    <select name="exam"
-                        class="rounded-lg border border-slate-200 px-3 py-2.5 text-sm font-bold text-slate-700 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100">
-                        <option value="">Semua tes</option>
-                        <option value="academic" @selected($examFilter === 'academic')>Akademik</option>
-                        <option value="psychology" @selected($examFilter === 'psychology')>Psikologi</option>
-                    </select>
 
                     <select name="per_page"
                         class="rounded-lg border border-slate-200 px-3 py-2.5 text-sm font-bold text-slate-700 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100">
@@ -112,9 +100,7 @@
                                         ? max(0, min(100, (int) round(($student->remaining_seconds / ($student->duration_minutes * 60)) * 100)))
                                         : 0;
                                     $isLowTime = $student->remaining_seconds <= 300;
-                                    $examBadge = $student->active_exam_key === 'academic'
-                                        ? 'bg-blue-50 text-blue-700 border-blue-100'
-                                        : 'bg-emerald-50 text-emerald-700 border-emerald-100';
+                                    $examBadge = 'bg-emerald-50 text-emerald-700 border-emerald-100';
                                 @endphp
                                 <tr class="hover:bg-slate-50/80 transition">
                                     <td class="py-3 px-4 align-top">
@@ -167,9 +153,7 @@
                     @foreach($students as $student)
                         @php
                             $isLowTime = $student->remaining_seconds <= 300;
-                            $examBadge = $student->active_exam_key === 'academic'
-                                ? 'bg-blue-50 text-blue-700 border-blue-100'
-                                : 'bg-emerald-50 text-emerald-700 border-emerald-100';
+                            $examBadge = 'bg-emerald-50 text-emerald-700 border-emerald-100';
                         @endphp
                         <div class="p-4">
                             <div class="flex items-start justify-between gap-3">
@@ -178,7 +162,7 @@
                                     <div class="text-xs text-slate-500 mt-1">{{ $student->nisn }} - {{ $student->origin_class }}</div>
                                 </div>
                                 <span class="shrink-0 rounded-md border px-2.5 py-1 text-xs font-extrabold {{ $examBadge }}">
-                                    {{ $student->active_exam_key === 'academic' ? 'Akademik' : 'Psikologi' }}
+                                    Psikologi
                                 </span>
                             </div>
 

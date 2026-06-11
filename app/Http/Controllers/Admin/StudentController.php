@@ -12,7 +12,6 @@ use App\Services\ActivityLogService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 use Maatwebsite\Excel\Facades\Excel;
 use Yajra\DataTables\Facades\DataTables;
@@ -117,7 +116,10 @@ class StudentController extends Controller
         ]);
 
         DB::transaction(function () use ($validated, $request, $logger) {
+            $ownerId = auth()->id();
+
             $user = User::create([
+                'owner_id' => $ownerId,
                 'name' => $validated['name'],
                 'nisn' => $validated['nisn'],
                 'password' => $validated['password'],
@@ -126,6 +128,7 @@ class StudentController extends Controller
             ]);
 
             $student = Student::create([
+                'owner_id' => $ownerId,
                 'user_id' => $user->id,
                 'nisn' => $validated['nisn'],
                 'nis' => $validated['nis'] ?? null,
@@ -200,7 +203,7 @@ class StudentController extends Controller
             'ids.*' => ['exists:students,id'],
         ]);
 
-        $students = Student::whereIn('id', $validated['ids'])->with(['user', 'selfie'])->get();
+        $students = Student::whereIn('id', $validated['ids'])->with(['user'])->get();
 
         DB::transaction(function () use ($students, $logger) {
             foreach ($students as $student) {
@@ -293,10 +296,6 @@ class StudentController extends Controller
     private function deleteStudents(Collection $students): void
     {
         foreach ($students as $student) {
-            if ($student->selfie?->path && Storage::disk('public')->exists($student->selfie->path)) {
-                Storage::disk('public')->delete($student->selfie->path);
-            }
-
             $user = $student->user;
             $student->delete();
 

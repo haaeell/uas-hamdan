@@ -2,11 +2,15 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\BelongsToOwner;
 use Illuminate\Database\Eloquent\Model;
 
 class TestResult extends Model
 {
+    use BelongsToOwner;
+
     protected $fillable = [
+        'owner_id',
         'student_id',
         'academic_score',
         'psychology_scores',

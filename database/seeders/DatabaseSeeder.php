@@ -6,6 +6,7 @@ use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 
 class DatabaseSeeder extends Seeder
 {
@@ -47,30 +48,30 @@ class DatabaseSeeder extends Seeder
         DB::statement('SET FOREIGN_KEY_CHECKS=1');
 
         DB::transaction(function () {
-            $this->seedSettings();
             $adminId = $this->seedAdmin();
-            $packages = $this->seedPackages();
+            $this->seedSettings($adminId);
+            $packages = $this->seedPackages($adminId);
             $this->seedPackageSubjects($packages);
-            $this->seedTestSessions();
-            $this->seedSampleStudents();
-            $this->seedAcademicQuestions();
+            $this->seedTestSessions($adminId);
+            $this->seedSampleStudents($adminId);
             $this->seedPsychologyQuestions($packages);
         });
     }
 
-    private function seedSettings(): void
+    private function seedSettings(int $ownerId): void
     {
         $settings = [
-            ['key' => 'app_name', 'value' => 'Sistem Pemilihan Jurusan', 'group' => 'general'],
-            ['key' => 'school_name', 'value' => 'SMA Negeri 1 Contoh', 'group' => 'general'],
-            ['key' => 'support_contact', 'value' => 'Admin BK / WA 0812-0000-0000', 'group' => 'general'],
-            ['key' => 'login_help_text', 'value' => 'Masuk menggunakan email admin atau NISN siswa yang sudah dibagikan sekolah.', 'group' => 'general'],
-            ['key' => 'academic_duration_minutes', 'value' => '90', 'group' => 'cbt'],
-            ['key' => 'psychology_duration_minutes', 'value' => '60', 'group' => 'cbt'],
-            ['key' => 'cbt_auto_submit_violation_limit', 'value' => '3', 'group' => 'cbt'],
-            ['key' => 'cbt_force_fullscreen', 'value' => '1', 'group' => 'cbt'],
-            ['key' => 'cbt_warning_message', 'value' => 'Perpindahan tab, keluar fullscreen, atau aktivitas mencurigakan akan dicatat oleh sistem.', 'group' => 'cbt'],
-            ['key' => 'student_help_text', 'value' => 'Pastikan perangkat stabil, gunakan koneksi yang baik, dan hubungi admin bila ada kendala teknis.', 'group' => 'student'],
+            ['owner_id' => $ownerId, 'key' => 'app_name', 'value' => 'Sistem Pemilihan Jurusan', 'group' => 'general'],
+            ['owner_id' => $ownerId, 'key' => 'school_name', 'value' => 'SMA Negeri 1 Contoh', 'group' => 'general'],
+            ['owner_id' => $ownerId, 'key' => 'support_contact', 'value' => 'Admin BK / WA 0812-0000-0000', 'group' => 'general'],
+            ['owner_id' => $ownerId, 'key' => 'whatsapp_number', 'value' => '6281200000000', 'group' => 'general'],
+            ['owner_id' => $ownerId, 'key' => 'theme_color', 'value' => '#2563eb', 'group' => 'general'],
+            ['owner_id' => $ownerId, 'key' => 'login_help_text', 'value' => 'Masuk menggunakan email admin atau NISN siswa yang sudah dibagikan sekolah.', 'group' => 'general'],
+            ['owner_id' => $ownerId, 'key' => 'psychology_duration_minutes', 'value' => '60', 'group' => 'cbt'],
+            ['owner_id' => $ownerId, 'key' => 'cbt_auto_submit_violation_limit', 'value' => '3', 'group' => 'cbt'],
+            ['owner_id' => $ownerId, 'key' => 'cbt_force_fullscreen', 'value' => '1', 'group' => 'cbt'],
+            ['owner_id' => $ownerId, 'key' => 'cbt_warning_message', 'value' => 'Perpindahan tab, keluar fullscreen, atau aktivitas mencurigakan akan dicatat oleh sistem.', 'group' => 'cbt'],
+            ['owner_id' => $ownerId, 'key' => 'student_help_text', 'value' => 'Pastikan perangkat stabil, gunakan koneksi yang baik, dan hubungi admin bila ada kendala teknis.', 'group' => 'student'],
         ];
 
         DB::table('settings')->insert($this->withTimestamps($settings));
@@ -78,16 +79,21 @@ class DatabaseSeeder extends Seeder
 
     private function seedAdmin(): int
     {
-        return User::create([
+        $user = User::create([
             'name' => 'Administrator',
             'email' => 'admin@gmail.com',
             'password' => Hash::make('password'),
             'role' => 'admin',
             'is_active' => true,
-        ])->id;
+            'exam_token' => Str::random(32),
+        ]);
+
+        $user->forceFill(['owner_id' => $user->id])->save();
+
+        return $user->id;
     }
 
-    private function seedPackages(): array
+    private function seedPackages(int $ownerId): array
     {
         $packages = [
             [
@@ -120,6 +126,7 @@ class DatabaseSeeder extends Seeder
 
         foreach ($packages as $package) {
             $packageIds[$package['code']] = DB::table('packages')->insertGetId($this->timestampedRow($package + [
+                'owner_id' => $ownerId,
                 'is_active' => true,
             ]));
         }
@@ -147,7 +154,7 @@ class DatabaseSeeder extends Seeder
         }
     }
 
-    private function seedTestSessions(): void
+    private function seedTestSessions(int $ownerId): void
     {
         $sessions = [
             [
@@ -157,6 +164,7 @@ class DatabaseSeeder extends Seeder
                 'end_time' => '10:30:00',
                 'test_type' => 'both',
                 'is_active' => true,
+                'owner_id' => $ownerId,
                 'classes' => ['X A', 'X B', 'X C', 'X D'],
             ],
             [
@@ -166,6 +174,7 @@ class DatabaseSeeder extends Seeder
                 'end_time' => '13:45:00',
                 'test_type' => 'both',
                 'is_active' => true,
+                'owner_id' => $ownerId,
                 'classes' => ['X E', 'X F', 'X G', 'X H'],
             ],
         ];
@@ -185,7 +194,7 @@ class DatabaseSeeder extends Seeder
         }
     }
 
-    private function seedSampleStudents(): void
+    private function seedSampleStudents(int $ownerId): void
     {
         $students = [
             ['name' => 'Alya Putri Maharani', 'nisn' => '2026000001', 'nis' => '260001', 'origin_class' => 'X A', 'status' => 'onboarding'],
@@ -198,6 +207,7 @@ class DatabaseSeeder extends Seeder
 
         foreach ($students as $index => $student) {
             $user = User::create([
+                'owner_id' => $ownerId,
                 'name' => $student['name'],
                 'nisn' => $student['nisn'],
                 'password' => Hash::make('12345678'),
@@ -206,6 +216,7 @@ class DatabaseSeeder extends Seeder
             ]);
 
             $studentId = DB::table('students')->insertGetId($this->timestampedRow([
+                'owner_id' => $ownerId,
                 'user_id' => $user->id,
                 'nisn' => $student['nisn'],
                 'nis' => $student['nis'],
@@ -216,63 +227,10 @@ class DatabaseSeeder extends Seeder
         }
     }
 
-    private function seedAcademicQuestions(): void
-    {
-        $questions = [
-            [
-                'question' => 'Nilai dari 3x - 7 = 20 adalah ...',
-                'correct' => 'B',
-                'options' => ['A' => '7', 'B' => '9', 'C' => '11', 'D' => '13', 'E' => '15'],
-            ],
-            [
-                'question' => 'Jika fungsi f(x) = 2x + 5, maka nilai f(4) adalah ...',
-                'correct' => 'D',
-                'options' => ['A' => '9', 'B' => '11', 'C' => '12', 'D' => '13', 'E' => '14'],
-            ],
-            [
-                'question' => 'Sebuah segitiga memiliki alas 12 cm dan tinggi 8 cm. Luas segitiga tersebut adalah ...',
-                'correct' => 'C',
-                'options' => ['A' => '32 cm2', 'B' => '40 cm2', 'C' => '48 cm2', 'D' => '96 cm2', 'E' => '24 cm2'],
-            ],
-            [
-                'question' => 'Persamaan garis yang melalui titik (0, 3) dan (2, 7) memiliki gradien ...',
-                'correct' => 'A',
-                'options' => ['A' => '2', 'B' => '3', 'C' => '4', 'D' => '5', 'E' => '6'],
-            ],
-            [
-                'question' => 'Hukum Newton I menjelaskan bahwa benda akan tetap diam atau bergerak lurus beraturan jika ...',
-                'correct' => 'B',
-                'options' => [
-                    'A' => 'diberi gaya yang makin besar',
-                    'B' => 'resultan gaya yang bekerja padanya nol',
-                    'C' => 'memiliki massa yang besar',
-                    'D' => 'bergerak pada lintasan melingkar',
-                    'E' => 'selalu dipercepat oleh gaya luar',
-                ],
-            ],
-        ];
-
-        foreach ($questions as $index => $questionData) {
-            $questionId = DB::table('academic_questions')->insertGetId($this->timestampedRow([
-                'question' => $questionData['question'],
-                'image_path' => null,
-                'order' => $index + 1,
-                'is_active' => true,
-            ]));
-
-            foreach ($questionData['options'] as $label => $text) {
-                DB::table('academic_question_options')->insert($this->timestampedRow([
-                    'academic_question_id' => $questionId,
-                    'label' => $label,
-                    'option_text' => $text,
-                    'is_correct' => $label === $questionData['correct'],
-                ]));
-            }
-        }
-    }
-
     private function seedPsychologyQuestions(array $packages): void
     {
+        $ownerId = DB::table('packages')->whereIn('id', array_values($packages))->value('owner_id');
+
         $questions = [
             [
                 'question' => 'Saat mengerjakan tugas kelompok, saya paling nyaman ketika ...',
@@ -335,6 +293,7 @@ class DatabaseSeeder extends Seeder
 
         foreach ($questions as $index => $questionData) {
             $questionId = DB::table('psychology_questions')->insertGetId($this->timestampedRow([
+                'owner_id' => $ownerId,
                 'question' => $questionData['question'],
                 'image_path' => null,
                 'order' => $index + 1,

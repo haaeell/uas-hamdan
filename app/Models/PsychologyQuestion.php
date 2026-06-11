@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\BelongsToOwner;
 use Illuminate\Support\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -11,9 +12,11 @@ use Illuminate\Support\Str;
 
 class PsychologyQuestion extends Model
 {
+    use BelongsToOwner;
     use SoftDeletes;
 
     protected $fillable = [
+        'owner_id',
         'question',
         'image_path',
         'order',
@@ -33,7 +36,7 @@ class PsychologyQuestion extends Model
 
     protected static function cacheKey(): string
     {
-        return 'exam.questions.psychology.active.v1';
+        return 'exam.questions.psychology.active.' . (\App\Support\OwnerContext::id() ?: 'public') . '.v1';
     }
 
     protected static function flushTestCache(): void

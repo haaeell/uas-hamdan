@@ -14,12 +14,15 @@ class SettingController extends Controller
     {
         $definitions = Setting::groupedDefinitions();
         $values = [];
+        $examLink = auth()->user()->exam_token
+            ? route('owner.exam-link', auth()->user()->exam_token)
+            : null;
 
         foreach (array_keys(Setting::definitions()) as $key) {
             $values[$key] = Setting::getSetting($key);
         }
 
-        return view('admin.settings.index', compact('definitions', 'values'));
+        return view('admin.settings.index', compact('definitions', 'values', 'examLink'));
     }
 
     public function update(Request $request, ActivityLogService $logger)

@@ -5,8 +5,7 @@
 @section('content')
     @php
         $typeLabels = [
-            'both' => 'Akademik + Psikologi',
-            'academic' => 'Akademik',
+            'both' => 'Psikologi',
             'psychology' => 'Psikologi',
         ];
     @endphp
@@ -85,10 +84,7 @@
                             <label class="block text-sm font-semibold text-slate-700 mb-2">Tipe Tes</label>
                             <select name="test_type"
                                 class="w-full px-4 py-3 rounded-2xl bg-slate-50 border border-slate-200 text-slate-800 focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-100 outline-none transition">
-                                <option value="both" {{ old('test_type') === 'both' ? 'selected' : '' }}>Akademik + Psikologi
-                                </option>
-                                <option value="academic" {{ old('test_type') === 'academic' ? 'selected' : '' }}>Akademik saja
-                                </option>
+                                <option value="both" {{ old('test_type') === 'both' ? 'selected' : '' }}>Psikologi</option>
                                 <option value="psychology" {{ old('test_type') === 'psychology' ? 'selected' : '' }}>Psikologi
                                     saja</option>
                             </select>
@@ -316,8 +312,6 @@
                         <label class="block text-sm font-semibold text-slate-700 mb-2">Tipe Tes</label>
                         <select name="test_type" id="edit_test_type"
                             class="w-full px-4 py-3 rounded-2xl bg-slate-50 border border-slate-200 text-slate-800 focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-100 outline-none transition">
-                            <option value="both">Akademik + Psikologi</option>
-                            <option value="academic">Akademik saja</option>
                             <option value="psychology">Psikologi saja</option>
                         </select>
                     </div>

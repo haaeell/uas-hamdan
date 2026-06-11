@@ -8,6 +8,7 @@ use App\Models\PackageSubject;
 use App\Services\ActivityLogService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\Rule;
 
 class PackageController extends Controller
 {
@@ -21,7 +22,12 @@ class PackageController extends Controller
     public function store(Request $request, ActivityLogService $logger)
     {
         $validated = $request->validate([
-            'code' => ['required', 'string', 'max:20', 'unique:packages,code'],
+            'code' => [
+                'required',
+                'string',
+                'max:20',
+                Rule::unique('packages', 'code')->where(fn ($query) => $query->where('owner_id', auth()->id())),
+            ],
             'name' => ['required', 'string', 'max:150'],
             'description' => ['nullable', 'string'],
             'color' => ['required', 'string', 'max:20'],
@@ -55,7 +61,14 @@ class PackageController extends Controller
     public function update(Request $request, Package $package, ActivityLogService $logger)
     {
         $validated = $request->validate([
-            'code' => ['required', 'string', 'max:20', 'unique:packages,code,' . $package->id],
+            'code' => [
+                'required',
+                'string',
+                'max:20',
+                Rule::unique('packages', 'code')
+                    ->where(fn ($query) => $query->where('owner_id', auth()->id()))
+                    ->ignore($package->id),
+            ],
             'name' => ['required', 'string', 'max:150'],
             'description' => ['nullable', 'string'],
             'color' => ['required', 'string', 'max:20'],

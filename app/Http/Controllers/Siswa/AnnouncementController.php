@@ -62,6 +62,10 @@ class AnnouncementController extends Controller
             ->latest()
             ->first()
             : null;
+        $whatsappNumber = preg_replace('/\D+/', '', (string) Setting::getSetting('whatsapp_number', ''));
+        $whatsappUrl = $whatsappNumber
+            ? 'https://wa.me/' . $whatsappNumber . '?text=' . urlencode('Halo, saya ' . $student->name . ' ingin bertanya tentang pengumuman hasil.')
+            : null;
 
         return view('siswa.announcements.index', compact(
             'student',
@@ -70,7 +74,8 @@ class AnnouncementController extends Controller
             'response',
             'testResult',
             'psychologyScores',
-            'objection'
+            'objection',
+            'whatsappUrl'
         ));
     }
 

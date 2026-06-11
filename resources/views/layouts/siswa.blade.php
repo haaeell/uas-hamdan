@@ -5,6 +5,7 @@
     @php
         $appName = \App\Models\Setting::getSetting('app_name', 'Sistem Pemilihan Jurusan');
         $logoUrl = \App\Models\Setting::logoUrl();
+        $themeColor = \App\Models\Setting::getSetting('theme_color', '#2563eb');
     @endphp
     <meta charset="UTF-8">
     <title>Siswa - {{ $appName }}</title>
@@ -20,6 +21,26 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+    <style>
+        :root {
+            --theme-color: {{ $themeColor }};
+        }
+
+        .bg-blue-600,
+        .bg-blue-700 {
+            background: var(--theme-color) !important;
+        }
+
+        .text-blue-600,
+        .text-blue-700 {
+            color: var(--theme-color) !important;
+        }
+
+        .border-blue-100,
+        .border-blue-600 {
+            border-color: color-mix(in srgb, var(--theme-color) 30%, white) !important;
+        }
+    </style>
 </head>
 
 <body class="bg-slate-950 text-white">
@@ -30,7 +51,7 @@
                     icon: 'warning',
                     title: 'Sesi Belum Dibuka',
                     text: @json(session('warning')),
-                    confirmButtonColor: '#2563eb'
+                    confirmButtonColor: @json($themeColor)
                 });
             });
         </script>
@@ -43,7 +64,7 @@
                     icon: 'success',
                     title: 'Berhasil',
                     text: @json(session('success')),
-                    confirmButtonColor: '#2563eb'
+                    confirmButtonColor: @json($themeColor)
                 });
             });
         </script>
@@ -56,7 +77,7 @@
                     icon: 'error',
                     title: 'Gagal',
                     text: @json(session('error')),
-                    confirmButtonColor: '#2563eb'
+                    confirmButtonColor: @json($themeColor)
                 });
             });
         </script>

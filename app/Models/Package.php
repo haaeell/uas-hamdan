@@ -2,14 +2,17 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\BelongsToOwner;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Package extends Model
 {
+    use BelongsToOwner;
     use SoftDeletes;
 
     protected $fillable = [
+        'owner_id',
         'code',
         'name',
         'description',

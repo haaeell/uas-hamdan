@@ -10,7 +10,6 @@ use App\Models\StudentPackageChoice;
 use App\Models\TestSession;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Storage;
 
 class WizardController extends Controller
 {
@@ -18,7 +17,6 @@ class WizardController extends Controller
     {
         $student = auth()->user()->student()->with([
             'biodata',
-            'selfie',
             'packageChoice',
         ])->firstOrFail();
 
@@ -93,50 +91,11 @@ class WizardController extends Controller
                 $validated + ['student_id' => $student->id]
             );
 
-            $student->update(['status' => 'selfie']);
-        });
-
-        return response()->json([
-            'message' => 'Pilihan jurusan berhasil disimpan.',
-            'next_step' => 'selfie',
-            'redirect_url' => route('siswa.wizard.index'),
-        ]);
-    }
-
-    public function saveSelfie(Request $request)
-    {
-        $validated = $request->validate([
-            'photo' => ['required', 'string'],
-            'device_info' => ['required', 'array'],
-        ]);
-
-        $student = auth()->user()->student;
-
-        $image = preg_replace('/^data:image\/\w+;base64,/', '', $validated['photo']);
-        $image = base64_decode($image, true);
-
-        abort_if($image === false, 422, 'Foto tidak valid.');
-        abort_if(strlen($image) > (5 * 1024 * 1024), 422, 'Ukuran foto terlalu besar.');
-
-        $path = 'selfies/student-' . $student->id . '-' . now()->timestamp . '.jpg';
-
-        Storage::disk('public')->put($path, $image);
-
-        DB::transaction(function () use ($student, $path, $validated) {
-            $student->selfie()->updateOrCreate(
-                ['student_id' => $student->id],
-                [
-                    'path' => $path,
-                    'device_info' => $validated['device_info'],
-                    'captured_at' => now(),
-                ]
-            );
-
             $student->update(['status' => 'waiting_session']);
         });
 
         return response()->json([
-            'message' => 'Selfie berhasil disimpan.',
+            'message' => 'Pilihan jurusan berhasil disimpan.',
             'next_step' => 'waiting_session',
             'redirect_url' => route('siswa.waiting-session'),
         ]);
@@ -146,7 +105,7 @@ class WizardController extends Controller
     {
         $student = auth()->user()->student;
 
-        if (!in_array($student->status, ['waiting_session', 'academic_test', 'psychology_test'], true)) {
+        if (!in_array($student->status, ['waiting_session', 'psychology_test'], true)) {
             return redirect()->route($this->studentRoute($student));
         }
 
@@ -162,7 +121,6 @@ class WizardController extends Controller
     {
         return match ($student->status) {
             'waiting_session' => 'siswa.waiting-session',
-            'academic_test' => 'siswa.academic.index',
             'psychology_test' => 'siswa.psychology.index',
             'completed' => 'siswa.announcements.index',
             default => 'siswa.wizard.index',

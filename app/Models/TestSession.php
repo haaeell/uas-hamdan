@@ -2,15 +2,18 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\BelongsToOwner;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Cache;
 
 class TestSession extends Model
 {
+    use BelongsToOwner;
     use SoftDeletes;
 
     protected $fillable = [
+        'owner_id',
         'name',
         'test_date',
         'start_time',
@@ -34,7 +37,7 @@ class TestSession extends Model
         $bucket = intdiv(now()->timestamp, 15);
 
         return Cache::store('file')->remember(
-            "test_sessions.active.{$originClass}.{$bucket}",
+            "test_sessions.active." . (\App\Support\OwnerContext::id() ?: 'public') . ".{$originClass}.{$bucket}",
             now()->addSeconds(15),
             function () use ($originClass) {
                 return static::query()
@@ -64,7 +67,7 @@ class TestSession extends Model
         $bucket = intdiv(now()->timestamp, 15);
 
         return Cache::store('file')->remember(
-            "test_sessions.upcoming.{$originClass}.{$bucket}",
+            "test_sessions.upcoming." . (\App\Support\OwnerContext::id() ?: 'public') . ".{$originClass}.{$bucket}",
             now()->addSeconds(15),
             function () use ($originClass) {
                 return static::query()
