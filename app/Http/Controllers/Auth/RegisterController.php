@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\Auth\EmailOtpVerificationController;
 use App\Models\User;
 use Illuminate\Foundation\Auth\RegistersUsers;
 use Illuminate\Http\Request;
@@ -72,6 +73,7 @@ class RegisterController extends Controller
             'role' => 'owner',
             'is_active' => false,
             'approved_at' => null,
+            'email_verified_at' => null,
             'exam_token' => Str::random(32),
         ]);
 
@@ -82,10 +84,14 @@ class RegisterController extends Controller
 
     protected function registered(Request $request, $user)
     {
+        EmailOtpVerificationController::issueFor($user);
+
         auth()->logout();
 
+        $request->session()->put('pending_owner_email', $user->email);
+
         return redirect()
-            ->route('login')
-            ->with('success', 'Pendaftaran owner berhasil dikirim. Akun Anda menunggu persetujuan admin dan notifikasi akan dikirim ke email setelah disetujui.');
+            ->route('auth.email-otp.form', ['email' => $user->email])
+            ->with('success', 'Pendaftaran berhasil. Masukkan kode OTP yang kami kirim ke email Anda untuk melanjutkan.');
     }
 }

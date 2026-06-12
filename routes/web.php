@@ -14,6 +14,7 @@ use App\Http\Controllers\Admin\StudentController;
 use App\Http\Controllers\Admin\TestSessionController;
 use App\Http\Controllers\Admin\TestResultController;
 use App\Http\Controllers\Admin\AdminViolationController;
+use App\Http\Controllers\Auth\EmailOtpVerificationController;
 use App\Http\Controllers\Auth\MagicLoginController;
 use App\Http\Controllers\RedirectController;
 
@@ -53,6 +54,16 @@ Route::get('/uji/{token}', function (string $token) {
 Route::get('/redirect-after-login', RedirectController::class)
     ->middleware('auth')
     ->name('redirect.after.login');
+
+Route::get('/verifikasi-email-otp', [EmailOtpVerificationController::class, 'show'])
+    ->name('auth.email-otp.form');
+
+Route::post('/verifikasi-email-otp', [EmailOtpVerificationController::class, 'verify'])
+    ->name('auth.email-otp.verify');
+
+Route::post('/verifikasi-email-otp/resend', [EmailOtpVerificationController::class, 'resend'])
+    ->middleware('throttle:5,1')
+    ->name('auth.email-otp.resend');
 
 Route::get('/owner/magic-login/{token}', MagicLoginController::class)
     ->name('owner.magic-login');

@@ -108,7 +108,9 @@
                             </td>
                             <td class="py-4 px-4 font-bold text-slate-700">{{ $item['counts']['activities'] }}</td>
                             <td class="py-4 pl-4">
-                                @if(!$item['owner']->approved_at)
+                                @if(!$item['owner']->email_verified_at)
+                                    <span class="inline-flex rounded-full bg-amber-50 px-3 py-1 text-xs font-extrabold text-amber-700">OTP</span>
+                                @elseif(!$item['owner']->approved_at)
                                     <span class="inline-flex rounded-full bg-amber-50 px-3 py-1 text-xs font-extrabold text-amber-700">Menunggu</span>
                                 @elseif($item['owner']->is_active)
                                     <span class="inline-flex rounded-full bg-blue-50 px-3 py-1 text-xs font-extrabold text-blue-700">Aktif</span>

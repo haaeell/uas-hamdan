@@ -47,6 +47,12 @@ class LoginController extends Controller
             return false;
         }
 
+        if ($user->role === 'owner' && !$user->email_verified_at) {
+            throw ValidationException::withMessages([
+                'login' => 'Silakan verifikasi OTP email terlebih dahulu.',
+            ]);
+        }
+
         if (!$user->is_active) {
             if ($user->role === 'owner' && !$user->approved_at) {
                 throw ValidationException::withMessages([

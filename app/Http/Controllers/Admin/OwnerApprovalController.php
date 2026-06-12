@@ -32,6 +32,7 @@ class OwnerApprovalController extends Controller
             ->map(fn (User $owner) => $this->ownerCard($owner));
 
         return view('admin.owner-approvals.index', [
+            'verificationPendingOwners' => $owners->where('status', 'verification_pending')->values(),
             'pendingOwners' => $owners->where('status', 'pending')->values(),
             'approvedOwners' => $owners->where('status', 'approved')->values(),
         ]);
@@ -40,6 +41,7 @@ class OwnerApprovalController extends Controller
     public function approve(User $owner, ActivityLogService $logger): RedirectResponse
     {
         abort_unless($owner->role === 'owner', 404);
+        abort_unless($owner->email_verified_at, 422, 'Owner harus verifikasi email terlebih dahulu.');
 
         $owner->update([
             'is_active' => true,
@@ -135,7 +137,9 @@ class OwnerApprovalController extends Controller
 
         return [
             'owner' => $owner,
-            'status' => $owner->approved_at ? 'approved' : 'pending',
+            'status' => !$owner->email_verified_at
+                ? 'verification_pending'
+                : ($owner->approved_at ? 'approved' : 'pending'),
             'counts' => [
                 'students' => $studentCount,
                 'packages' => $packageCount,

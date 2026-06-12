@@ -16,6 +16,10 @@
 
                 <div class="grid grid-cols-2 gap-3 text-center">
                     <div class="rounded-2xl bg-slate-50 border border-slate-200 px-4 py-3">
+                        <div class="text-xs font-bold text-slate-500 uppercase tracking-wide">Menunggu OTP</div>
+                        <div class="text-2xl font-extrabold text-slate-900 mt-1">{{ $verificationPendingOwners->count() }}</div>
+                    </div>
+                    <div class="rounded-2xl bg-slate-50 border border-slate-200 px-4 py-3">
                         <div class="text-xs font-bold text-slate-500 uppercase tracking-wide">Pending</div>
                         <div class="text-2xl font-extrabold text-slate-900 mt-1">{{ $pendingOwners->count() }}</div>
                     </div>
@@ -27,7 +31,24 @@
             </div>
         </div>
 
-        <div class="grid xl:grid-cols-2 gap-6">
+        <div class="grid xl:grid-cols-3 gap-6">
+            <div class="bg-white border border-slate-200 rounded-[28px] p-6 shadow-sm">
+                <h2 class="text-xl font-extrabold text-slate-900 mb-4">Menunggu Verifikasi Email</h2>
+                <div class="space-y-4">
+                    @forelse($verificationPendingOwners as $item)
+                        <div class="rounded-2xl border border-amber-200 bg-amber-50 p-4">
+                            <div class="font-extrabold text-slate-900">{{ $item['owner']->name }}</div>
+                            <div class="text-sm text-slate-500 mt-1">{{ $item['owner']->email }}</div>
+                            <div class="text-xs text-amber-700 font-semibold mt-2">Belum memverifikasi OTP email</div>
+                        </div>
+                    @empty
+                        <div class="rounded-2xl border border-dashed border-slate-200 p-8 text-center text-sm text-slate-500">
+                            Tidak ada owner yang menunggu OTP.
+                        </div>
+                    @endforelse
+                </div>
+            </div>
+
             <div class="bg-white border border-slate-200 rounded-[28px] p-6 shadow-sm">
                 <h2 class="text-xl font-extrabold text-slate-900 mb-4">Pengajuan Menunggu</h2>
                 <div class="space-y-4">

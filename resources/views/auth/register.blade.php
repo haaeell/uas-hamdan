@@ -19,14 +19,14 @@
 
             <div class="grid lg:grid-cols-[1.15fr_0.85fr] gap-6">
                 <div>
-                    <div class="rounded-2xl border border-red-100 bg-red-50 p-4 text-sm text-red-700 mb-6">
-                        <p class="font-bold mb-2">Sebelum mengajukan akses</p>
-                        <div class="space-y-1 leading-relaxed">
-                            <div>1. Gunakan email aktif yang benar-benar bisa diakses.</div>
-                            <div>2. Permohonan akan diperiksa admin sebelum akun bisa dipakai.</div>
-                            <div>3. Notifikasi persetujuan dikirim ke email setelah akun disetujui.</div>
+                        <div class="rounded-2xl border border-red-100 bg-red-50 p-4 text-sm text-red-700 mb-6">
+                            <p class="font-bold mb-2">Sebelum mengajukan akses</p>
+                            <div class="space-y-1 leading-relaxed">
+                                <div>1. Gunakan email aktif yang benar-benar bisa diakses.</div>
+                                <div>2. Kode OTP akan dikirim ke email untuk verifikasi awal.</div>
+                                <div>3. Setelah email terverifikasi, admin akan meninjau pengajuan akun Anda.</div>
+                            </div>
                         </div>
-                    </div>
 
                     <form method="POST" action="{{ route('register') }}" class="space-y-5">
                         @csrf

@@ -12,7 +12,7 @@
         $profileLabel = auth()->user()?->role === 'admin' ? 'Administrator' : 'Owner';
         $isPlatformAdmin = auth()->user()?->role === 'admin';
         $pendingOwnersCount = $isPlatformAdmin
-            ? \App\Models\User::where('role', 'owner')->whereNull('approved_at')->count()
+            ? \App\Models\User::where('role', 'owner')->whereNotNull('email_verified_at')->whereNull('approved_at')->count()
             : 0;
 
         $activeSessionsCount = \App\Models\TestSession::where('is_active', true)->count();
