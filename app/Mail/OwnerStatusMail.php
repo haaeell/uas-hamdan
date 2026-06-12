@@ -19,6 +19,8 @@ class OwnerStatusMail extends Mailable
         public string $headline,
         public string $statusLabel,
         public string $messageLine,
+        public ?string $actionUrl = null,
+        public ?string $actionLabel = null,
     ) {
     }
 

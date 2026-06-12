@@ -18,6 +18,8 @@ class User extends Authenticatable
         'role',
         'is_active',
         'approved_at',
+        'login_magic_token_hash',
+        'login_magic_token_expires_at',
         'exam_token',
     ];
 
@@ -30,6 +32,7 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
         'is_active' => 'boolean',
         'approved_at' => 'datetime',
+        'login_magic_token_expires_at' => 'datetime',
     ];
 
     public function student()

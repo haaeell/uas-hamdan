@@ -37,13 +37,15 @@
                                 Silakan masuk ke sistem untuk melihat pembaruan akun Anda.
                             </p>
 
-                            <table role="presentation" cellspacing="0" cellpadding="0" border="0">
-                                <tr>
-                                    <td style="border-radius:12px; background:#dc2626;">
-                                        <a href="{{ route('login') }}" style="display:inline-block; padding:14px 22px; color:#ffffff; text-decoration:none; font-weight:700; font-size:15px;">Masuk ke Sistem</a>
-                                    </td>
-                                </tr>
-                            </table>
+                            @if($actionUrl && $actionLabel)
+                                <table role="presentation" cellspacing="0" cellpadding="0" border="0">
+                                    <tr>
+                                        <td style="border-radius:12px; background:#dc2626;">
+                                            <a href="{{ $actionUrl }}" style="display:inline-block; padding:14px 22px; color:#ffffff; text-decoration:none; font-weight:700; font-size:15px;">{{ $actionLabel }}</a>
+                                        </td>
+                                    </tr>
+                                </table>
+                            @endif
 
                             <p style="margin:28px 0 0; font-size:13px; line-height:1.6; color:#64748b;">
                                 Email ini dikirim otomatis oleh {{ config('app.name') }}.

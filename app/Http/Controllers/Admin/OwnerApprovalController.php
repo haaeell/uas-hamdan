@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\Auth\MagicLoginController;
 use App\Mail\OwnerStatusMail;
 use App\Models\ActivityLog;
 use App\Models\Announcement;
@@ -45,12 +46,15 @@ class OwnerApprovalController extends Controller
             'approved_at' => now(),
         ]);
 
+        $magicLogin = MagicLoginController::makeTokenFor($owner);
         Mail::to($owner->email)->send(new OwnerStatusMail(
             owner: $owner,
             subjectLine: 'Akun Owner Anda Telah Disetujui',
             headline: 'Akun Anda Disetujui',
             statusLabel: 'Aktif',
             messageLine: 'Akun owner Anda sudah disetujui oleh admin dan akses panel telah dibuka.',
+            actionUrl: route('owner.magic-login', $magicLogin['token']),
+            actionLabel: 'Masuk Sekarang',
         ));
         $logger->log('owner_approval', 'approve', $owner, [
             'owner_name' => $owner->name,
@@ -65,12 +69,15 @@ class OwnerApprovalController extends Controller
         abort_unless($owner->role === 'owner' && $owner->approved_at, 404);
 
         $owner->update(['is_active' => true]);
+        $magicLogin = MagicLoginController::makeTokenFor($owner);
         Mail::to($owner->email)->send(new OwnerStatusMail(
             owner: $owner,
             subjectLine: 'Akun Owner Anda Diaktifkan Kembali',
             headline: 'Akun Anda Aktif Kembali',
             statusLabel: 'Aktif',
             messageLine: 'Akses owner Anda telah diaktifkan kembali oleh admin. Silakan login untuk melanjutkan penggunaan panel.',
+            actionUrl: route('owner.magic-login', $magicLogin['token']),
+            actionLabel: 'Masuk Sekarang',
         ));
         $logger->log('owner_approval', 'activate', $owner, [
             'owner_name' => $owner->name,
@@ -87,6 +94,8 @@ class OwnerApprovalController extends Controller
         $owner->forceFill([
             'is_active' => false,
             'remember_token' => Str::random(60),
+            'login_magic_token_hash' => null,
+            'login_magic_token_expires_at' => null,
         ])->save();
 
         if (Schema::hasTable('sessions') && config('session.driver') === 'database') {
@@ -101,6 +110,8 @@ class OwnerApprovalController extends Controller
             headline: 'Akun Anda Dinonaktifkan',
             statusLabel: 'Nonaktif',
             messageLine: 'Akses owner Anda telah dinonaktifkan oleh admin. Anda tidak bisa login sampai akun diaktifkan kembali.',
+            actionUrl: null,
+            actionLabel: null,
         ));
         $logger->log('owner_approval', 'deactivate', $owner, [
             'owner_name' => $owner->name,
