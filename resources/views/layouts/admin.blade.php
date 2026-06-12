@@ -5,8 +5,15 @@
     @php
         $appName = \App\Models\Setting::getSetting('app_name', 'Sistem Pemilihan Jurusan');
         $schoolName = \App\Models\Setting::getSetting('school_name', 'Pemilihan Jurusan');
-        $logoUrl = \App\Models\Setting::logoUrl();
+        $hasLogo = \App\Models\Setting::hasLogo();
+        $logoUrl = $hasLogo ? \App\Models\Setting::logoUrl() : null;
         $themeColor = \App\Models\Setting::getSetting('theme_color', '#2563eb');
+        $panelLabel = auth()->user()?->role === 'admin' ? 'Admin Panel' : 'Owner Panel';
+        $profileLabel = auth()->user()?->role === 'admin' ? 'Administrator' : 'Owner';
+        $isPlatformAdmin = auth()->user()?->role === 'admin';
+        $pendingOwnersCount = $isPlatformAdmin
+            ? \App\Models\User::where('role', 'owner')->whereNull('approved_at')->count()
+            : 0;
 
         $activeSessionsCount = \App\Models\TestSession::where('is_active', true)->count();
         $todaySessionsCount = \App\Models\TestSession::where('is_active', true)
@@ -15,29 +22,39 @@
         $unpublishedAnnouncementsCount = \App\Models\Announcement::where('is_published', false)->count();
         $latestAnnouncement = \App\Models\Announcement::latest()->first();
 
-        $notificationCount = $todaySessionsCount
-            + $unpublishedAnnouncementsCount;
+        $notificationCount = $isPlatformAdmin
+            ? $pendingOwnersCount
+            : ($todaySessionsCount + $unpublishedAnnouncementsCount);
 
-        $adminSearchItems = [
-            ['title' => 'Dashboard', 'description' => 'Ringkasan aktivitas dan statistik utama', 'icon' => 'fa-chart-line', 'url' => route('admin.dashboard'), 'keywords' => 'home statistik ringkasan'],
-            ['title' => 'Siswa', 'description' => 'Tambah, import, edit, hapus, dan aktivasi akun siswa', 'icon' => 'fa-users', 'url' => route('admin.students.index'), 'keywords' => 'murid peserta import akun kelas'],
-            ['title' => 'Jurusan', 'description' => 'Kelola paket jurusan dan mapel pendukung', 'icon' => 'fa-layer-group', 'url' => route('admin.packages.index'), 'keywords' => 'paket peminatan mapel pilihan'],
-            ['title' => 'Sesi Tes', 'description' => 'Atur jadwal, tipe tes, dan kelas peserta', 'icon' => 'fa-clock', 'url' => route('admin.test-sessions.index'), 'keywords' => 'jadwal ujian kelas waktu sesi'],
-            ['title' => 'Soal Psikologi', 'description' => 'Kelola pernyataan psikotes dan bobot jurusan', 'icon' => 'fa-brain', 'url' => route('admin.psychology-questions.index'), 'keywords' => 'psikotes psikologi bobot'],
-            ['title' => 'Monitoring Ujian', 'description' => 'Pantau siswa yang sedang mengerjakan tes', 'icon' => 'fa-desktop', 'url' => route('admin.exam-monitoring.index'), 'keywords' => 'monitor ujian aktif real time'],
-            ['title' => 'Pelanggaran CBT', 'description' => 'Lihat catatan pelanggaran selama ujian', 'icon' => 'fa-shield-halved', 'url' => route('admin.violations.index'), 'keywords' => 'violation pelanggaran fullscreen tab'],
-            ['title' => 'Hasil Tes', 'description' => 'Rekomendasi, biodata, dan penempatan', 'icon' => 'fa-square-poll-vertical', 'url' => route('admin.test-results.index'), 'keywords' => 'hasil rekomendasi final'],
-            ['title' => 'Distribusi Kelas', 'description' => 'Auto distribusi dan pindah siswa antar kelas', 'icon' => 'fa-random', 'url' => route('admin.class-distribution.index'), 'keywords' => 'kelas hasil pembagian final'],
-            ['title' => 'Laporan', 'description' => 'Export laporan siswa, hasil tes, kelas, dan respons', 'icon' => 'fa-file-arrow-down', 'url' => route('admin.reports.index'), 'keywords' => 'report excel pdf export'],
-            ['title' => 'Pengumuman', 'description' => 'Buat dan publish pengumuman sementara atau final', 'icon' => 'fa-bullhorn', 'url' => route('admin.announcements.index'), 'keywords' => 'announcement final temporary publish'],
-            ['title' => 'Audit Log', 'description' => 'Riwayat aktivitas admin pada sistem', 'icon' => 'fa-clock-rotate-left', 'url' => route('admin.activity-logs.index'), 'keywords' => 'log aktivitas riwayat'],
-            ['title' => 'Settings', 'description' => 'Pengaturan aplikasi, sekolah, timer, dan CBT', 'icon' => 'fa-gear', 'url' => route('admin.settings.index'), 'keywords' => 'setting konfigurasi timer logo'],
-        ];
+        $adminSearchItems = $isPlatformAdmin
+            ? [
+                ['title' => 'Dashboard', 'description' => 'Laporan owner dan aktivitas panel', 'icon' => 'fa-chart-line', 'url' => route('admin.dashboard'), 'keywords' => 'home statistik owner laporan'],
+                ['title' => 'Persetujuan Owner', 'description' => 'Review dan setujui pengajuan owner baru', 'icon' => 'fa-user-check', 'url' => route('admin.owner-approvals.index'), 'keywords' => 'owner approval persetujuan register pending'],
+                ['title' => 'Audit Log', 'description' => 'Riwayat aktivitas sistem', 'icon' => 'fa-clock-rotate-left', 'url' => route('admin.activity-logs.index'), 'keywords' => 'log aktivitas riwayat'],
+                ['title' => 'Settings', 'description' => 'Pengaturan aplikasi', 'icon' => 'fa-gear', 'url' => route('admin.settings.index'), 'keywords' => 'setting konfigurasi'],
+            ]
+            : [
+                ['title' => 'Dashboard', 'description' => 'Ringkasan aktivitas dan statistik utama', 'icon' => 'fa-chart-line', 'url' => route('admin.dashboard'), 'keywords' => 'home statistik ringkasan'],
+                ['title' => 'Siswa', 'description' => 'Tambah, import, edit, hapus, dan aktivasi akun siswa', 'icon' => 'fa-users', 'url' => route('admin.students.index'), 'keywords' => 'murid peserta import akun kelas'],
+                ['title' => 'Jurusan', 'description' => 'Kelola paket jurusan dan mapel pendukung', 'icon' => 'fa-layer-group', 'url' => route('admin.packages.index'), 'keywords' => 'paket peminatan mapel pilihan'],
+                ['title' => 'Sesi Tes', 'description' => 'Atur jadwal, tipe tes, dan kelas peserta', 'icon' => 'fa-clock', 'url' => route('admin.test-sessions.index'), 'keywords' => 'jadwal ujian kelas waktu sesi'],
+                ['title' => 'Soal Instrumen Peminatan', 'description' => 'Kelola pernyataan instrumen peminatan dan bobot jurusan', 'icon' => 'fa-brain', 'url' => route('admin.psychology-questions.index'), 'keywords' => 'instrumen peminatan bobot'],
+                ['title' => 'Monitoring Ujian', 'description' => 'Pantau siswa yang sedang mengerjakan tes', 'icon' => 'fa-desktop', 'url' => route('admin.exam-monitoring.index'), 'keywords' => 'monitor ujian aktif real time'],
+                ['title' => 'Pelanggaran CBT', 'description' => 'Lihat catatan pelanggaran selama ujian', 'icon' => 'fa-shield-halved', 'url' => route('admin.violations.index'), 'keywords' => 'violation pelanggaran fullscreen tab'],
+                ['title' => 'Hasil Tes', 'description' => 'Rekomendasi, biodata, dan penempatan', 'icon' => 'fa-square-poll-vertical', 'url' => route('admin.test-results.index'), 'keywords' => 'hasil rekomendasi final'],
+                ['title' => 'Distribusi Kelas', 'description' => 'Auto distribusi dan pindah siswa antar kelas', 'icon' => 'fa-random', 'url' => route('admin.class-distribution.index'), 'keywords' => 'kelas hasil pembagian final'],
+                ['title' => 'Laporan', 'description' => 'Export laporan siswa, hasil tes, kelas, dan respons', 'icon' => 'fa-file-arrow-down', 'url' => route('admin.reports.index'), 'keywords' => 'report excel pdf export'],
+                ['title' => 'Pengumuman', 'description' => 'Buat dan publish pengumuman sementara atau final', 'icon' => 'fa-bullhorn', 'url' => route('admin.announcements.index'), 'keywords' => 'announcement final temporary publish'],
+                ['title' => 'Audit Log', 'description' => 'Riwayat aktivitas admin pada sistem', 'icon' => 'fa-clock-rotate-left', 'url' => route('admin.activity-logs.index'), 'keywords' => 'log aktivitas riwayat'],
+                ['title' => 'Settings', 'description' => 'Pengaturan aplikasi, sekolah, timer, dan CBT', 'icon' => 'fa-gear', 'url' => route('admin.settings.index'), 'keywords' => 'setting konfigurasi timer logo'],
+            ];
     @endphp
     <meta charset="UTF-8">
     <title>Admin - {{ $appName }}</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="icon" type="image/png" href="{{ $logoUrl }}">
+    @if($hasLogo)
+        <link rel="icon" type="image/png" href="{{ $logoUrl }}">
+    @endif
 
     {{-- Tailwind --}}
     <script src="https://cdn.tailwindcss.com"></script>
@@ -74,14 +91,59 @@
             background: var(--theme-color) !important;
         }
 
+        .bg-blue-50,
+        .hover\:bg-blue-50:hover,
+        .group:hover .group-hover\:bg-blue-50 {
+            background-color: color-mix(in srgb, var(--theme-color) 10%, white) !important;
+        }
+
+        .bg-blue-100 {
+            background-color: color-mix(in srgb, var(--theme-color) 18%, white) !important;
+        }
+
+        .bg-blue-500 {
+            background-color: color-mix(in srgb, var(--theme-color) 86%, white) !important;
+        }
+
+        .hover\:bg-blue-600:hover,
+        .hover\:bg-blue-700:hover,
+        .group:hover .group-hover\:bg-blue-600 {
+            background-color: color-mix(in srgb, var(--theme-color) 88%, #0f172a) !important;
+        }
+
         .text-blue-600,
-        .text-blue-700 {
+        .text-blue-700,
+        .hover\:text-blue-600:hover,
+        .hover\:text-blue-700:hover {
             color: var(--theme-color) !important;
         }
 
         .border-blue-100,
-        .border-blue-600 {
+        .border-blue-600,
+        .hover\:border-blue-600:hover {
             border-color: color-mix(in srgb, var(--theme-color) 30%, white) !important;
+        }
+
+        .focus\:border-blue-500:focus {
+            border-color: var(--theme-color) !important;
+        }
+
+        .focus\:ring-blue-100:focus {
+            --tw-ring-color: color-mix(in srgb, var(--theme-color) 18%, white) !important;
+        }
+
+        .focus\:ring-blue-500:focus {
+            --tw-ring-color: color-mix(in srgb, var(--theme-color) 42%, white) !important;
+        }
+
+        .text-blue-500 {
+            color: color-mix(in srgb, var(--theme-color) 86%, white) !important;
+        }
+
+        .shadow-blue-100,
+        .shadow-blue-200 {
+            --tw-shadow-color: color-mix(in srgb, var(--theme-color) 22%, transparent) !important;
+            --tw-shadow: var(--tw-shadow-colored) !important;
         }
 
         .sidebar-link {
@@ -97,7 +159,7 @@
         }
 
         .sidebar-link:hover {
-            background: #eff6ff;
+            background: color-mix(in srgb, var(--theme-color) 10%, white);
             color: var(--theme-color);
             transform: translateX(3px);
         }
@@ -137,12 +199,12 @@
 
         .dt-container .dt-search input:focus,
         .dt-container .dt-length select:focus {
-            border-color: #3b82f6 !important;
-            box-shadow: 0 0 0 4px #dbeafe !important;
+            border-color: var(--theme-color) !important;
+            box-shadow: 0 0 0 4px color-mix(in srgb, var(--theme-color) 18%, white) !important;
         }
 
         .dt-container .dt-paging .dt-paging-button.current {
-            background: #2563eb !important;
+            background: var(--theme-color) !important;
             color: white !important;
             border-radius: 10px !important;
             border: none !important;
@@ -200,8 +262,8 @@
 
         #testResultsTable_wrapper .dt-search input:focus,
         #testResultsTable_wrapper .dt-length select:focus {
-            border-color: #2563eb;
-            box-shadow: 0 0 0 4px #dbeafe;
+            border-color: var(--theme-color);
+            box-shadow: 0 0 0 4px color-mix(in srgb, var(--theme-color) 18%, white);
             background: #ffffff;
         }
 
@@ -274,15 +336,15 @@
         }
 
         #testResultsTable_wrapper .dt-paging .dt-paging-button.current {
-            background: #2563eb !important;
+            background: var(--theme-color) !important;
             color: #ffffff !important;
-            border-color: #2563eb !important;
+            border-color: var(--theme-color) !important;
         }
 
         #testResultsTable_wrapper .dt-paging .dt-paging-button:hover {
-            background: #eff6ff !important;
-            color: #2563eb !important;
-            border-color: #bfdbfe !important;
+            background: color-mix(in srgb, var(--theme-color) 10%, white) !important;
+            color: var(--theme-color) !important;
+            border-color: color-mix(in srgb, var(--theme-color) 28%, white) !important;
         }
 
         @media (max-width: 768px) {
@@ -309,107 +371,135 @@
 
             {{-- Brand --}}
             <div class="h-20 px-6 flex items-center border-b border-slate-100">
-                <div
-                    class="w-11 h-11 rounded-2xl bg-gradient-to-br from-blue-600 to-blue-400 flex items-center justify-center text-white shadow-lg shadow-blue-200 overflow-hidden p-2">
-                    <img src="{{ $logoUrl }}" alt="Logo {{ $schoolName }}" class="w-full h-full object-contain">
-                </div>
+                @if($hasLogo)
+                    <div
+                        class="w-11 h-11 rounded-2xl flex items-center justify-center text-white shadow-lg shadow-blue-200 overflow-hidden p-2">
+                        <img src="{{ $logoUrl }}" alt="Logo {{ $schoolName }}" class="w-full h-full object-contain">
+                    </div>
+                @endif
 
-                <div class="ml-3">
-                    <h1 class="font-extrabold text-slate-900 leading-tight">Admin Panel</h1>
+                <div class="{{ $hasLogo ? 'ml-3' : '' }}">
+                    <h1 class="font-extrabold text-slate-900 leading-tight">{{ $panelLabel }}</h1>
                     <p class="text-xs text-slate-400 font-medium">{{ $schoolName }}</p>
                 </div>
             </div>
 
             {{-- Navigation --}}
             <nav class="flex-1 overflow-y-auto px-4 py-5">
-
                 <a href="{{ route('admin.dashboard') }}"
-                    class=" sidebar-link {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
+                    class="sidebar-link {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
                     <i class="fa-solid fa-chart-line"></i>
                     <span>Dashboard</span>
                 </a>
 
-                <div class="menu-title">Master Data</div>
+                @if(auth()->user()?->role === 'admin')
+                    <div class="menu-title">Laporan Owner</div>
 
-                <a href="{{ route('admin.students.index') }}"
-                    class=" sidebar-link {{ request()->routeIs('admin.students.*') ? 'active' : '' }}">
-                    <i class="fa-solid fa-users"></i>
-                    <span>Siswa</span>
-                </a>
+                    <a href="{{ route('admin.owner-approvals.index') }}"
+                        class="sidebar-link {{ request()->routeIs('admin.owner-approvals.*') ? 'active' : '' }}">
+                        <i class="fa-solid fa-user-check"></i>
+                        <span class="flex-1">Persetujuan Owner</span>
+                        @if($pendingOwnersCount > 0)
+                            <span class="min-w-5 h-5 px-1 rounded-full bg-red-600 text-white text-[10px] font-extrabold flex items-center justify-center">
+                                {{ $pendingOwnersCount > 9 ? '9+' : $pendingOwnersCount }}
+                            </span>
+                        @endif
+                    </a>
 
-                <a href="{{ route('admin.packages.index') }}"
-                    class=" sidebar-link {{ request()->routeIs('admin.packages.*') ? 'active' : '' }}">
-                    <i class="fa-solid fa-layer-group"></i>
-                    <span>Jurusan</span>
-                </a>
+                    <a href="{{ route('admin.activity-logs.index') }}"
+                        class="sidebar-link {{ request()->routeIs('admin.activity-logs.*') ? 'active' : '' }}">
+                        <i class="fa-solid fa-clock-rotate-left"></i>
+                        <span>Audit Log</span>
+                    </a>
 
-                <div class="menu-title">Tes CBT</div>
+                    <a href="{{ route('admin.settings.index') }}"
+                        class="sidebar-link {{ request()->routeIs('admin.settings.*') ? 'active' : '' }}">
+                        <i class="fa-solid fa-gear"></i>
+                        <span>Settings</span>
+                    </a>
+                @else
+                    <div class="menu-title">Master Data</div>
 
-                <a href="{{ route('admin.test-sessions.index') }}"
-                    class=" sidebar-link {{ request()->routeIs('admin.test-sessions.*') ? 'active' : '' }}">
-                    <i class="fa-solid fa-clock"></i>
-                    <span>Sesi Tes</span>
-                </a>
+                    <a href="{{ route('admin.students.index') }}"
+                        class="sidebar-link {{ request()->routeIs('admin.students.*') ? 'active' : '' }}">
+                        <i class="fa-solid fa-users"></i>
+                        <span>Siswa</span>
+                    </a>
 
-                <a href="{{ route('admin.psychology-questions.index') }}"
-                    class=" sidebar-link {{ request()->routeIs('admin.psychology-questions.*') ? 'active' : '' }}">
-                    <i class="fa-solid fa-brain"></i>
-                    <span>Soal Psikologi</span>
-                </a>
+                    <a href="{{ route('admin.packages.index') }}"
+                        class="sidebar-link {{ request()->routeIs('admin.packages.*') ? 'active' : '' }}">
+                        <i class="fa-solid fa-layer-group"></i>
+                        <span>Jurusan</span>
+                    </a>
 
-                <a href="{{ route('admin.violations.index') }}"
-                    class=" sidebar-link {{ request()->routeIs('admin.violations.*') ? 'active' : '' }}">
-                    <i class="fa-solid fa-shield-halved"></i>
-                    <span>Pelanggaran CBT</span>
-                </a>
+                    <div class="menu-title">Tes CBT</div>
 
-                <a href="{{ route('admin.exam-monitoring.index') }}"
-                    class=" sidebar-link {{ request()->routeIs('admin.exam-monitoring.*') ? 'active' : '' }}">
-                    <i class="fa-solid fa-desktop"></i>
-                    <span>Monitoring Ujian</span>
-                </a>
+                    <a href="{{ route('admin.test-sessions.index') }}"
+                        class="sidebar-link {{ request()->routeIs('admin.test-sessions.*') ? 'active' : '' }}">
+                        <i class="fa-solid fa-clock"></i>
+                        <span>Sesi Tes</span>
+                    </a>
 
-                <div class="menu-title">Laporan</div>
+                    <a href="{{ route('admin.psychology-questions.index') }}"
+                        class="sidebar-link {{ request()->routeIs('admin.psychology-questions.*') ? 'active' : '' }}">
+                        <i class="fa-solid fa-brain"></i>
+                        <span>Soal Instrumen Peminatan</span>
+                    </a>
 
-                <a href="{{ route('admin.reports.index') }}"
-                    class=" sidebar-link {{ request()->routeIs('admin.reports.*') ? 'active' : '' }}">
-                    <i class="fa-solid fa-file-arrow-down"></i>
-                    <span>Laporan</span>
-                </a>
+                    <a href="{{ route('admin.exam-monitoring.index') }}"
+                        class="sidebar-link {{ request()->routeIs('admin.exam-monitoring.*') ? 'active' : '' }}">
+                        <i class="fa-solid fa-desktop"></i>
+                        <span>Monitoring Ujian</span>
+                    </a>
 
-                <a href="{{ route('admin.test-results.index') }}"
-                    class=" sidebar-link {{ request()->routeIs('admin.test-results.*') ? 'active' : '' }}">
-                    <i class="fa-solid fa-square-poll-vertical"></i>
-                    <span>Hasil Tes</span>
-                </a>
+                    <a href="{{ route('admin.violations.index') }}"
+                        class="sidebar-link {{ request()->routeIs('admin.violations.*') ? 'active' : '' }}">
+                        <i class="fa-solid fa-shield-halved"></i>
+                        <span>Pelanggaran CBT</span>
+                    </a>
 
-                <a href="{{ route('admin.activity-logs.index') }}"
-                    class=" sidebar-link {{ request()->routeIs('admin.activity-logs.*') ? 'active' : '' }}">
-                    <i class="fa-solid fa-clock-rotate-left"></i>
-                    <span>Audit Log</span>
-                </a>
+                    <div class="menu-title">Laporan</div>
 
-                <a href="{{ route('admin.class-distribution.index') }}"
-                    class=" sidebar-link {{ request()->routeIs('admin.class-distribution.*') ? 'active' : '' }}">
-                    <i class="fa-solid fa-random"></i>
-                    <span>Distribusi Kelas</span>
-                </a>
+                    <a href="{{ route('admin.reports.index') }}"
+                        class="sidebar-link {{ request()->routeIs('admin.reports.*') ? 'active' : '' }}">
+                        <i class="fa-solid fa-file-arrow-down"></i>
+                        <span>Laporan</span>
+                    </a>
 
-                <div class="menu-title">Komunikasi</div>
+                    <a href="{{ route('admin.test-results.index') }}"
+                        class="sidebar-link {{ request()->routeIs('admin.test-results.*') ? 'active' : '' }}">
+                        <i class="fa-solid fa-square-poll-vertical"></i>
+                        <span>Hasil Tes</span>
+                    </a>
 
-                <a href="{{ route('admin.announcements.index') }}"
-                    class=" sidebar-link {{ request()->routeIs('admin.announcements.*') ? 'active' : '' }}">
-                    <i class="fa-solid fa-bullhorn"></i>
-                    <span>Pengumuman</span>
-                </a>
+                    <a href="{{ route('admin.class-distribution.index') }}"
+                        class="sidebar-link {{ request()->routeIs('admin.class-distribution.*') ? 'active' : '' }}">
+                        <i class="fa-solid fa-random"></i>
+                        <span>Distribusi Kelas</span>
+                    </a>
 
-                <div class="menu-title">Sistem</div>
+                    <div class="menu-title">Komunikasi</div>
 
-                <a href="{{ route('admin.settings.index') }}"
-                    class=" sidebar-link {{ request()->routeIs('admin.settings.*') ? 'active' : '' }}">
-                    <i class="fa-solid fa-gear"></i>
-                    <span>Settings</span>
-                </a>
+                    <a href="{{ route('admin.announcements.index') }}"
+                        class="sidebar-link {{ request()->routeIs('admin.announcements.*') ? 'active' : '' }}">
+                        <i class="fa-solid fa-bullhorn"></i>
+                        <span>Pengumuman</span>
+                    </a>
+
+                    <div class="menu-title">Sistem</div>
+
+                    <a href="{{ route('admin.activity-logs.index') }}"
+                        class="sidebar-link {{ request()->routeIs('admin.activity-logs.*') ? 'active' : '' }}">
+                        <i class="fa-solid fa-clock-rotate-left"></i>
+                        <span>Audit Log</span>
+                    </a>
+
+                    <a href="{{ route('admin.settings.index') }}"
+                        class="sidebar-link {{ request()->routeIs('admin.settings.*') ? 'active' : '' }}">
+                        <i class="fa-solid fa-gear"></i>
+                        <span>Settings</span>
+                    </a>
+                @endif
             </nav>
 
             {{-- Admin Mini Profile --}}
@@ -417,11 +507,11 @@
                 <div class="flex items-center gap-3 p-3 rounded-2xl bg-blue-50">
                     <div
                         class="w-10 h-10 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold">
-                        A
+                        {{ auth()->user()?->role === 'admin' ? 'A' : 'O' }}
                     </div>
                     <div class="min-w-0">
-                        <p class="text-sm font-bold text-slate-900 truncate">Administrator</p>
-                        <p class="text-xs text-slate-500 truncate">Panel Admin</p>
+                        <p class="text-sm font-bold text-slate-900 truncate">{{ $profileLabel }}</p>
+                        <p class="text-xs text-slate-500 truncate">{{ auth()->user()?->role === 'admin' ? 'Panel Admin' : 'Panel Owner' }}</p>
                     </div>
                 </div>
             </div>
@@ -493,40 +583,57 @@
                             </div>
 
                             <div class="p-2 max-h-[420px] overflow-y-auto">
-                                <a href="{{ route('admin.test-sessions.index') }}"
-                                    class="flex items-start gap-3 rounded-2xl px-3 py-3 hover:bg-blue-50 transition">
-                                    <div
-                                        class="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center shrink-0">
-                                        <i class="fa-solid fa-clock"></i>
-                                    </div>
-                                    <div class="min-w-0 flex-1">
-                                        <div class="flex items-center justify-between gap-3">
-                                            <p class="font-bold text-slate-900">Sesi aktif hari ini</p>
-                                            <span
-                                                class="text-xs font-extrabold text-blue-700">{{ $todaySessionsCount }}</span>
+                                @if($isPlatformAdmin)
+                                    <a href="{{ route('admin.owner-approvals.index') }}"
+                                        class="flex items-start gap-3 rounded-2xl px-3 py-3 hover:bg-blue-50 transition">
+                                        <div
+                                            class="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center shrink-0">
+                                            <i class="fa-solid fa-user-check"></i>
                                         </div>
-                                        <p class="text-xs text-slate-500 mt-1">{{ $activeSessionsCount }} sesi aktif
-                                            tersimpan di sistem.</p>
-                                    </div>
-                                </a>
+                                        <div class="min-w-0 flex-1">
+                                            <div class="flex items-center justify-between gap-3">
+                                                <p class="font-bold text-slate-900">Pengajuan owner</p>
+                                                <span class="text-xs font-extrabold text-blue-700">{{ $pendingOwnersCount }}</span>
+                                            </div>
+                                            <p class="text-xs text-slate-500 mt-1">Owner baru yang menunggu persetujuan admin.</p>
+                                        </div>
+                                    </a>
+                                @else
+                                    <a href="{{ route('admin.test-sessions.index') }}"
+                                        class="flex items-start gap-3 rounded-2xl px-3 py-3 hover:bg-blue-50 transition">
+                                        <div
+                                            class="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center shrink-0">
+                                            <i class="fa-solid fa-clock"></i>
+                                        </div>
+                                        <div class="min-w-0 flex-1">
+                                            <div class="flex items-center justify-between gap-3">
+                                                <p class="font-bold text-slate-900">Sesi aktif hari ini</p>
+                                                <span
+                                                    class="text-xs font-extrabold text-blue-700">{{ $todaySessionsCount }}</span>
+                                            </div>
+                                            <p class="text-xs text-slate-500 mt-1">{{ $activeSessionsCount }} sesi aktif
+                                                tersimpan di sistem.</p>
+                                        </div>
+                                    </a>
 
-                                <a href="{{ route('admin.announcements.index') }}"
-                                    class="flex items-start gap-3 rounded-2xl px-3 py-3 hover:bg-blue-50 transition">
-                                    <div
-                                        class="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center shrink-0">
-                                        <i class="fa-solid fa-bullhorn"></i>
-                                    </div>
-                                    <div class="min-w-0 flex-1">
-                                        <div class="flex items-center justify-between gap-3">
-                                            <p class="font-bold text-slate-900">Pengumuman draft</p>
-                                            <span
-                                                class="text-xs font-extrabold text-blue-700">{{ $unpublishedAnnouncementsCount }}</span>
+                                    <a href="{{ route('admin.announcements.index') }}"
+                                        class="flex items-start gap-3 rounded-2xl px-3 py-3 hover:bg-blue-50 transition">
+                                        <div
+                                            class="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center shrink-0">
+                                            <i class="fa-solid fa-bullhorn"></i>
                                         </div>
-                                        <p class="text-xs text-slate-500 mt-1">
-                                            {{ $latestAnnouncement ? 'Terakhir: ' . $latestAnnouncement->title : 'Belum ada pengumuman.' }}
-                                        </p>
-                                    </div>
-                                </a>
+                                        <div class="min-w-0 flex-1">
+                                            <div class="flex items-center justify-between gap-3">
+                                                <p class="font-bold text-slate-900">Pengumuman draft</p>
+                                                <span
+                                                    class="text-xs font-extrabold text-blue-700">{{ $unpublishedAnnouncementsCount }}</span>
+                                            </div>
+                                            <p class="text-xs text-slate-500 mt-1">
+                                                {{ $latestAnnouncement ? 'Terakhir: ' . $latestAnnouncement->title : 'Belum ada pengumuman.' }}
+                                            </p>
+                                        </div>
+                                    </a>
+                                @endif
 
                                 @if($notificationCount === 0)
                                     <div class="px-4 py-8 text-center">
@@ -594,6 +701,7 @@
         };
 
         $(function () {
+            const themeColor = @json($themeColor);
             const adminSearchItems = @json($adminSearchItems);
             const toast = Swal.mixin({
                 toast: true,
@@ -625,7 +733,7 @@
                     showCancelButton: true,
                     confirmButtonText: 'Ya, hapus',
                     cancelButtonText: 'Batal',
-                    confirmButtonColor: '#2563eb',
+                    confirmButtonColor: themeColor,
                     cancelButtonColor: '#64748b',
                     background: '#ffffff',
                     color: '#0f172a',

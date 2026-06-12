@@ -48,10 +48,11 @@ return new class extends Migration
             $table->unique(['owner_id', 'key']);
         });
 
-        $ownerId = DB::table('users')->where('role', 'admin')->orderBy('id')->value('id');
+        $ownerId = DB::table('users')->where('role', 'owner')->orderBy('id')->value('id')
+            ?: DB::table('users')->where('role', 'admin')->orderBy('id')->value('id');
 
         if ($ownerId) {
-            DB::table('users')->where('role', 'admin')->whereNull('owner_id')->orderBy('id')->pluck('id')->each(function ($adminId) {
+            DB::table('users')->whereIn('role', ['admin', 'owner'])->whereNull('owner_id')->orderBy('id')->pluck('id')->each(function ($adminId) {
                 DB::table('users')->where('id', $adminId)->update([
                     'owner_id' => $adminId,
                     'exam_token' => Str::random(32),

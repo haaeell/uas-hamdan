@@ -17,7 +17,7 @@ class Setting extends Model
         'group',
     ];
 
-    protected static ?Collection $cachedSettings = null;
+    protected static array $cachedSettings = [];
 
     protected static function cacheKey(): string
     {
@@ -64,7 +64,7 @@ class Setting extends Model
                 'group' => 'general',
                 'type' => 'color',
                 'default' => '#2563eb',
-                'rules' => ['required', 'string', 'max:20'],
+                'rules' => ['required', 'regex:/^#[0-9a-fA-F]{6}$/'],
                 'help' => 'Warna utama panel, tombol, dan halaman siswa.',
             ],
             'logo_path' => [
@@ -90,7 +90,7 @@ class Setting extends Model
                 'default' => '45',
                 'rules' => ['required', 'integer', 'min:1', 'max:300'],
                 'suffix' => 'menit',
-                'help' => 'Waktu hitung mundur otomatis untuk ujian psikologi.',
+                'help' => 'Waktu hitung mundur otomatis untuk instrumen peminatan.',
             ],
             'cbt_auto_submit_violation_limit' => [
                 'label' => 'Batas Pelanggaran Auto Submit',
@@ -142,16 +142,18 @@ class Setting extends Model
 
     public static function allKeyed(): Collection
     {
-        if (static::$cachedSettings === null) {
-            static::$cachedSettings = Cache::store('file')->rememberForever(
-                static::cacheKey(),
+        $cacheKey = static::cacheKey();
+
+        if (!isset(static::$cachedSettings[$cacheKey])) {
+            static::$cachedSettings[$cacheKey] = Cache::store('file')->rememberForever(
+                $cacheKey,
                     fn () => static::query()
                         ->when(OwnerContext::id() ?: session('exam_owner_id'), fn ($query, $ownerId) => $query->where('owner_id', $ownerId))
                         ->pluck('value', 'key')
             );
         }
 
-        return static::$cachedSettings;
+        return static::$cachedSettings[$cacheKey];
     }
 
     public static function getSetting(string $key, mixed $default = null): mixed
@@ -195,8 +197,9 @@ class Setting extends Model
             );
         }
 
-        static::$cachedSettings = null;
-        Cache::store('file')->forget(static::cacheKey());
+        $cacheKey = static::cacheKey();
+        unset(static::$cachedSettings[$cacheKey]);
+        Cache::store('file')->forget($cacheKey);
     }
 
     public static function logoUrl(): string
@@ -208,6 +211,13 @@ class Setting extends Model
         }
 
         return asset('images/logo.png');
+    }
+
+    public static function hasLogo(): bool
+    {
+        $logoPath = static::getSetting('logo_path');
+
+        return $logoPath && Storage::disk('public')->exists($logoPath);
     }
 
     public static function logoAbsolutePath(): ?string

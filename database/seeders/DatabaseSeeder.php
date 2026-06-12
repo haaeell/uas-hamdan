@@ -48,12 +48,13 @@ class DatabaseSeeder extends Seeder
         DB::statement('SET FOREIGN_KEY_CHECKS=1');
 
         DB::transaction(function () {
-            $adminId = $this->seedAdmin();
-            $this->seedSettings($adminId);
-            $packages = $this->seedPackages($adminId);
+            $platformAdminId = $this->seedPlatformAdmin();
+            $ownerId = $this->seedOwner();
+            $this->seedSettings($ownerId);
+            $packages = $this->seedPackages($ownerId);
             $this->seedPackageSubjects($packages);
-            $this->seedTestSessions($adminId);
-            $this->seedSampleStudents($adminId);
+            $this->seedTestSessions($ownerId);
+            $this->seedSampleStudents($ownerId);
             $this->seedPsychologyQuestions($packages);
         });
     }
@@ -77,7 +78,7 @@ class DatabaseSeeder extends Seeder
         DB::table('settings')->insert($this->withTimestamps($settings));
     }
 
-    private function seedAdmin(): int
+    private function seedPlatformAdmin(): int
     {
         $user = User::create([
             'name' => 'Administrator',
@@ -85,6 +86,22 @@ class DatabaseSeeder extends Seeder
             'password' => Hash::make('password'),
             'role' => 'admin',
             'is_active' => true,
+            'approved_at' => now(),
+            'exam_token' => Str::random(32),
+        ]);
+
+        return $user->id;
+    }
+
+    private function seedOwner(): int
+    {
+        $user = User::create([
+            'name' => 'Owner Demo',
+            'email' => 'owner@gmail.com',
+            'password' => Hash::make('password'),
+            'role' => 'owner',
+            'is_active' => true,
+            'approved_at' => now(),
             'exam_token' => Str::random(32),
         ]);
 

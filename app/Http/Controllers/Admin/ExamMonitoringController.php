@@ -103,7 +103,7 @@ class ExamMonitoringController extends Controller
                 $elapsedSeconds = $startedAt ? max(0, Carbon::parse($startedAt)->diffInSeconds($now)) : 0;
                 $remainingSeconds = max(0, ($durationMinutes * 60) - $elapsedSeconds);
 
-                $student->active_exam = 'Tes Psikologi';
+                $student->active_exam = 'Instrumen Peminatan';
                 $student->duration_minutes = $durationMinutes;
                 $student->violation_count = $violationCount;
                 $student->remaining_seconds = $remainingSeconds;
@@ -169,7 +169,7 @@ class ExamMonitoringController extends Controller
                 s.nisn,
                 s.origin_class,
                 ts.name as session_name,
-                'Tes Psikologi' as exam_name,
+                'Instrumen Peminatan' as exam_name,
                 sts.psychology_submitted_at as submitted_at,
                 sts.psychology_duration_seconds as duration_seconds,
                 sts.psychology_submit_type as submit_type

@@ -32,7 +32,7 @@
                 </div>
 
                 <div class="px-5 py-4">
-                    <div class="text-xs font-bold uppercase tracking-wide text-slate-500">Tes Psikologi</div>
+                    <div class="text-xs font-bold uppercase tracking-wide text-slate-500">Instrumen Peminatan</div>
                     <div class="text-3xl font-extrabold text-emerald-700 mt-1">{{ $summary['psychology'] }}</div>
                 </div>
 
@@ -162,7 +162,7 @@
                                     <div class="text-xs text-slate-500 mt-1">{{ $student->nisn }} - {{ $student->origin_class }}</div>
                                 </div>
                                 <span class="shrink-0 rounded-md border px-2.5 py-1 text-xs font-extrabold {{ $examBadge }}">
-                                    Psikologi
+                                    Instrumen Peminatan
                                 </span>
                             </div>
 

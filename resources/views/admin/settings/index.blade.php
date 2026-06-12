@@ -56,7 +56,7 @@
                 <div class="mt-5 rounded-[24px] border border-slate-200 bg-slate-50 p-4 text-sm text-slate-600">
                     <div class="font-bold text-slate-800 mb-2">Yang langsung terhubung</div>
                     <div class="space-y-2">
-                        <div>1. Timer ujian psikologi siswa.</div>
+                        <div>1. Timer instrumen peminatan siswa.</div>
                         <div>2. Auto-submit saat batas pelanggaran tercapai.</div>
                         <div>3. Branding aplikasi, warna tema, dan WhatsApp owner.</div>
                     </div>
@@ -117,13 +117,28 @@
                                                     class="block w-full text-sm text-slate-600 file:mr-4 file:rounded-xl file:border-0 file:bg-blue-600 file:px-4 file:py-2 file:font-semibold file:text-white hover:file:bg-blue-700">
 
                                                 <div class="mt-4 flex items-center gap-4">
-                                                    <img src="{{ \App\Models\Setting::logoUrl() }}" alt="Logo aplikasi"
-                                                        class="w-16 h-16 rounded-2xl object-contain bg-white border border-slate-200 p-2">
+                                                    @if(\App\Models\Setting::hasLogo())
+                                                        <img src="{{ \App\Models\Setting::logoUrl() }}" alt="Logo aplikasi"
+                                                            class="w-16 h-16 rounded-2xl object-contain bg-white border border-slate-200 p-2">
+                                                    @else
+                                                        <div class="w-16 h-16 rounded-2xl bg-white border border-dashed border-slate-300"></div>
+                                                    @endif
                                                     <div class="text-xs text-slate-500">
-                                                        <div class="font-semibold text-slate-700">Logo aktif saat ini</div>
-                                                        <div>Upload file baru untuk mengganti logo di seluruh aplikasi.</div>
+                                                        <div class="font-semibold text-slate-700">
+                                                            {{ \App\Models\Setting::hasLogo() ? 'Logo aktif saat ini' : 'Belum ada logo' }}
+                                                        </div>
+                                                        <div>Upload file baru untuk menampilkan logo di panel.</div>
                                                     </div>
                                                 </div>
+                                            </div>
+                                        @elseif (($definition['type'] ?? 'text') === 'color')
+                                            <div class="flex items-center gap-3 rounded-2xl bg-slate-50 border border-slate-200 px-4 py-3 focus-within:bg-white focus-within:border-blue-500 focus-within:ring-4 focus-within:ring-blue-100 transition">
+                                                <input type="color" name="{{ $key }}"
+                                                    value="{{ old($key, $values[$key]) }}"
+                                                    class="theme-color-input h-11 w-14 shrink-0 cursor-pointer rounded-xl border border-slate-200 bg-white p-1"
+                                                    data-value-target="{{ $key }}_value">
+                                                <span id="{{ $key }}_value"
+                                                    class="font-extrabold text-slate-800">{{ old($key, $values[$key]) }}</span>
                                             </div>
                                         @else
                                             <div class="relative">
@@ -158,3 +173,17 @@
         </div>
     </div>
 @endsection
+
+@push('scripts')
+    <script>
+        document.querySelectorAll('.theme-color-input').forEach((input) => {
+            const target = document.getElementById(input.dataset.valueTarget);
+
+            input.addEventListener('input', () => {
+                if (target) {
+                    target.textContent = input.value;
+                }
+            });
+        });
+    </script>
+@endpush

@@ -6,32 +6,30 @@
         $schoolName = \App\Models\Setting::getSetting('school_name', 'Sekolah Menengah Atas');
         $loginHelpText = \App\Models\Setting::getSetting('login_help_text', 'Gunakan email admin atau NISN siswa untuk melanjutkan.');
         $supportContact = \App\Models\Setting::getSetting('support_contact', 'Hubungi admin sekolah');
-        $logoUrl = \App\Models\Setting::logoUrl();
     @endphp
     <div class="min-h-screen bg-slate-100 flex items-center justify-center px-4 py-10">
 
         <div
-            class="w-full max-w-6xl grid lg:grid-cols-2 bg-white rounded-[36px] overflow-hidden shadow-2xl shadow-blue-100 border border-slate-200">
+            class="w-full max-w-6xl grid lg:grid-cols-2 bg-white rounded-[36px] overflow-hidden shadow-2xl shadow-red-100 border border-slate-200">
 
             {{-- Left Branding --}}
             <div
-                class="hidden lg:flex relative bg-gradient-to-br from-blue-700 via-blue-600 to-blue-400 p-10 text-white overflow-hidden">
+                class="hidden lg:flex relative bg-gradient-to-br from-red-700 via-red-600 to-red-500 p-10 text-white overflow-hidden">
 
                 <div class="absolute -top-20 -right-20 w-72 h-72 rounded-full bg-white/10"></div>
                 <div class="absolute bottom-10 -left-16 w-64 h-64 rounded-full bg-white/10"></div>
 
                 <div class="relative z-10 flex flex-col justify-between w-full">
                     <div>
-                        <div
-                            class="w-16 h-16 rounded-3xl bg-white/15 backdrop-blur-xl border border-white/20 flex items-center justify-center shadow-xl overflow-hidden p-2">
-                            <img src="{{ $logoUrl }}" alt="Logo {{ $schoolName }}" class="w-full h-full object-contain">
+                        <div class="w-16 h-16 rounded-3xl bg-white/15 backdrop-blur-xl border border-white/20 flex items-center justify-center shadow-xl">
+                            <i class="fa-solid fa-graduation-cap text-2xl"></i>
                         </div>
 
                         <h1 class="text-4xl font-extrabold mt-8 leading-tight">
                             {{ $appName }}
                         </h1>
 
-                        <p class="text-blue-100 mt-4 leading-relaxed max-w-md">
+                        <p class="text-red-100 mt-4 leading-relaxed max-w-md">
                             {{ $schoolName }} menggunakan platform ini untuk membuat proses pemilihan jurusan lebih tertata, aman, dan mudah digunakan.
                         </p>
                     </div>
@@ -59,16 +57,8 @@
             <div class="p-6 sm:p-10 lg:p-14 flex items-center">
                 <div class="w-full max-w-md mx-auto">
 
-                    {{-- Mobile Logo --}}
-                    <div class="lg:hidden flex justify-center mb-8">
-                        <div
-                            class="w-16 h-16 rounded-3xl bg-blue-600 text-white flex items-center justify-center shadow-lg shadow-blue-200 overflow-hidden p-2">
-                            <img src="{{ $logoUrl }}" alt="Logo {{ $schoolName }}" class="w-full h-full object-contain">
-                        </div>
-                    </div>
-
                     <div class="mb-8">
-                        <p class="text-sm font-bold text-blue-600 uppercase tracking-wide">
+                        <p class="text-sm font-bold text-red-600 uppercase tracking-wide">
                             Selamat Datang
                         </p>
 
@@ -82,9 +72,9 @@
                     </div>
 
                     @if ($errors->any())
-                        <div class="mb-6 rounded-2xl border border-blue-100 bg-blue-50 p-4 text-sm text-blue-700">
+                        <div class="mb-6 rounded-2xl border border-red-100 bg-red-50 p-4 text-sm text-red-700">
                             <p class="font-bold mb-1">Login gagal</p>
-                            <p>Periksa kembali email/NISN dan password kamu.</p>
+                            <p>{{ $errors->first('login') ?: 'Periksa kembali email/NISN dan password kamu.' }}</p>
                         </div>
                     @endif
 
@@ -103,12 +93,12 @@
                                 <input type="text" name="login" value="{{ old('login') }}" required autofocus
                                     placeholder="Masukkan email admin atau NISN"
                                     class="w-full pl-11 pr-4 py-3.5 rounded-2xl bg-slate-50 border border-slate-200 text-slate-800
-                                        focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-100 outline-none transition">
+                                        focus:bg-white focus:border-red-500 focus:ring-4 focus:ring-red-100 outline-none transition">
 
                             </div>
 
                             @error('login')
-                                <p class="text-sm text-blue-700 mt-2 font-semibold">{{ $message }}</p>
+                                <p class="text-sm text-red-700 mt-2 font-semibold">{{ $message }}</p>
                             @enderror
                         </div>
 
@@ -124,28 +114,34 @@
                                 <input type="password" name="password" id="passwordInput" required
                                     placeholder="Masukkan password"
                                     class="w-full pl-11 pr-12 py-3.5 rounded-2xl bg-slate-50 border border-slate-200 text-slate-800
-                                        focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-100 outline-none transition">
+                                        focus:bg-white focus:border-red-500 focus:ring-4 focus:ring-red-100 outline-none transition">
 
                                 <button type="button" id="togglePassword"
-                                    class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-blue-600 transition">
+                                    class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-red-600 transition">
                                     <i class="fa-solid fa-eye"></i>
                                 </button>
                             </div>
 
                             @error('password')
-                                <p class="text-sm text-blue-700 mt-2 font-semibold">{{ $message }}</p>
+                                <p class="text-sm text-red-700 mt-2 font-semibold">{{ $message }}</p>
                             @enderror
                         </div>
 
                         {{-- Submit --}}
                         <button
-                            class="w-full inline-flex items-center justify-center gap-2 py-3.5 rounded-2xl bg-blue-600 hover:bg-blue-700
-                                text-white font-extrabold shadow-lg shadow-blue-200 transition-all duration-300 hover:-translate-y-0.5">
+                            class="w-full inline-flex items-center justify-center gap-2 py-3.5 rounded-2xl bg-red-600 hover:bg-red-700
+                                text-white font-extrabold shadow-lg shadow-red-200 transition-all duration-300 hover:-translate-y-0.5">
 
                             <i class="fa-solid fa-right-to-bracket"></i>
                             Masuk
                         </button>
                     </form>
+
+                    <a href="{{ route('register') }}"
+                        class="mt-4 inline-flex w-full items-center justify-center gap-2 py-3.5 rounded-2xl bg-white hover:bg-red-50 text-red-700 border border-red-100 font-extrabold transition">
+                        <i class="fa-solid fa-user-plus"></i>
+                        Daftar Owner Baru
+                    </a>
 
                     <div class="mt-8 text-center text-sm text-slate-400">
                         © {{ date('Y') }} {{ $appName }} · Bantuan: {{ $supportContact }}

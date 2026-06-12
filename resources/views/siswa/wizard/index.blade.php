@@ -48,7 +48,7 @@
                     </div>
 
                     <div class="w-full h-3 rounded-full bg-slate-200 overflow-hidden">
-                        <div class="h-3 rounded-full bg-gradient-to-r from-blue-600 to-blue-400 transition-all duration-500"
+                        <div class="h-3 rounded-full  transition-all duration-500"
                             style="width: {{ $progress }}%">
                         </div>
                     </div>

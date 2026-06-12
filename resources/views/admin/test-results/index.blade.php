@@ -153,7 +153,7 @@
 
         function psychologyBadges(scores) {
             if (!scores || Object.keys(scores).length === 0) {
-                return `<span class="text-slate-400 text-xs">Tidak ada data psikotes.</span>`;
+                return `<span class="text-slate-400 text-xs">Tidak ada data instrumen peminatan.</span>`;
             }
 
             return Object.entries(scores).map(([code, score]) => `
@@ -250,7 +250,7 @@
                                                         </div>
 
                                                         <div class="bg-slate-50 rounded-2xl p-4">
-                                                            <div class="text-xs font-bold text-slate-500 mb-3">Skor Psikotes</div>
+                                                            <div class="text-xs font-bold text-slate-500 mb-3">Skor Instrumen Peminatan</div>
                                                             <div class="flex flex-wrap gap-2">
                                                                 ${psychologyBadges(data.psychology_scores)}
                                                             </div>

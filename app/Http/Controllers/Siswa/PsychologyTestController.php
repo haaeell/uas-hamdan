@@ -61,10 +61,10 @@ class PsychologyTestController extends Controller
         ]);
 
         $student = auth()->user()->student;
-        abort_if($student->status !== 'psychology_test', 403, 'Tes psikologi belum tersedia untuk status Anda.');
+        abort_if($student->status !== 'psychology_test', 403, 'Instrumen peminatan belum tersedia untuk status Anda.');
 
         $sessionState = $this->getSessionState($request, $student->id);
-        abort_if($this->calculateRemainingSeconds($sessionState->psychology_started_at, Setting::getInt('psychology_duration_minutes', 45)) <= 0, 423, 'Waktu tes psikologi sudah habis.');
+        abort_if($this->calculateRemainingSeconds($sessionState->psychology_started_at, Setting::getInt('psychology_duration_minutes', 45)) <= 0, 423, 'Waktu instrumen peminatan sudah habis.');
 
         StudentPsychologyAnswer::updateOrCreate(
             [
@@ -85,7 +85,7 @@ class PsychologyTestController extends Controller
     public function submit(Request $request, ExamFinalizationService $examFinalizationService)
     {
         $student = auth()->user()->student;
-        abort_if($student->status !== 'psychology_test', 403, 'Tes psikologi belum tersedia untuk status Anda.');
+        abort_if($student->status !== 'psychology_test', 403, 'Instrumen peminatan belum tersedia untuk status Anda.');
 
         $sessionState = $this->getSessionState($request, $student->id);
 
@@ -139,11 +139,11 @@ class PsychologyTestController extends Controller
         if ($expired) {
             return redirect()
                 ->route('siswa.announcements.index')
-                ->with('warning', 'Waktu tes psikologi sudah habis. Jawaban Anda dikirim otomatis.');
+                ->with('warning', 'Waktu instrumen peminatan sudah habis. Jawaban Anda dikirim otomatis.');
         }
 
         return response()->json([
-            'message' => 'Tes psikologi selesai.',
+            'message' => 'Instrumen peminatan selesai.',
             'redirect_url' => route('siswa.announcements.index'),
         ]);
     }

@@ -10,7 +10,7 @@
             <div class="flex items-start justify-between gap-3">
                 <div>
                     <p class="text-[10px] sm:text-xs font-bold text-blue-600 uppercase tracking-wide">CBT Online</p>
-                    <h1 class="font-extrabold text-lg sm:text-xl leading-tight text-slate-900">Tes Psikologi</h1>
+                    <h1 class="font-extrabold text-lg sm:text-xl leading-tight text-slate-900">Instrumen Peminatan</h1>
                     <p class="text-[10px] sm:text-xs text-slate-500 mt-1 leading-tight">Tidak ada jawaban benar atau salah</p>
                 </div>
 
@@ -47,7 +47,7 @@
 
             <div class="mt-3 sm:mt-4 h-3 bg-slate-200 rounded-full overflow-hidden">
                 <div id="progressBar"
-                    class="h-3 bg-gradient-to-r from-blue-600 to-blue-400 rounded-full transition-all duration-500"
+                    class="h-3  rounded-full transition-all duration-500"
                     style="width: 0%">
                 </div>
             </div>

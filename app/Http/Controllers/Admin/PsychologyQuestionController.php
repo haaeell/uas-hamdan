@@ -73,7 +73,7 @@ class PsychologyQuestionController extends Controller
             $logger->log('psychology_question', 'create', $question);
         });
 
-        return back()->with('success', 'Soal psikotes berhasil dibuat.');
+        return back()->with('success', 'Soal instrumen peminatan berhasil dibuat.');
     }
 
     public function update(Request $request, PsychologyQuestion $psychologyQuestion, ActivityLogService $logger)
@@ -106,7 +106,7 @@ class PsychologyQuestionController extends Controller
             $logger->log('psychology_question', 'update', $psychologyQuestion);
         });
 
-        return back()->with('success', 'Soal psikotes berhasil diperbarui.');
+        return back()->with('success', 'Soal instrumen peminatan berhasil diperbarui.');
     }
 
     private function rules(): array
@@ -132,7 +132,7 @@ class PsychologyQuestionController extends Controller
 
         $psychologyQuestion->delete();
 
-        return back()->with('success', 'Soal psikotes berhasil dihapus.');
+        return back()->with('success', 'Soal instrumen peminatan berhasil dihapus.');
     }
 
     public function bulkDelete(Request $request)
@@ -144,7 +144,7 @@ class PsychologyQuestionController extends Controller
 
         PsychologyQuestion::whereIn('id', $validated['ids'])->delete();
 
-        return back()->with('success', 'Soal psikotes terpilih berhasil dihapus.');
+        return back()->with('success', 'Soal instrumen peminatan terpilih berhasil dihapus.');
     }
 
     public function destroyAll()
@@ -157,7 +157,7 @@ class PsychologyQuestionController extends Controller
                 }
             });
 
-        return back()->with('success', 'Semua soal psikotes berhasil dihapus.');
+        return back()->with('success', 'Semua soal instrumen peminatan berhasil dihapus.');
     }
 
     public function downloadTemplate()
@@ -166,7 +166,7 @@ class PsychologyQuestionController extends Controller
 
         return Excel::download(
             new PsychologyQuestionsTemplateExport($packages),
-            'template_soal_psikotes.xlsx'
+            'template_soal_instrumen_peminatan.xlsx'
         );
     }
 
@@ -176,7 +176,7 @@ class PsychologyQuestionController extends Controller
 
         return Excel::download(
             new PsychologyQuestionsExport($packages),
-            'soal_psikotes.xlsx'
+            'soal_instrumen_peminatan.xlsx'
         );
     }
 
@@ -191,6 +191,6 @@ class PsychologyQuestionController extends Controller
             'filename' => $request->file('file')->getClientOriginalName(),
         ]);
 
-        return back()->with('success', 'Import soal psikotes berhasil.');
+        return back()->with('success', 'Import soal instrumen peminatan berhasil.');
     }
 }

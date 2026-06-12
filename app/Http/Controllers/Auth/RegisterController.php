@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Foundation\Auth\RegistersUsers;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
@@ -68,13 +69,23 @@ class RegisterController extends Controller
             'name' => $data['name'],
             'email' => $data['email'],
             'password' => Hash::make($data['password']),
-            'role' => 'admin',
-            'is_active' => true,
+            'role' => 'owner',
+            'is_active' => false,
+            'approved_at' => null,
             'exam_token' => Str::random(32),
         ]);
 
         $user->forceFill(['owner_id' => $user->id])->save();
 
         return $user;
+    }
+
+    protected function registered(Request $request, $user)
+    {
+        auth()->logout();
+
+        return redirect()
+            ->route('login')
+            ->with('success', 'Pendaftaran owner berhasil dikirim. Akun Anda menunggu persetujuan admin dan notifikasi akan dikirim ke email setelah disetujui.');
     }
 }

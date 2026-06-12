@@ -177,7 +177,7 @@
                             </div>
 
                             <div class="rounded-2xl bg-slate-50 border border-slate-200 p-4">
-                                <p class="font-bold text-slate-900 mb-3">Nilai Psikotes per Jurusan</p>
+                                <p class="font-bold text-slate-900 mb-3">Nilai Instrumen Peminatan per Jurusan</p>
 
                                 @if($psychologyScores->isNotEmpty())
                                     <div class="space-y-3">
@@ -200,7 +200,7 @@
                                         @endforeach
                                     </div>
                                 @else
-                                    <p class="text-sm text-slate-500">Nilai psikotes belum tersedia.</p>
+                                    <p class="text-sm text-slate-500">Nilai instrumen peminatan belum tersedia.</p>
                                 @endif
                             </div>
                         @else

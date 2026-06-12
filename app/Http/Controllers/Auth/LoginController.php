@@ -7,6 +7,7 @@ use App\Models\User;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\ValidationException;
 
 class LoginController extends Controller
 {
@@ -40,29 +41,34 @@ class LoginController extends Controller
     {
         $login = $request->input('login');
         $field = filter_var($login, FILTER_VALIDATE_EMAIL) ? 'email' : 'nisn';
-        $user = User::where($field, $login)
-            ->where('is_active', true)
-            ->first();
+        $user = User::where($field, $login)->first();
 
         if (!$user) {
             return false;
         }
 
+        if (!$user->is_active) {
+            if ($user->role === 'owner' && !$user->approved_at) {
+                throw ValidationException::withMessages([
+                    'login' => 'Akun owner Anda masih menunggu persetujuan admin.',
+                ]);
+            }
+
+            throw ValidationException::withMessages([
+                'login' => 'Akun Anda belum aktif. Silakan hubungi admin.',
+            ]);
+        }
+
         $password = (string) $request->input('password');
+
+        if ($user->role === 'siswa' && session('exam_owner_id') && (int) $user->owner_id !== (int) session('exam_owner_id')) {
+            return false;
+        }
+
         $storedPassword = (string) $user->password;
 
-        if ($user->role === 'siswa') {
-            if (session('exam_owner_id') && (int) $user->owner_id !== (int) session('exam_owner_id')) {
-                return false;
-            }
-
-            if (!hash_equals($storedPassword, $password)) {
-                return false;
-            }
-        } else {
-            if (!hash_equals($storedPassword, $password) && !Hash::check($password, $storedPassword)) {
-                return false;
-            }
+        if (!Hash::check($password, $storedPassword) && !hash_equals($storedPassword, $password)) {
+            return false;
         }
 
         $this->guard()->login($user, $request->boolean('remember'));

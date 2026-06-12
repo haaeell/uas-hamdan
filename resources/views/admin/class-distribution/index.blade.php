@@ -156,7 +156,7 @@
                     </div>
 
                     <div class="w-full h-3 rounded-full bg-slate-100 overflow-hidden">
-                        <div class="h-3 rounded-full bg-gradient-to-r from-blue-600 to-blue-400" style="width: {{ $percent }}%">
+                        <div class="h-3 rounded-full bg-gradient-to-r " style="width: {{ $percent }}%">
                         </div>
                     </div>
                 </div>

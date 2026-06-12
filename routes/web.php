@@ -5,6 +5,7 @@ use App\Http\Controllers\Admin\AnnouncementController;
 use App\Http\Controllers\Admin\ClassDistributionController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\ExamMonitoringController;
+use App\Http\Controllers\Admin\OwnerApprovalController;
 use App\Http\Controllers\Admin\PackageController;
 use App\Http\Controllers\Admin\PsychologyQuestionController;
 use App\Http\Controllers\Admin\ReportController;
@@ -38,7 +39,7 @@ Auth::routes([
 ]);
 
 Route::get('/uji/{token}', function (string $token) {
-    $owner = \App\Models\User::where('role', 'admin')
+    $owner = \App\Models\User::where('role', 'owner')
         ->where('is_active', true)
         ->where('exam_token', $token)
         ->firstOrFail();
@@ -57,7 +58,7 @@ Route::get('/redirect-after-login', RedirectController::class)
 | ADMIN ROUTES
 |--------------------------------------------------------------------------
 */
-Route::middleware(['auth', 'role:admin'])
+Route::middleware(['auth', 'role:admin,owner'])
     ->prefix('admin')
     ->name('admin.')
     ->group(function () {
@@ -68,130 +69,146 @@ Route::middleware(['auth', 'role:admin'])
         Route::post('/dashboard/reset-data', [DashboardController::class, 'resetData'])
             ->name('dashboard.reset-data');
 
-        Route::get('/exam-monitoring', [ExamMonitoringController::class, 'index'])
-            ->name('exam-monitoring.index');
+        Route::middleware('role:admin')->group(function () {
+            Route::get('/owner-approvals', [OwnerApprovalController::class, 'index'])
+                ->name('owner-approvals.index');
 
-        /*
-        |--------------------------------------------------------------------------
-        | MASTER SISWA
-        |--------------------------------------------------------------------------
-        */
-        Route::get('/students/data', [StudentController::class, 'data'])->name('students.data');
-        Route::resource('/students', StudentController::class);
-        Route::post('/students/import', [StudentController::class, 'import'])->name('students.import');
-        Route::get('/students/export/excel', [StudentController::class, 'export'])->name('students.export');
-        Route::get('/students/template/download', [StudentController::class, 'downloadTemplate'])->name('students.template');
-        Route::post('/students/bulk-delete', [StudentController::class, 'bulkDelete'])->name('students.bulk-delete');
+            Route::post('/owner-approvals/{owner}/approve', [OwnerApprovalController::class, 'approve'])
+                ->name('owner-approvals.approve');
 
-        Route::post('/students/bulk-activate', [StudentController::class, 'bulkActivate'])
-            ->name('students.bulk-activate');
+            Route::post('/owner-approvals/{owner}/activate', [OwnerApprovalController::class, 'activate'])
+                ->name('owner-approvals.activate');
 
-        Route::post('/students/bulk-deactivate', [StudentController::class, 'bulkDeactivate'])
-            ->name('students.bulk-deactivate');
+            Route::post('/owner-approvals/{owner}/deactivate', [OwnerApprovalController::class, 'deactivate'])
+                ->name('owner-approvals.deactivate');
+        });
 
-        /*
-        |--------------------------------------------------------------------------
-        | MASTER JURUSAN
-        |--------------------------------------------------------------------------
-        */
-        Route::resource('/packages', PackageController::class);
+        Route::middleware('role:owner')->group(function () {
+            Route::get('/exam-monitoring', [ExamMonitoringController::class, 'index'])
+                ->name('exam-monitoring.index');
 
-        Route::post('/packages/{package}/subjects', [PackageController::class, 'storeSubject'])
-            ->name('packages.subjects.store');
+            /*
+            |--------------------------------------------------------------------------
+            | MASTER SISWA
+            |--------------------------------------------------------------------------
+            */
+            Route::get('/students/data', [StudentController::class, 'data'])->name('students.data');
+            Route::resource('/students', StudentController::class);
+            Route::post('/students/import', [StudentController::class, 'import'])->name('students.import');
+            Route::get('/students/export/excel', [StudentController::class, 'export'])->name('students.export');
+            Route::get('/students/template/download', [StudentController::class, 'downloadTemplate'])->name('students.template');
+            Route::post('/students/bulk-delete', [StudentController::class, 'bulkDelete'])->name('students.bulk-delete');
 
-        Route::delete('/packages/{package}/subjects/{subject}', [PackageController::class, 'destroySubject'])
-            ->name('packages.subjects.destroy');
+            Route::post('/students/bulk-activate', [StudentController::class, 'bulkActivate'])
+                ->name('students.bulk-activate');
 
-        /*
-        |--------------------------------------------------------------------------
-        | SESI TES
-        |--------------------------------------------------------------------------
-        */
-        Route::resource('/test-sessions', TestSessionController::class);
+            Route::post('/students/bulk-deactivate', [StudentController::class, 'bulkDeactivate'])
+                ->name('students.bulk-deactivate');
 
-        Route::post('/test-sessions/{testSession}/classes', [TestSessionController::class, 'storeClass'])
-            ->name('test-sessions.classes.store');
+            /*
+            |--------------------------------------------------------------------------
+            | MASTER JURUSAN
+            |--------------------------------------------------------------------------
+            */
+            Route::resource('/packages', PackageController::class);
 
-        Route::delete('/test-sessions/{testSession}/classes/{classId}', [TestSessionController::class, 'destroyClass'])
-            ->name('test-sessions.classes.destroy');
+            Route::post('/packages/{package}/subjects', [PackageController::class, 'storeSubject'])
+                ->name('packages.subjects.store');
 
-        /*
-        |--------------------------------------------------------------------------
-        | SOAL PSIKOLOGI
-        |--------------------------------------------------------------------------
-        */
-        Route::delete('/psychology-questions/destroy-all', [PsychologyQuestionController::class, 'destroyAll'])
-            ->name('psychology-questions.destroy-all');
+            Route::delete('/packages/{package}/subjects/{subject}', [PackageController::class, 'destroySubject'])
+                ->name('packages.subjects.destroy');
 
-        Route::resource('/psychology-questions', PsychologyQuestionController::class);
+            /*
+            |--------------------------------------------------------------------------
+            | SESI TES
+            |--------------------------------------------------------------------------
+            */
+            Route::resource('/test-sessions', TestSessionController::class);
 
-        Route::post('/psychology-questions/import', [PsychologyQuestionController::class, 'import'])
-            ->name('psychology-questions.import');
+            Route::post('/test-sessions/{testSession}/classes', [TestSessionController::class, 'storeClass'])
+                ->name('test-sessions.classes.store');
 
-        Route::get('/psychology-questions/export/excel', [PsychologyQuestionController::class, 'export'])
-            ->name('psychology-questions.export');
+            Route::delete('/test-sessions/{testSession}/classes/{classId}', [TestSessionController::class, 'destroyClass'])
+                ->name('test-sessions.classes.destroy');
 
-        Route::get('/psychology-questions/template/download', [PsychologyQuestionController::class, 'downloadTemplate'])
-            ->name('psychology-questions.template');
+            /*
+            |--------------------------------------------------------------------------
+            | SOAL INSTRUMEN PEMINATAN
+            |--------------------------------------------------------------------------
+            */
+            Route::delete('/psychology-questions/destroy-all', [PsychologyQuestionController::class, 'destroyAll'])
+                ->name('psychology-questions.destroy-all');
 
-        Route::post('/psychology-questions/bulk-delete', [PsychologyQuestionController::class, 'bulkDelete'])
-            ->name('psychology-questions.bulk-delete');
+            Route::resource('/psychology-questions', PsychologyQuestionController::class);
 
-        /*
-        |--------------------------------------------------------------------------
-        | DISTRIBUSI KELAS
-        |--------------------------------------------------------------------------
-        */
-        Route::get('/class-distribution', [ClassDistributionController::class, 'index'])
-            ->name('class-distribution.index');
+            Route::post('/psychology-questions/import', [PsychologyQuestionController::class, 'import'])
+                ->name('psychology-questions.import');
 
-        Route::post('/class-distribution/classes', [ClassDistributionController::class, 'store'])
-            ->name('class-distribution.classes.store');
+            Route::get('/psychology-questions/export/excel', [PsychologyQuestionController::class, 'export'])
+                ->name('psychology-questions.export');
 
-        Route::put('/class-distribution/classes/{classGroup}', [ClassDistributionController::class, 'update'])
-            ->name('class-distribution.classes.update');
+            Route::get('/psychology-questions/template/download', [PsychologyQuestionController::class, 'downloadTemplate'])
+                ->name('psychology-questions.template');
 
-        Route::delete('/class-distribution/classes/{classGroup}', [ClassDistributionController::class, 'destroy'])
-            ->name('class-distribution.classes.destroy');
+            Route::post('/psychology-questions/bulk-delete', [PsychologyQuestionController::class, 'bulkDelete'])
+                ->name('psychology-questions.bulk-delete');
 
-        Route::post('/class-distribution/run', [ClassDistributionController::class, 'run'])
-            ->name('class-distribution.run');
+            /*
+            |--------------------------------------------------------------------------
+            | DISTRIBUSI KELAS
+            |--------------------------------------------------------------------------
+            */
+            Route::get('/class-distribution', [ClassDistributionController::class, 'index'])
+                ->name('class-distribution.index');
 
-        Route::post('/class-distribution/manual-move', [ClassDistributionController::class, 'manualMove'])
-            ->name('class-distribution.manual-move');
+            Route::post('/class-distribution/classes', [ClassDistributionController::class, 'store'])
+                ->name('class-distribution.classes.store');
 
-        Route::post('/class-distribution/lock', [ClassDistributionController::class, 'lock'])
-            ->name('class-distribution.lock');
+            Route::put('/class-distribution/classes/{classGroup}', [ClassDistributionController::class, 'update'])
+                ->name('class-distribution.classes.update');
 
-        /*
-        |--------------------------------------------------------------------------
-        | PENGUMUMAN
-        |--------------------------------------------------------------------------
-        */
-        Route::resource('/announcements', AnnouncementController::class);
+            Route::delete('/class-distribution/classes/{classGroup}', [ClassDistributionController::class, 'destroy'])
+                ->name('class-distribution.classes.destroy');
 
-        Route::post('/announcements/{announcement}/publish', [AnnouncementController::class, 'publish'])
-            ->name('announcements.publish');
+            Route::post('/class-distribution/run', [ClassDistributionController::class, 'run'])
+                ->name('class-distribution.run');
 
-        Route::post('/announcements/{announcement}/lock-final', [AnnouncementController::class, 'lockFinal'])
-            ->name('announcements.lock-final');
+            Route::post('/class-distribution/manual-move', [ClassDistributionController::class, 'manualMove'])
+                ->name('class-distribution.manual-move');
 
-        Route::get('/test-results', [TestResultController::class, 'index'])->name('test-results.index');
-        Route::get('/test-results/data', [TestResultController::class, 'data'])->name('test-results.data');
-        Route::post('/test-results/manual-update', [TestResultController::class, 'manualUpdate'])->name('test-results.manual-update');
-        Route::get('/test-results/export', [TestResultController::class, 'export'])->name('test-results.export');
+            Route::post('/class-distribution/lock', [ClassDistributionController::class, 'lock'])
+                ->name('class-distribution.lock');
 
-        Route::get('/reports', [ReportController::class, 'index'])
-            ->name('reports.index');
+            /*
+            |--------------------------------------------------------------------------
+            | PENGUMUMAN
+            |--------------------------------------------------------------------------
+            */
+            Route::resource('/announcements', AnnouncementController::class);
 
-        Route::get('/reports/{type}/excel', [ReportController::class, 'exportExcel'])
-            ->name('reports.excel');
+            Route::post('/announcements/{announcement}/publish', [AnnouncementController::class, 'publish'])
+                ->name('announcements.publish');
 
-        Route::get('/reports/{type}/pdf', [ReportController::class, 'exportPdf'])
-            ->name('reports.pdf');
+            Route::post('/announcements/{announcement}/lock-final', [AnnouncementController::class, 'lockFinal'])
+                ->name('announcements.lock-final');
 
-        Route::get('/violations', [AdminViolationController::class, 'index'])
-            ->name('violations.index');
+            Route::get('/test-results', [TestResultController::class, 'index'])->name('test-results.index');
+            Route::get('/test-results/data', [TestResultController::class, 'data'])->name('test-results.data');
+            Route::post('/test-results/manual-update', [TestResultController::class, 'manualUpdate'])->name('test-results.manual-update');
+            Route::get('/test-results/export', [TestResultController::class, 'export'])->name('test-results.export');
+
+            Route::get('/reports', [ReportController::class, 'index'])
+                ->name('reports.index');
+
+            Route::get('/reports/{type}/excel', [ReportController::class, 'exportExcel'])
+                ->name('reports.excel');
+
+            Route::get('/reports/{type}/pdf', [ReportController::class, 'exportPdf'])
+                ->name('reports.pdf');
+
+            Route::get('/violations', [AdminViolationController::class, 'index'])
+                ->name('violations.index');
+        });
 
         Route::get('/activity-logs', [ActivityLogController::class, 'index'])
             ->name('activity-logs.index');

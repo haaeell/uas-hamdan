@@ -14,9 +14,11 @@ class OwnerContext
             return null;
         }
 
-        return $user->role === 'admin'
-            ? $user->id
-            : ($user->owner_id ?: null);
+        return match ($user->role) {
+            'admin' => null,
+            'owner' => $user->id,
+            default => $user->owner_id ?: null,
+        };
     }
 
     public static function user(?User $user = null): ?User
@@ -28,6 +30,10 @@ class OwnerContext
         }
 
         if ($user->role === 'admin') {
+            return null;
+        }
+
+        if ($user->role === 'owner') {
             return $user;
         }
 

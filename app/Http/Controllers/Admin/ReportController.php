@@ -165,10 +165,10 @@ class ReportController extends Controller
             'No',
             'Nama',
             'NISN',
-            'Skor Psikotes',
+            'Skor Instrumen Peminatan',
             'Pilihan 1',
             'Pilihan 2',
-            'Rekomendasi Psikotes',
+            'Rekomendasi Instrumen Peminatan',
             'Jurusan Final',
             'Rencana Setelah Lulus',
         ];
@@ -200,7 +200,7 @@ class ReportController extends Controller
 
         return [
             'title' => 'Laporan Hasil Tes Siswa',
-            'subtitle' => 'Skor psikotes dan rekomendasi penempatan.',
+            'subtitle' => 'Skor instrumen peminatan dan rekomendasi penempatan.',
             'filename' => 'laporan_hasil_tes_siswa',
             'headings' => $headings,
             'rows' => $this->flattenGroupedRows($groupedRows),

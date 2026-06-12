@@ -177,7 +177,7 @@
         <p>Dengan hormat,</p>
         <br>
         <p>
-            Berdasarkan hasil evaluasi akademik, psikotes, minat, bakat, serta pertimbangan kemampuan peserta didik
+            Berdasarkan hasil evaluasi akademik, instrumen peminatan, minat, bakat, serta pertimbangan kemampuan peserta didik
             selama menempuh pendidikan di kelas X, maka {{ $schoolName }} menetapkan pemilihan paket peminatan untuk
             peserta didik yang akan melanjutkan ke kelas XI Tahun Pelajaran 2026/2027.
         </p>
@@ -218,7 +218,7 @@
                 <td>{{ $biodata?->address ?: '-' }}</td>
             </tr>
             <tr>
-                <td class="label">Hasil Tes Psikotes</td>
+                <td class="label">Hasil Instrumen Peminatan</td>
                 <td class="colon">:</td>
                 <td>{{ $psychologyResult }}</td>
             </tr>

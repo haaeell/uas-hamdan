@@ -11,7 +11,7 @@ class RedirectController extends Controller
     {
         $user = auth()->user();
 
-        if ($user->role === 'admin') {
+        if (in_array($user->role, ['admin', 'owner'], true)) {
             return redirect()->route('admin.dashboard');
         }
 

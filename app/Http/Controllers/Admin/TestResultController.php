@@ -194,7 +194,7 @@ class TestResultController extends Controller
                 'NISN',
                 'Kelas Asal',
                 'Status Tes',
-                'Rekomendasi Psikotes',
+                'Rekomendasi Instrumen Peminatan',
                 'Jurusan Final',
                 'Pilihan 1',
                 'Pilihan 2',

@@ -24,7 +24,7 @@ class PsychologyQuestionsImport implements SkipsEmptyRows, ToCollection, WithHea
     {
         if ($rows->isEmpty()) {
             throw ValidationException::withMessages([
-                'file' => ['File import soal psikotes kosong.'],
+                'file' => ['File import soal instrumen peminatan kosong.'],
             ]);
         }
 

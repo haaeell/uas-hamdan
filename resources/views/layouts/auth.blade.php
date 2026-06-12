@@ -4,14 +4,12 @@
 <head>
     @php
         $appName = \App\Models\Setting::getSetting('app_name', 'Sistem Pemilihan Jurusan');
-        $logoUrl = \App\Models\Setting::logoUrl();
-        $themeColor = \App\Models\Setting::getSetting('theme_color', '#2563eb');
+        $themeColor = '#dc2626';
     @endphp
     <meta charset="UTF-8">
     <title>@yield('title', $appName)</title>
 
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="icon" type="image/png" href="{{ $logoUrl }}">
 
     {{-- Fonts --}}
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -44,21 +42,21 @@
 
                     colors: {
                         primary: {
-                            50: '#eff6ff',
-                            100: '#dbeafe',
-                            200: '#bfdbfe',
-                            300: '#93c5fd',
-                            400: '#60a5fa',
-                            500: '#3b82f6',
-                            600: '#2563eb',
-                            700: '#1d4ed8',
-                            800: '#1e40af',
-                            900: '#1e3a8a',
+                            50: '#fef2f2',
+                            100: '#fee2e2',
+                            200: '#fecaca',
+                            300: '#fca5a5',
+                            400: '#f87171',
+                            500: '#ef4444',
+                            600: '#dc2626',
+                            700: '#b91c1c',
+                            800: '#991b1b',
+                            900: '#7f1d1d',
                         }
                     },
 
                     boxShadow: {
-                        soft: '0 10px 30px rgba(37, 99, 235, 0.08)',
+                        soft: '0 10px 30px rgba(220, 38, 38, 0.08)',
                     }
                 }
             }
@@ -117,12 +115,12 @@
         }
 
         ::-webkit-scrollbar-thumb {
-            background: #93c5fd;
+            background: #fca5a5;
             border-radius: 999px;
         }
 
         ::-webkit-scrollbar-thumb:hover {
-            background: #2563eb;
+            background: #dc2626;
         }
 
         /* Autofill */
@@ -179,7 +177,7 @@
 
         table.dataTable tbody tr:hover {
             transform: translateY(-1px);
-            box-shadow: 0 8px 24px rgba(37, 99, 235, 0.08);
+            box-shadow: 0 8px 24px rgba(220, 38, 38, 0.08);
         }
 
         table.dataTable thead th {
@@ -231,7 +229,7 @@
                     icon: 'success',
                     title: 'Berhasil',
                     text: @json(session('success')),
-                    confirmButtonColor: '#2563eb'
+                    confirmButtonColor: '#dc2626'
                 });
             });
         </script>
@@ -244,7 +242,7 @@
                     icon: 'error',
                     title: 'Terjadi Kesalahan',
                     text: @json(session('error')),
-                    confirmButtonColor: '#2563eb'
+                    confirmButtonColor: '#dc2626'
                 });
             });
         </script>
@@ -261,7 +259,7 @@
                 text: 'Data yang dihapus tidak dapat dikembalikan.',
                 icon: 'warning',
                 showCancelButton: true,
-                confirmButtonColor: '#2563eb',
+                confirmButtonColor: '#dc2626',
                 cancelButtonColor: '#64748b',
                 confirmButtonText: 'Ya, hapus',
                 cancelButtonText: 'Batal'

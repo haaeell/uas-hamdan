@@ -1,15 +1,15 @@
 @extends('layouts.admin')
 
-@section('title', 'Soal Psikotes')
+@section('title', 'Soal Instrumen Peminatan')
 
 @section('content')
 
     {{-- Header --}}
     <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8">
         <div>
-            <h1 class="text-3xl font-extrabold text-slate-900">Soal Psikotes</h1>
+            <h1 class="text-3xl font-extrabold text-slate-900">Soal Instrumen Peminatan</h1>
             <p class="text-slate-500 mt-2">
-                Kelola pernyataan psikotes, pilihan jawaban, dan bobot tiap jurusan.
+                Kelola pernyataan instrumen peminatan, pilihan jawaban, dan bobot tiap jurusan.
             </p>
         </div>
 
@@ -33,7 +33,7 @@
 
                     <div>
                         <h2 class="text-xl font-extrabold text-slate-900">File Data</h2>
-                        <p class="text-sm text-slate-500">Import, download template, atau export data psikotes.</p>
+                        <p class="text-sm text-slate-500">Import, download template, atau export data instrumen peminatan.</p>
                     </div>
                 </div>
 
@@ -105,10 +105,10 @@
 
                     <div>
                         <label class="block text-sm font-semibold text-slate-700 mb-2">
-                            Pernyataan Psikotes
+                            Pernyataan Instrumen Peminatan
                         </label>
 
-                        <textarea name="question" rows="5" placeholder="Tulis pernyataan psikotes di sini..."
+                        <textarea name="question" rows="5" placeholder="Tulis pernyataan instrumen peminatan di sini..."
                             class="w-full px-4 py-3 rounded-2xl bg-slate-50 border border-slate-200 text-slate-800
                             focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-100 outline-none transition">{{ old('question') }}</textarea>
                     </div>
@@ -188,7 +188,7 @@
         <div class="xl:col-span-2 bg-white border border-slate-200 rounded-[30px] p-6 shadow-sm">
             <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
                 <div>
-                    <h2 class="text-xl font-extrabold text-slate-900">Daftar Soal Psikotes</h2>
+                    <h2 class="text-xl font-extrabold text-slate-900">Daftar Soal Instrumen Peminatan</h2>
                     <p class="text-sm text-slate-500">Preview pilihan jawaban dan bobot tiap jurusan.</p>
                 </div>
 
@@ -259,7 +259,7 @@
                                     </p>
 
                                     @if($question->image_path)
-                                        <img src="{{ asset('storage/' . $question->image_path) }}" alt="Gambar soal psikotes"
+                                        <img src="{{ asset('storage/' . $question->image_path) }}" alt="Gambar soal instrumen peminatan"
                                             class="mt-4 w-full max-w-xl rounded-2xl border border-slate-200 object-contain bg-slate-50">
                                     @endif
                                 </div>
@@ -343,7 +343,7 @@
                             <i class="fa-solid fa-brain text-2xl"></i>
                         </div>
 
-                        <h2 class="text-xl font-extrabold text-slate-900">Belum ada soal psikotes</h2>
+                        <h2 class="text-xl font-extrabold text-slate-900">Belum ada soal instrumen peminatan</h2>
                         <p class="text-slate-500 mt-2">Tambahkan soal pertama melalui form di sebelah kiri.</p>
                     </div>
                 @endforelse
@@ -361,7 +361,7 @@
         <div class="bg-white border border-slate-200 rounded-[28px] p-6 w-full max-w-4xl shadow-2xl max-h-[90vh] overflow-y-auto">
             <div class="flex justify-between items-start mb-6">
                 <div>
-                    <h2 class="font-extrabold text-xl text-slate-900">Edit Soal Psikotes</h2>
+                    <h2 class="font-extrabold text-xl text-slate-900">Edit Soal Instrumen Peminatan</h2>
                     <p class="text-sm text-slate-500">Perbarui pernyataan, gambar, opsi, dan bobot jurusan.</p>
                 </div>
                 <button type="button" id="closePsychologyQuestionModal"
@@ -374,7 +374,7 @@
                 @csrf
                 @method('PUT')
                 <div>
-                    <label class="block text-sm font-semibold text-slate-700 mb-2">Pernyataan Psikotes</label>
+                    <label class="block text-sm font-semibold text-slate-700 mb-2">Pernyataan Instrumen Peminatan</label>
                     <textarea name="question" id="edit_psychology_question" rows="4"
                         class="w-full px-4 py-3 rounded-2xl bg-slate-50 border border-slate-200 text-slate-800"></textarea>
                 </div>
