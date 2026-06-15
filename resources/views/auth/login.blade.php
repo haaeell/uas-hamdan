@@ -137,6 +137,14 @@
                         </button>
                     </form>
 
+                    <div class="mt-3 text-center">
+                        <a href="{{ route('password.request') }}"
+                            class="text-sm text-slate-500 hover:text-red-600 font-semibold transition">
+                            <i class="fa-solid fa-key mr-1"></i>
+                            Lupa Password?
+                        </a>
+                    </div>
+
                     <a href="{{ route('register') }}"
                         class="mt-4 inline-flex w-full items-center justify-center gap-2 py-3.5 rounded-2xl bg-white hover:bg-red-50 text-red-700 border border-red-100 font-extrabold transition">
                         <i class="fa-solid fa-user-plus"></i>
