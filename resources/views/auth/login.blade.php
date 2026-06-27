@@ -4,7 +4,7 @@
     @php
         $appName = \App\Models\Setting::getSetting('app_name', 'Sistem Pemilihan Jurusan');
         $schoolName = \App\Models\Setting::getSetting('school_name', 'Sekolah Menengah Atas');
-        $loginHelpText = \App\Models\Setting::getSetting('login_help_text', 'Gunakan email admin atau NISN siswa untuk melanjutkan.');
+        $loginHelpText = \App\Models\Setting::getSetting('login_help_text', 'Gunakan email admin untuk melanjutkan.');
         $supportContact = \App\Models\Setting::getSetting('support_contact', 'Hubungi admin sekolah');
     @endphp
     <div class="min-h-screen bg-slate-100 flex items-center justify-center px-4 py-10">
@@ -74,7 +74,7 @@
                     @if ($errors->any())
                         <div class="mb-6 rounded-2xl border border-red-100 bg-red-50 p-4 text-sm text-red-700">
                             <p class="font-bold mb-1">Login gagal</p>
-                            <p>{{ $errors->first('login') ?: 'Periksa kembali email/NISN dan password kamu.' }}</p>
+                            <p>{{ $errors->first('login') ?: 'Periksa kembali email dan password kamu.' }}</p>
                         </div>
                     @endif
 
@@ -84,14 +84,14 @@
                         {{-- Login --}}
                         <div>
                             <label class="block text-sm font-semibold text-slate-700 mb-2">
-                                Email / NISN
+                                Email
                             </label>
 
                             <div class="relative">
                                 <i class="fa-solid fa-user absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
 
                                 <input type="text" name="login" value="{{ old('login') }}" required autofocus
-                                    placeholder="Masukkan email admin atau NISN"
+                                    placeholder="Masukkan email admin"
                                     class="w-full pl-11 pr-4 py-3.5 rounded-2xl bg-slate-50 border border-slate-200 text-slate-800
                                         focus:bg-white focus:border-red-500 focus:ring-4 focus:ring-red-100 outline-none transition">
 
