@@ -209,12 +209,6 @@ Route::middleware(['auth', 'role:admin,owner'])
             */
             Route::resource('/announcements', AnnouncementController::class);
 
-            Route::post('/announcements/{announcement}/publish', [AnnouncementController::class, 'publish'])
-                ->name('announcements.publish');
-
-            Route::post('/announcements/{announcement}/lock-final', [AnnouncementController::class, 'lockFinal'])
-                ->name('announcements.lock-final');
-
             Route::get('/test-results', [TestResultController::class, 'index'])->name('test-results.index');
             Route::get('/test-results/data', [TestResultController::class, 'data'])->name('test-results.data');
             Route::post('/test-results/manual-update', [TestResultController::class, 'manualUpdate'])->name('test-results.manual-update');

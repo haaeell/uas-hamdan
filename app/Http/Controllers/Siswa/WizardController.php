@@ -21,11 +21,15 @@ class WizardController extends Controller
         ])->firstOrFail();
 
         $announcement = null;
+        $announcementIsOpen = false;
         if (in_array($student->status, ['completed'], true)) {
             $announcement = Announcement::query()
+                ->where('type', 'final')
                 ->where('is_published', true)
                 ->latest('published_at')
+                ->latest('id')
                 ->first();
+            $announcementIsOpen = $announcement?->published_at?->lte(now()) ?? false;
         }
 
         $packages = collect();
@@ -33,7 +37,7 @@ class WizardController extends Controller
             $packages = Package::where('is_active', true)->with('subjects')->get();
         }
 
-        return view('siswa.wizard.index', compact('student', 'packages', 'announcement'));
+        return view('siswa.wizard.index', compact('student', 'packages', 'announcement', 'announcementIsOpen'));
     }
 
     public function saveBiodata(Request $request)

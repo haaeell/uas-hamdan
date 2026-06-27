@@ -67,7 +67,7 @@ class DatabaseSeeder extends Seeder
             ['owner_id' => $ownerId, 'key' => 'support_contact', 'value' => 'Admin BK / WA 0812-0000-0000', 'group' => 'general'],
             ['owner_id' => $ownerId, 'key' => 'whatsapp_number', 'value' => '6281200000000', 'group' => 'general'],
             ['owner_id' => $ownerId, 'key' => 'theme_color', 'value' => '#2563eb', 'group' => 'general'],
-            ['owner_id' => $ownerId, 'key' => 'login_help_text', 'value' => 'Masuk menggunakan email admin atau NISN siswa yang sudah dibagikan sekolah.', 'group' => 'general'],
+            ['owner_id' => $ownerId, 'key' => 'login_help_text', 'value' => 'Masuk menggunakan email admin atau owner yang sudah terdaftar.', 'group' => 'general'],
             ['owner_id' => $ownerId, 'key' => 'psychology_duration_minutes', 'value' => '60', 'group' => 'cbt'],
             ['owner_id' => $ownerId, 'key' => 'cbt_auto_submit_violation_limit', 'value' => '3', 'group' => 'cbt'],
             ['owner_id' => $ownerId, 'key' => 'cbt_force_fullscreen', 'value' => '1', 'group' => 'cbt'],

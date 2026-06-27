@@ -38,7 +38,7 @@
                         </h2>
 
                         <p class="text-slate-500 mt-3">
-                            Pengumuman hasil belum dipublikasikan. Silakan cek kembali secara berkala melalui akun ini karena hasil, respons, dan surat keterangan akan ditampilkan di sini setelah dirilis oleh admin sekolah.
+                            Pengumuman hasil belum dibuat. Silakan cek kembali secara berkala melalui akun ini karena hasil dan surat keterangan akan ditampilkan di sini setelah dirilis oleh admin sekolah.
                         </p>
 
                         <div class="mt-6 rounded-[28px] border border-blue-100 bg-blue-50 p-5 text-left text-sm text-blue-700">
@@ -48,10 +48,63 @@
                             <div>3. Jika ada kendala akses atau data belum sesuai, hubungi admin sekolah.</div>
                         </div>
                     </div>
+                @elseif(!$announcementIsOpen)
+                    <div class="text-center py-10">
+                        <div
+                            class="w-20 h-20 rounded-3xl bg-blue-50 text-blue-600 flex items-center justify-center mx-auto mb-5">
+                            <i class="fa-solid fa-hourglass-half text-4xl"></i>
+                        </div>
+
+                        <p class="text-sm font-bold text-blue-600 uppercase tracking-wide">
+                            Pengumuman Final
+                        </p>
+
+                        <h2 class="text-2xl font-extrabold text-slate-900 mt-2">
+                            {{ $announcement->title }}
+                        </h2>
+
+                        <p class="text-slate-500 mt-3">
+                            Pengumuman final sudah dibuat dan akan dibuka sesuai jadwal berikut.
+                        </p>
+
+                        <div class="mt-6 rounded-[28px] border border-blue-100 bg-blue-50 p-5">
+                            <p class="text-sm font-bold text-blue-700 mb-4">
+                                {{ $announcement->published_at?->translatedFormat('l, d F Y H:i') }}
+                            </p>
+
+                            @if($announcement->published_at)
+                                <div id="announcementCountdown"
+                                    data-target="{{ $announcement->published_at->toISOString() }}"
+                                    class="grid grid-cols-4 gap-3 text-center">
+                                    <div class="rounded-2xl bg-white border border-blue-100 p-3">
+                                        <div data-countdown-days class="text-2xl font-extrabold text-slate-900">00</div>
+                                        <div class="text-xs font-bold text-slate-500 mt-1">Hari</div>
+                                    </div>
+
+                                    <div class="rounded-2xl bg-white border border-blue-100 p-3">
+                                        <div data-countdown-hours class="text-2xl font-extrabold text-slate-900">00</div>
+                                        <div class="text-xs font-bold text-slate-500 mt-1">Jam</div>
+                                    </div>
+
+                                    <div class="rounded-2xl bg-white border border-blue-100 p-3">
+                                        <div data-countdown-minutes class="text-2xl font-extrabold text-slate-900">00</div>
+                                        <div class="text-xs font-bold text-slate-500 mt-1">Menit</div>
+                                    </div>
+
+                                    <div class="rounded-2xl bg-white border border-blue-100 p-3">
+                                        <div data-countdown-seconds class="text-2xl font-extrabold text-slate-900">00</div>
+                                        <div class="text-xs font-bold text-slate-500 mt-1">Detik</div>
+                                    </div>
+                                </div>
+                            @else
+                                <p class="text-sm text-blue-700">Jadwal buka belum ditentukan oleh admin.</p>
+                            @endif
+                        </div>
+                    </div>
                 @else
                     <div class="bg-blue-50 border border-blue-100 rounded-[28px] p-5 md:p-6 mb-6">
                         <p class="text-sm font-bold text-blue-600 uppercase tracking-wide">
-                            {{ strtoupper($announcement->type) }}
+                            FINAL
                         </p>
 
                         <h2 class="text-2xl font-extrabold text-slate-900 mt-2">
@@ -67,9 +120,9 @@
                         <h3 class="text-lg font-extrabold text-slate-900">Petunjuk Setelah Pengumuman</h3>
                         <div class="mt-3 space-y-2 text-sm text-slate-600 leading-relaxed">
                             <div>1. Baca hasil penempatan Anda dengan teliti hingga selesai.</div>
-                            <div>2. Jika setuju, gunakan tombol penerimaan agar status Anda tercatat di sistem.</div>
+                            <div>2. Pastikan data diri, jurusan, dan kelas sudah sesuai.</div>
                             <div>3. Jika ada pertanyaan atau data perlu dikonfirmasi, hubungi owner melalui WhatsApp.</div>
-                            <div>4. Tetap cek halaman ini secara berkala untuk pembaruan pengumuman.</div>
+                            <div>4. Simpan akun ini untuk mengakses kembali hasil pengumuman.</div>
                         </div>
                     </div>
 
@@ -242,37 +295,13 @@
                         </div>
                     @endif
 
-                    @if(!$response && $announcement->type === 'temporary')
-                        <form method="POST" action="{{ route('siswa.announcements.accept', $announcement) }}" class="mb-4">
-                            @csrf
-
-                            <button
-                                class="w-full inline-flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white py-4 rounded-2xl font-extrabold shadow-lg shadow-blue-200 transition">
-                                <i class="fa-solid fa-check"></i>
-                                Saya Terima
-                            </button>
-                        </form>
-
-                        @if($whatsappUrl)
-                            <a href="{{ $whatsappUrl }}" target="_blank" rel="noopener"
-                                class="w-full inline-flex items-center justify-center gap-2 bg-white hover:bg-blue-50 text-blue-700 border border-blue-100 py-4 rounded-2xl font-extrabold transition">
-                                <i class="fa-brands fa-whatsapp"></i>
-                                Hubungi WhatsApp
-                            </a>
-                        @endif
-                    @elseif($response || ($announcement->type === 'final' && $classStudent))
+                    @if($classStudent)
                         <div class="space-y-4">
                             <div class="bg-blue-50 border border-blue-100 text-blue-700 rounded-[28px] p-5">
-                                @if($response)
-                                    <p class="font-bold">Respons Anda: {{ $response->response === 'accepted' ? 'Diterima' : 'Sudah tercatat' }}</p>
-                                @else
-                                    <p class="font-bold">Pengumuman final sudah tersedia.</p>
-                                @endif
+                                <p class="font-bold">Pengumuman final sudah tersedia.</p>
 
-                                @if($response?->responded_at)
-                                    <p class="text-sm mt-1">Dikirim pada {{ $response->responded_at->translatedFormat('d F Y H:i') }}</p>
-                                @elseif($announcement->type === 'final' && $announcement->published_at)
-                                    <p class="text-sm mt-1">Dipublikasikan pada {{ $announcement->published_at->translatedFormat('d F Y H:i') }}</p>
+                                @if($announcement->published_at)
+                                    <p class="text-sm mt-1">Dibuka pada {{ $announcement->published_at->translatedFormat('d F Y H:i') }}</p>
                                 @endif
                             </div>
 
@@ -284,6 +313,12 @@
                                 </a>
                             @endif
                         </div>
+                    @elseif($whatsappUrl)
+                        <a href="{{ $whatsappUrl }}" target="_blank" rel="noopener"
+                            class="w-full inline-flex items-center justify-center gap-2 bg-white hover:bg-blue-50 text-blue-700 border border-blue-100 py-4 rounded-2xl font-extrabold transition">
+                            <i class="fa-brands fa-whatsapp"></i>
+                            Hubungi WhatsApp
+                        </a>
                     @endif
                 @endif
 
@@ -316,3 +351,43 @@
         </div>
     </div>
 @endsection
+
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const countdown = document.getElementById('announcementCountdown');
+
+    if (!countdown) {
+        return;
+    }
+
+    const targetDate = new Date(countdown.dataset.target);
+    const days = countdown.querySelector('[data-countdown-days]');
+    const hours = countdown.querySelector('[data-countdown-hours]');
+    const minutes = countdown.querySelector('[data-countdown-minutes]');
+    const seconds = countdown.querySelector('[data-countdown-seconds]');
+    const pad = (value) => String(value).padStart(2, '0');
+
+    function updateCountdown() {
+        const distance = targetDate.getTime() - Date.now();
+
+        if (distance <= 0) {
+            days.textContent = '00';
+            hours.textContent = '00';
+            minutes.textContent = '00';
+            seconds.textContent = '00';
+            window.location.reload();
+            return;
+        }
+
+        days.textContent = pad(Math.floor(distance / (1000 * 60 * 60 * 24)));
+        hours.textContent = pad(Math.floor((distance / (1000 * 60 * 60)) % 24));
+        minutes.textContent = pad(Math.floor((distance / (1000 * 60)) % 60));
+        seconds.textContent = pad(Math.floor((distance / 1000) % 60));
+    }
+
+    updateCountdown();
+    setInterval(updateCountdown, 1000);
+});
+</script>
+@endpush

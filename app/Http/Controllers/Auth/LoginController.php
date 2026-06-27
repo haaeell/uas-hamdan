@@ -29,10 +29,11 @@ class LoginController extends Controller
     protected function validateLogin(Request $request): void
     {
         $request->validate([
-            'login' => ['required', 'string'],
+            'login' => ['required', 'string', 'email'],
             'password' => ['required', 'string'],
         ], [
-            'login.required' => 'Email atau NISN wajib diisi.',
+            'login.required' => 'Email wajib diisi.',
+            'login.email' => 'Masukkan email admin atau owner yang valid.',
             'password.required' => 'Password wajib diisi.',
         ]);
     }
@@ -40,11 +41,16 @@ class LoginController extends Controller
     protected function attemptLogin(Request $request): bool
     {
         $login = $request->input('login');
-        $field = filter_var($login, FILTER_VALIDATE_EMAIL) ? 'email' : 'nisn';
-        $user = User::where($field, $login)->first();
+        $user = User::where('email', $login)->first();
 
         if (!$user) {
             return false;
+        }
+
+        if ($user->role === 'siswa') {
+            throw ValidationException::withMessages([
+                'login' => 'Akun siswa tidak bisa masuk melalui halaman admin atau owner. Gunakan link login siswa dari sekolah.',
+            ]);
         }
 
         if ($user->role === 'owner' && !$user->email_verified_at) {

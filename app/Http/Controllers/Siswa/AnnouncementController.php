@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Siswa;
 use App\Http\Controllers\Controller;
 use App\Models\Announcement;
 use App\Models\AnnouncementResponse;
-use App\Models\Objection;
 use App\Models\Package;
 use App\Models\Setting;
 use App\Models\TestResult;
@@ -26,19 +25,16 @@ class AnnouncementController extends Controller
 
         abort_if($student->status !== 'completed', 403, 'Pengumuman belum tersedia untuk status Anda.');
 
-        $announcement = Announcement::where('is_published', true)
+        $announcement = Announcement::where('type', 'final')
+            ->where('is_published', true)
             ->latest('published_at')
+            ->latest('id')
             ->first();
+        $announcementIsOpen = $announcement?->published_at?->lte(now()) ?? false;
 
         $classStudent = $student->classStudent()
             ->with('classGroup.package')
             ->first();
-
-        $response = $announcement
-            ? AnnouncementResponse::where('announcement_id', $announcement->id)
-            ->where('student_id', $student->id)
-            ->first()
-            : null;
 
         $testResult = TestResult::with(['recommendedPackage', 'finalPackage'])
             ->where('student_id', $student->id)
@@ -56,12 +52,6 @@ class AnnouncementController extends Controller
             ->sortByDesc('score')
             ->values();
 
-        $objection = $announcement
-            ? Objection::where('announcement_id', $announcement->id)
-            ->where('student_id', $student->id)
-            ->latest()
-            ->first()
-            : null;
         $whatsappNumber = preg_replace('/\D+/', '', (string) Setting::getSetting('whatsapp_number', ''));
         $whatsappUrl = $whatsappNumber
             ? 'https://wa.me/' . $whatsappNumber . '?text=' . urlencode('Halo, saya ' . $student->name . ' ingin bertanya tentang pengumuman hasil.')
@@ -71,11 +61,10 @@ class AnnouncementController extends Controller
             'student',
             'announcement',
             'classStudent',
-            'response',
             'testResult',
             'psychologyScores',
-            'objection',
-            'whatsappUrl'
+            'whatsappUrl',
+            'announcementIsOpen'
         ));
     }
 
@@ -111,14 +100,12 @@ class AnnouncementController extends Controller
 
         abort_if($student->status !== 'completed', 403, 'Surat belum tersedia untuk status Anda.');
         abort_if(!$announcement->is_published, 404);
+        abort_if($announcement->type !== 'final', 404);
+        abort_if(!($announcement->published_at?->lte(now()) ?? false), 403, 'Surat belum tersedia sebelum jadwal pengumuman dibuka.');
 
         $response = AnnouncementResponse::where('announcement_id', $announcement->id)
             ->where('student_id', $student->id)
             ->first();
-
-        if ($announcement->type !== 'final') {
-            abort_if(!$response || $response->response !== 'accepted', 403, 'Surat hanya tersedia setelah pengumuman diterima.');
-        }
 
         $classStudent = $student->classStudent()
             ->with(['classGroup.package', 'package'])

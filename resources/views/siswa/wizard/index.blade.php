@@ -258,7 +258,57 @@
                 </div>
             @endif
 
-            @if($announcement)
+            @if($student->status === 'completed' && $announcement && !$announcementIsOpen)
+                <div
+                    class="max-w-3xl mx-auto text-center bg-white border border-slate-200 rounded-[32px] p-8 md:p-10 shadow-sm">
+                    <div class="w-20 h-20 rounded-3xl bg-blue-50 text-blue-600 flex items-center justify-center mx-auto mb-6">
+                        <i class="fa-solid fa-hourglass-half text-4xl"></i>
+                    </div>
+
+                    <p class="text-sm font-bold text-blue-600 uppercase tracking-wide">Pengumuman Final</p>
+                    <h2 class="text-2xl font-extrabold text-slate-900 mt-2">{{ $announcement->title }}</h2>
+
+                    <p class="text-slate-500 mt-3">
+                        Pengumuman final sudah dibuat dan akan dibuka sesuai jadwal.
+                    </p>
+
+                    <div class="mt-6 rounded-2xl border border-blue-100 bg-blue-50 px-5 py-4">
+                        <p class="text-sm font-bold text-blue-700 mb-4">
+                            {{ $announcement->published_at?->translatedFormat('l, d F Y H:i') }}
+                        </p>
+
+                        @if($announcement->published_at)
+                            <div id="wizardAnnouncementCountdown"
+                                data-target="{{ $announcement->published_at->toISOString() }}"
+                                class="grid grid-cols-4 gap-3 text-center">
+                                <div class="rounded-2xl bg-white border border-blue-100 p-3">
+                                    <div data-countdown-days class="text-2xl font-extrabold text-slate-900">00</div>
+                                    <div class="text-xs font-bold text-slate-500 mt-1">Hari</div>
+                                </div>
+
+                                <div class="rounded-2xl bg-white border border-blue-100 p-3">
+                                    <div data-countdown-hours class="text-2xl font-extrabold text-slate-900">00</div>
+                                    <div class="text-xs font-bold text-slate-500 mt-1">Jam</div>
+                                </div>
+
+                                <div class="rounded-2xl bg-white border border-blue-100 p-3">
+                                    <div data-countdown-minutes class="text-2xl font-extrabold text-slate-900">00</div>
+                                    <div class="text-xs font-bold text-slate-500 mt-1">Menit</div>
+                                </div>
+
+                                <div class="rounded-2xl bg-white border border-blue-100 p-3">
+                                    <div data-countdown-seconds class="text-2xl font-extrabold text-slate-900">00</div>
+                                    <div class="text-xs font-bold text-slate-500 mt-1">Detik</div>
+                                </div>
+                            </div>
+                        @else
+                            <p class="text-sm text-blue-700">Jadwal buka belum ditentukan oleh admin.</p>
+                        @endif
+                    </div>
+                </div>
+            @endif
+
+            @if($announcement && $announcementIsOpen)
                 <div class="max-w-3xl mx-auto mt-4">
                     <a href="{{ route('siswa.announcements.index') }}" class="flex items-center justify-between gap-4 bg-blue-600 hover:bg-blue-700
                             text-white rounded-2xl px-5 py-4 shadow-lg shadow-blue-200 transition-all duration-300">
@@ -386,6 +436,38 @@
                     Swal.fire('Gagal', xhr.responseJSON?.message ?? 'Validasi gagal.', 'error');
                 });
         });
+
+        const countdown = document.getElementById('wizardAnnouncementCountdown');
+
+        if (countdown) {
+            const targetDate = new Date(countdown.dataset.target);
+            const days = countdown.querySelector('[data-countdown-days]');
+            const hours = countdown.querySelector('[data-countdown-hours]');
+            const minutes = countdown.querySelector('[data-countdown-minutes]');
+            const seconds = countdown.querySelector('[data-countdown-seconds]');
+            const pad = (value) => String(value).padStart(2, '0');
+
+            function updateCountdown() {
+                const distance = targetDate.getTime() - Date.now();
+
+                if (distance <= 0) {
+                    days.textContent = '00';
+                    hours.textContent = '00';
+                    minutes.textContent = '00';
+                    seconds.textContent = '00';
+                    window.location.reload();
+                    return;
+                }
+
+                days.textContent = pad(Math.floor(distance / (1000 * 60 * 60 * 24)));
+                hours.textContent = pad(Math.floor((distance / (1000 * 60 * 60)) % 24));
+                minutes.textContent = pad(Math.floor((distance / (1000 * 60)) % 60));
+                seconds.textContent = pad(Math.floor((distance / 1000) % 60));
+            }
+
+            updateCountdown();
+            setInterval(updateCountdown, 1000);
+        }
 
     </script>
 @endpush

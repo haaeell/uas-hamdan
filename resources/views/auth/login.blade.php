@@ -4,7 +4,10 @@
     @php
         $appName = \App\Models\Setting::getSetting('app_name', 'Sistem Pemilihan Jurusan');
         $schoolName = \App\Models\Setting::getSetting('school_name', 'Sekolah Menengah Atas');
-        $loginHelpText = \App\Models\Setting::getSetting('login_help_text', 'Gunakan email admin untuk melanjutkan.');
+        $loginHelpText = \App\Models\Setting::getSetting('login_help_text', 'Gunakan email admin atau owner untuk melanjutkan.');
+        $loginHelpText = str_contains(strtoupper($loginHelpText), 'NISN')
+            ? 'Gunakan email admin atau owner untuk melanjutkan.'
+            : $loginHelpText;
         $supportContact = \App\Models\Setting::getSetting('support_contact', 'Hubungi admin sekolah');
     @endphp
     <div class="min-h-screen bg-slate-100 flex items-center justify-center px-4 py-10">
@@ -100,8 +103,8 @@
                             <div class="relative">
                                 <i class="fa-solid fa-user absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
 
-                                <input type="text" name="login" value="{{ old('login') }}" required autofocus
-                                    placeholder="Masukkan email admin"
+                                <input type="email" name="login" value="{{ old('login') }}" required autofocus
+                                    placeholder="Masukkan email admin/owner"
                                     class="w-full pl-11 pr-4 py-3.5 rounded-2xl bg-slate-50 border border-slate-200 text-slate-800
                                         focus:bg-white focus:border-red-500 focus:ring-4 focus:ring-red-100 outline-none transition">
 

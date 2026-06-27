@@ -79,7 +79,7 @@ class Setting extends Model
                 'label' => 'Teks Bantuan Login',
                 'group' => 'general',
                 'type' => 'textarea',
-                'default' => 'Gunakan email admin atau NISN siswa untuk melanjutkan.',
+                'default' => 'Gunakan email admin atau owner untuk melanjutkan.',
                 'rules' => ['nullable', 'string', 'max:255'],
                 'help' => 'Muncul di halaman login sebagai petunjuk singkat.',
             ],

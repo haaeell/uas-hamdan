@@ -19,12 +19,15 @@
         $todaySessionsCount = \App\Models\TestSession::where('is_active', true)
             ->whereDate('test_date', now()->toDateString())
             ->count();
-        $unpublishedAnnouncementsCount = \App\Models\Announcement::where('is_published', false)->count();
-        $latestAnnouncement = \App\Models\Announcement::latest()->first();
+        $scheduledAnnouncementsCount = \App\Models\Announcement::where('type', 'final')
+            ->where('is_published', true)
+            ->where('published_at', '>', now())
+            ->count();
+        $latestAnnouncement = \App\Models\Announcement::where('type', 'final')->latest('updated_at')->first();
 
         $notificationCount = $isPlatformAdmin
             ? $pendingOwnersCount
-            : ($todaySessionsCount + $unpublishedAnnouncementsCount);
+            : ($todaySessionsCount + $scheduledAnnouncementsCount);
 
         $adminSearchItems = $isPlatformAdmin
             ? [
@@ -44,7 +47,7 @@
                 ['title' => 'Hasil Tes', 'description' => 'Rekomendasi, biodata, dan penempatan', 'icon' => 'fa-square-poll-vertical', 'url' => route('admin.test-results.index'), 'keywords' => 'hasil rekomendasi final'],
                 ['title' => 'Distribusi Kelas', 'description' => 'Auto distribusi dan pindah siswa antar kelas', 'icon' => 'fa-random', 'url' => route('admin.class-distribution.index'), 'keywords' => 'kelas hasil pembagian final'],
                 ['title' => 'Laporan', 'description' => 'Export laporan siswa, hasil tes, kelas, dan respons', 'icon' => 'fa-file-arrow-down', 'url' => route('admin.reports.index'), 'keywords' => 'report excel pdf export'],
-                ['title' => 'Pengumuman', 'description' => 'Buat dan publish pengumuman sementara atau final', 'icon' => 'fa-bullhorn', 'url' => route('admin.announcements.index'), 'keywords' => 'announcement final temporary publish'],
+                ['title' => 'Pengumuman', 'description' => 'Atur pengumuman final dan tanggal buka', 'icon' => 'fa-bullhorn', 'url' => route('admin.announcements.index'), 'keywords' => 'announcement final jadwal pengumuman'],
                 ['title' => 'Audit Log', 'description' => 'Riwayat aktivitas admin pada sistem', 'icon' => 'fa-clock-rotate-left', 'url' => route('admin.activity-logs.index'), 'keywords' => 'log aktivitas riwayat'],
                 ['title' => 'Settings', 'description' => 'Pengaturan aplikasi, sekolah, timer, dan CBT', 'icon' => 'fa-gear', 'url' => route('admin.settings.index'), 'keywords' => 'setting konfigurasi timer logo'],
             ];
@@ -624,9 +627,9 @@
                                         </div>
                                         <div class="min-w-0 flex-1">
                                             <div class="flex items-center justify-between gap-3">
-                                                <p class="font-bold text-slate-900">Pengumuman draft</p>
+                                                <p class="font-bold text-slate-900">Pengumuman terjadwal</p>
                                                 <span
-                                                    class="text-xs font-extrabold text-blue-700">{{ $unpublishedAnnouncementsCount }}</span>
+                                                    class="text-xs font-extrabold text-blue-700">{{ $scheduledAnnouncementsCount }}</span>
                                             </div>
                                             <p class="text-xs text-slate-500 mt-1">
                                                 {{ $latestAnnouncement ? 'Terakhir: ' . $latestAnnouncement->title : 'Belum ada pengumuman.' }}
