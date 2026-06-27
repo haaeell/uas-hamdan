@@ -20,7 +20,7 @@ class StudentController extends Controller
 {
     public function index()
     {
-        $totalStudents = Student::count();
+        $totalStudents = Student::where('owner_id', auth()->id())->count();
 
         return view('admin.students.index', compact('totalStudents'));
     }
@@ -29,6 +29,7 @@ class StudentController extends Controller
     {
         $query = Student::query()
             ->select('students.*')
+            ->where('owner_id', auth()->id())
             ->with(['user'])
             ->orderByDesc('students.created_at');
 
@@ -203,7 +204,7 @@ class StudentController extends Controller
             'ids.*' => ['exists:students,id'],
         ]);
 
-        $students = Student::whereIn('id', $validated['ids'])->with(['user'])->get();
+        $students = Student::whereIn('id', $validated['ids'])->where('owner_id', auth()->id())->with(['user'])->get();
 
         DB::transaction(function () use ($students, $logger) {
             foreach ($students as $student) {
@@ -223,7 +224,7 @@ class StudentController extends Controller
             'ids.*' => ['exists:students,id'],
         ]);
 
-        User::whereHas('student', fn($q) => $q->whereIn('id', $validated['ids']))
+        User::whereHas('student', fn($q) => $q->whereIn('id', $validated['ids'])->where('owner_id', auth()->id()))
             ->update(['is_active' => true]);
 
         return back()->with('success', 'Siswa terpilih berhasil diaktifkan.');
@@ -236,7 +237,7 @@ class StudentController extends Controller
             'ids.*' => ['exists:students,id'],
         ]);
 
-        User::whereHas('student', fn($q) => $q->whereIn('id', $validated['ids']))
+        User::whereHas('student', fn($q) => $q->whereIn('id', $validated['ids'])->where('owner_id', auth()->id()))
             ->update(['is_active' => false]);
 
         return back()->with('success', 'Siswa terpilih berhasil dinonaktifkan.');
