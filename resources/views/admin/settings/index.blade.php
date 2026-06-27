@@ -38,7 +38,7 @@
 
                 <div class="space-y-3">
                     <div class="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-4">
-                        <div class="text-xs font-bold uppercase tracking-wide text-slate-500">Link Ujian Owner</div>
+                        <div class="text-xs font-bold uppercase tracking-wide text-slate-500">Link Ujian Siswa</div>
                         <div class="text-sm font-extrabold text-slate-900 mt-1 break-all">{{ $examLink ?: '-' }}</div>
                     </div>
 
