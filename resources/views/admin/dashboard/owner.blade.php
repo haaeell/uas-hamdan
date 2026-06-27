@@ -19,9 +19,17 @@
                     </p>
                 </div>
 
-                <div class="bg-white/15 backdrop-blur-xl rounded-3xl px-5 py-4 border border-white/20">
-                    <p class="text-xs text-white/75">Status Panel</p>
-                    <p class="font-bold text-lg">Aktif</p>
+                <div class="flex items-center gap-3">
+                    <div class="bg-white/15 backdrop-blur-xl rounded-3xl px-5 py-4 border border-white/20">
+                        <p class="text-xs text-white/75">Status Panel</p>
+                        <p class="font-bold text-lg">Aktif</p>
+                    </div>
+
+                    <button type="button" onclick="document.getElementById('resetOwnerModal').classList.remove('hidden'); document.getElementById('resetOwnerModal').classList.add('flex')"
+                        class="bg-white/10 hover:bg-red-500/80 backdrop-blur-xl rounded-3xl px-5 py-4 border border-white/20 hover:border-red-400 transition-all text-left">
+                        <p class="text-xs text-white/75">Bahaya</p>
+                        <p class="font-bold text-lg flex items-center gap-2"><i class="fa-solid fa-triangle-exclamation text-sm"></i> Reset Data</p>
+                    </button>
                 </div>
             </div>
         </div>
@@ -156,6 +164,58 @@
         </div>
     </div>
 @endsection
+
+{{-- Modal Reset Data Owner --}}
+<div id="resetOwnerModal" class="hidden fixed inset-0 bg-slate-900/70 backdrop-blur-sm z-50 items-center justify-center p-4">
+    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6">
+        <div class="flex items-center gap-3 mb-4">
+            <div class="w-11 h-11 rounded-xl bg-red-100 flex items-center justify-center flex-shrink-0">
+                <i class="fa-solid fa-triangle-exclamation text-red-600"></i>
+            </div>
+            <div>
+                <h2 class="font-extrabold text-slate-900 text-lg">Reset Semua Data</h2>
+                <p class="text-sm text-slate-500">Tindakan ini tidak bisa dibatalkan</p>
+            </div>
+        </div>
+
+        <div class="rounded-xl bg-red-50 border border-red-200 p-4 text-sm text-red-700 mb-5 space-y-1">
+            <p class="font-bold mb-2">Data yang akan dihapus permanen:</p>
+            <ul class="list-disc list-inside space-y-0.5">
+                <li>Seluruh data siswa & akun login siswa</li>
+                <li>Sesi tes & jawaban siswa</li>
+                <li>Hasil tes & distribusi kelas</li>
+                <li>Pelanggaran & pengumuman</li>
+                <li>Soal instrumen peminatan</li>
+                <li>Jurusan (paket) & mata pelajaran</li>
+                <li>Log aktivitas</li>
+            </ul>
+            <p class="font-semibold mt-2 text-red-800">Semua data akan dihapus permanen.</p>
+        </div>
+
+        <form method="POST" action="{{ route('admin.dashboard.reset-owner-data') }}">
+            @csrf
+            <div class="mb-4">
+                <label class="block text-sm font-semibold text-slate-700 mb-2">
+                    Ketik <span class="font-bold text-red-600">RESET</span> untuk konfirmasi
+                </label>
+                <input type="text" name="confirmation" placeholder="RESET" autocomplete="off"
+                    class="w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50 text-slate-800 focus:border-red-400 focus:ring-4 focus:ring-red-100 outline-none transition font-mono tracking-widest">
+            </div>
+
+            <div class="flex gap-3">
+                <button type="button"
+                    onclick="document.getElementById('resetOwnerModal').classList.add('hidden'); document.getElementById('resetOwnerModal').classList.remove('flex')"
+                    class="flex-1 py-3 rounded-xl border border-slate-200 text-slate-600 font-bold hover:bg-slate-50 transition">
+                    Batal
+                </button>
+                <button type="submit"
+                    class="flex-1 py-3 rounded-xl bg-red-600 hover:bg-red-700 text-white font-bold transition">
+                    Ya, Reset Sekarang
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
 
 @push('scripts')
     <script>

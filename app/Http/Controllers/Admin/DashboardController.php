@@ -195,6 +195,85 @@ class DashboardController extends Controller
         ));
     }
 
+    public function resetOwnerData(Request $request)
+    {
+        abort_unless(auth()->user()->role === 'owner', 403);
+
+        $request->validate([
+            'confirmation' => ['required', 'in:RESET'],
+        ]);
+
+        $ownerId = auth()->id();
+
+        DB::transaction(function () use ($ownerId) {
+            // Hapus data yang bergantung pada students
+            $studentIds = Student::withoutGlobalScopes()
+                ->where('owner_id', $ownerId)
+                ->pluck('id');
+
+            if ($studentIds->isNotEmpty()) {
+                DB::table('student_test_sessions')->whereIn('student_id', $studentIds)->delete();
+                DB::table('student_psychology_answers')->whereIn('student_id', $studentIds)->delete();
+                DB::table('student_academic_answers')->whereIn('student_id', $studentIds)->delete();
+                DB::table('student_package_choices')->whereIn('student_id', $studentIds)->delete();
+                DB::table('student_selfies')->whereIn('student_id', $studentIds)->delete();
+                DB::table('student_biodatas')->whereIn('student_id', $studentIds)->delete();
+                DB::table('class_students')->whereIn('student_id', $studentIds)->delete();
+                DB::table('announcement_responses')->whereIn('student_id', $studentIds)->delete();
+                DB::table('objections')->whereIn('student_id', $studentIds)->delete();
+            }
+
+            // Hapus data berdasarkan owner_id
+            DB::table('violations')->where('owner_id', $ownerId)->delete();
+            DB::table('test_results')->where('owner_id', $ownerId)->delete();
+            DB::table('class_groups')->where('owner_id', $ownerId)->delete();
+            DB::table('announcements')->where('owner_id', $ownerId)->delete();
+            DB::table('test_session_classes')->whereIn('test_session_id',
+                DB::table('test_sessions')->where('owner_id', $ownerId)->pluck('id')
+            )->delete();
+            DB::table('test_sessions')->where('owner_id', $ownerId)->delete();
+            DB::table('activity_logs')->where('owner_id', $ownerId)->delete();
+
+            // Hapus students dan users siswa
+            $userIds = Student::withoutGlobalScopes()
+                ->where('owner_id', $ownerId)
+                ->pluck('user_id')
+                ->filter();
+
+            Student::withoutGlobalScopes()->where('owner_id', $ownerId)->delete();
+
+            if ($userIds->isNotEmpty()) {
+                User::whereIn('id', $userIds)->delete();
+            }
+
+            // Hapus soal instrumen peminatan beserta opsi dan bobot
+            $questionIds = DB::table('psychology_questions')->where('owner_id', $ownerId)->pluck('id');
+            if ($questionIds->isNotEmpty()) {
+                $optionIds = DB::table('psychology_question_options')->whereIn('question_id', $questionIds)->pluck('id');
+                if ($optionIds->isNotEmpty()) {
+                    DB::table('psychology_option_weights')->whereIn('option_id', $optionIds)->delete();
+                }
+                DB::table('psychology_question_options')->whereIn('question_id', $questionIds)->delete();
+            }
+            DB::table('psychology_questions')->where('owner_id', $ownerId)->delete();
+
+            // Hapus jurusan beserta mata pelajaran
+            $packageIds = DB::table('packages')->where('owner_id', $ownerId)->pluck('id');
+            if ($packageIds->isNotEmpty()) {
+                DB::table('package_subjects')->whereIn('package_id', $packageIds)->delete();
+            }
+            DB::table('packages')->where('owner_id', $ownerId)->delete();
+        });
+
+        // Hapus file selfie dan gambar soal milik owner ini
+        Storage::disk('public')->deleteDirectory("selfies/{$ownerId}");
+        Storage::disk('public')->deleteDirectory("question-images");
+
+        return redirect()
+            ->route('admin.dashboard')
+            ->with('success', 'Semua data berhasil direset sepenuhnya.');
+    }
+
     public function resetData(Request $request)
     {
         abort_unless(auth()->user()->role === 'admin', 403);

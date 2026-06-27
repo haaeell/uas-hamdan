@@ -302,16 +302,19 @@ class StudentController extends Controller
     {
         $ownerId = auth()->id();
 
-        DB::transaction(function () use ($ownerId, $logger) {
-            Student::where('owner_id', $ownerId)
-                ->with('user')
-                ->chunkById(100, function ($students) use ($logger) {
-                    foreach ($students as $student) {
-                        $logger->log('student', 'delete', $student);
-                    }
+        // Ambil semua dulu sebelum dihapus agar chunk tidak skip data
+        $students = Student::where('owner_id', $ownerId)->with('user')->get();
 
-                    $this->deleteStudents($students);
-                });
+        if ($students->isEmpty()) {
+            return back()->with('success', 'Tidak ada data siswa untuk dihapus.');
+        }
+
+        DB::transaction(function () use ($students, $logger) {
+            foreach ($students as $student) {
+                $logger->log('student', 'delete', $student);
+            }
+
+            $this->deleteStudents($students);
         });
 
         return back()->with('success', 'Semua data siswa berhasil dihapus.');

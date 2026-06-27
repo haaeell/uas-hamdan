@@ -161,16 +161,11 @@
                         Hapus
                     </button>
 
-                    <form id="destroyAllStudentsForm" method="POST"
-                        action="{{ route('admin.students.destroy-all') }}" class="inline">
-                        @csrf
-                        @method('DELETE')
-                        <button type="button" id="destroyAllStudentsBtn"
-                            class="inline-flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white px-4 py-2.5 rounded-2xl font-bold shadow-lg shadow-red-100 transition">
-                            <i class="fa-solid fa-trash-can"></i>
-                            Hapus Semua
-                        </button>
-                    </form>
+                    <button type="button" id="destroyAllStudentsBtn"
+                        class="inline-flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white px-4 py-2.5 rounded-2xl font-bold shadow-lg shadow-red-100 transition">
+                        <i class="fa-solid fa-trash-can"></i>
+                        Hapus Semua
+                    </button>
                 </div>
 
                 <div class="overflow-x-auto">
@@ -193,6 +188,12 @@
             </form>
 
             <form id="singleDeleteForm" method="POST" class="hidden">
+                @csrf
+                @method('DELETE')
+            </form>
+
+            <form id="destroyAllStudentsForm" method="POST"
+                action="{{ route('admin.students.destroy-all') }}" class="hidden">
                 @csrf
                 @method('DELETE')
             </form>

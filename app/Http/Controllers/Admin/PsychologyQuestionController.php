@@ -149,13 +149,13 @@ class PsychologyQuestionController extends Controller
 
     public function destroyAll()
     {
-        PsychologyQuestion::query()
-            ->select('id')
-            ->chunkById(100, function ($questions) {
-                foreach ($questions as $question) {
-                    $question->delete();
-                }
-            });
+        $ids = PsychologyQuestion::pluck('id');
+
+        if ($ids->isEmpty()) {
+            return back()->with('success', 'Tidak ada soal untuk dihapus.');
+        }
+
+        PsychologyQuestion::whereIn('id', $ids)->delete();
 
         return back()->with('success', 'Semua soal instrumen peminatan berhasil dihapus.');
     }

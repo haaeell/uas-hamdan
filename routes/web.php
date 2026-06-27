@@ -84,6 +84,10 @@ Route::middleware(['auth', 'role:admin,owner'])
         Route::post('/dashboard/reset-data', [DashboardController::class, 'resetData'])
             ->name('dashboard.reset-data');
 
+        Route::post('/dashboard/reset-owner-data', [DashboardController::class, 'resetOwnerData'])
+            ->middleware('role:owner')
+            ->name('dashboard.reset-owner-data');
+
         Route::middleware('role:admin')->group(function () {
             Route::get('/owner-approvals', [OwnerApprovalController::class, 'index'])
                 ->name('owner-approvals.index');
