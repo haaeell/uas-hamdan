@@ -146,6 +146,8 @@ class StudentController extends Controller
 
     public function update(Request $request, Student $student, ActivityLogService $logger)
     {
+        abort_unless($student->owner_id === auth()->id(), 403);
+
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:150'],
             'nisn' => [
@@ -189,6 +191,8 @@ class StudentController extends Controller
 
     public function destroy(Student $student, ActivityLogService $logger)
     {
+        abort_unless($student->owner_id === auth()->id(), 403);
+
         DB::transaction(function () use ($student, $logger) {
             $logger->log('student', 'delete', $student);
             $this->deleteStudents(collect([$student]));

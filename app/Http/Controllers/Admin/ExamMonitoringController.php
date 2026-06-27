@@ -28,6 +28,7 @@ class ExamMonitoringController extends Controller
         $activeSessionsQuery = DB::table('student_test_sessions as sts')
             ->join('students as s', 's.id', '=', 'sts.student_id')
             ->join('test_sessions as ts', 'ts.id', '=', 'sts.test_session_id')
+            ->where('s.owner_id', auth()->id())
             ->whereNotNull('sts.psychology_started_at')
             ->whereNull('sts.psychology_submitted_at');
 
@@ -163,6 +164,7 @@ class ExamMonitoringController extends Controller
         $psychologySubmissions = DB::table('student_test_sessions as sts')
             ->join('students as s', 's.id', '=', 'sts.student_id')
             ->join('test_sessions as ts', 'ts.id', '=', 'sts.test_session_id')
+            ->where('s.owner_id', auth()->id())
             ->whereNotNull('sts.psychology_submitted_at')
             ->selectRaw("
                 s.name,

@@ -10,6 +10,7 @@ class AdminViolationController extends Controller
     public function index()
     {
         $violations = Violation::with('student')
+            ->where('owner_id', auth()->id())
             ->latest()
             ->paginate(30);
 

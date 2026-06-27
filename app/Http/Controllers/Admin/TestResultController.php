@@ -25,6 +25,7 @@ class TestResultController extends Controller
     {
         $query = TestResult::query()
             ->select('test_results.*')
+            ->where('owner_id', auth()->id())
             ->with([
                 'student.user',
                 'student.biodata',
@@ -201,12 +202,13 @@ class TestResultController extends Controller
                 'Rencana Setelah Lulus',
             ]);
 
-            TestResult::with([
-                'student.packageChoice.firstPackage',
-                'student.packageChoice.secondPackage',
-                'recommendedPackage',
-                'finalPackage',
-            ])->chunk(100, function ($results) use ($file) {
+            TestResult::where('owner_id', auth()->id())
+                ->with([
+                    'student.packageChoice.firstPackage',
+                    'student.packageChoice.secondPackage',
+                    'recommendedPackage',
+                    'finalPackage',
+                ])->chunk(100, function ($results) use ($file) {
                 foreach ($results as $result) {
                     fputcsv($file, [
                         $result->student?->name,
