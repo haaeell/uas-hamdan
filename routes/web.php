@@ -245,6 +245,10 @@ Route::middleware(['auth', 'role:admin,owner'])
         Route::put('/settings/update-password', [SettingController::class, 'updatePassword'])
             ->middleware('role:owner')
             ->name('settings.update-password');
+
+        Route::post('/settings/regenerate-exam-link', [SettingController::class, 'regenerateExamLink'])
+            ->middleware('role:owner')
+            ->name('settings.regenerate-exam-link');
     });
 
 /*

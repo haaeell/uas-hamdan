@@ -36,10 +36,28 @@
                     </div>
                 </div>
 
+                @if(session('link_success'))
+                    <div class="mb-3 rounded-2xl bg-green-50 border border-green-200 px-4 py-3 text-sm text-green-700 font-semibold">
+                        <i class="fa-solid fa-circle-check mr-1"></i> {{ session('link_success') }}
+                    </div>
+                @endif
+
                 <div class="space-y-3">
                     <div class="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-4">
-                        <div class="text-xs font-bold uppercase tracking-wide text-slate-500">Link Ujian Siswa</div>
-                        <div class="text-sm font-extrabold text-slate-900 mt-1 break-all">{{ $examLink ?: '-' }}</div>
+                        <div class="flex items-center justify-between mb-1">
+                            <div class="text-xs font-bold uppercase tracking-wide text-slate-500">Link Ujian Siswa</div>
+                            @if(auth()->user()->role === 'owner')
+                                <form method="POST" action="{{ route('admin.settings.regenerate-exam-link') }}">
+                                    @csrf
+                                    <button type="button"
+                                        onclick="if(confirm('Generate link baru? Link lama tidak akan bisa digunakan lagi.')) this.closest('form').submit()"
+                                        class="inline-flex items-center gap-1.5 text-xs font-bold text-blue-600 hover:text-blue-800 transition">
+                                        <i class="fa-solid fa-arrows-rotate"></i> Regenerate
+                                    </button>
+                                </form>
+                            @endif
+                        </div>
+                        <div class="text-sm font-extrabold text-slate-900 break-all">{{ $examLink ?: '-' }}</div>
                     </div>
 
                     <div class="rounded-2xl border border-blue-100 bg-blue-50 px-4 py-4">

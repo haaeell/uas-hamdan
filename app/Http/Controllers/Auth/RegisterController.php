@@ -74,7 +74,7 @@ class RegisterController extends Controller
             'is_active' => false,
             'approved_at' => null,
             'email_verified_at' => null,
-            'exam_token' => Str::random(32),
+            'exam_token' => Str::random(8),
         ]);
 
         $user->forceFill(['owner_id' => $user->id])->save();

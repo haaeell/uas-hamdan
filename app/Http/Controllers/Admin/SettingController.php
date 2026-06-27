@@ -8,6 +8,7 @@ use App\Services\ActivityLogService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class SettingController extends Controller
 {
@@ -69,5 +70,16 @@ class SettingController extends Controller
         ]);
 
         return back()->with('password_success', 'Password berhasil diperbarui.');
+    }
+
+    public function regenerateExamLink()
+    {
+        abort_unless(auth()->user()->role === 'owner', 403);
+
+        auth()->user()->update([
+            'exam_token' => Str::random(8),
+        ]);
+
+        return back()->with('link_success', 'Link ujian berhasil diperbarui.');
     }
 }
