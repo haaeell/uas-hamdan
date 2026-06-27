@@ -261,7 +261,7 @@ class StudentController extends Controller
         @set_time_limit(0);
         @ini_set('max_execution_time', '0');
 
-        $import = new StudentsImport();
+        $import = new StudentsImport(auth()->id());
 
         Excel::import($import, $request->file('file'));
 

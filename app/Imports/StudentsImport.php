@@ -24,6 +24,10 @@ class StudentsImport implements ToCollection, WithChunkReading, WithHeadingRow, 
 
     private array $seenNisns = [];
 
+    public function __construct(private readonly int $ownerId)
+    {
+    }
+
     public function collection(Collection $rows): void
     {
         $now = now();
@@ -105,6 +109,7 @@ class StudentsImport implements ToCollection, WithChunkReading, WithHeadingRow, 
                 }
 
                 $userRows[] = [
+                    'owner_id' => $this->ownerId,
                     'name' => $row['name'],
                     'nisn' => $row['nisn'],
                     'password' => $row['password'],
@@ -130,6 +135,7 @@ class StudentsImport implements ToCollection, WithChunkReading, WithHeadingRow, 
                 }
 
                 $studentRows[] = [
+                    'owner_id' => $this->ownerId,
                     'user_id' => $userIds[$row['nisn']],
                     'nisn' => $row['nisn'],
                     'nis' => $row['nis'],
