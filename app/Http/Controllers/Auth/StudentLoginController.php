@@ -55,11 +55,7 @@ class StudentLoginController extends Controller
             ]);
         }
 
-        $stored = (string) $student->password;
-        $input  = (string) $request->password;
-
-        $valid = \Illuminate\Support\Facades\Hash::check($input, $stored)
-            || hash_equals($stored, $input);
+        $valid = hash_equals((string) $student->password, (string) $request->password);
 
         if (!$valid) {
             throw ValidationException::withMessages([
