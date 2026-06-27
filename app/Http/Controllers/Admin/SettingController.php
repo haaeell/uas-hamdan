@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Setting;
 use App\Services\ActivityLogService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 
 class SettingController extends Controller
@@ -15,7 +16,7 @@ class SettingController extends Controller
         $definitions = Setting::groupedDefinitions();
         $values = [];
         $examLink = auth()->user()->exam_token
-            ? route('owner.exam-link', auth()->user()->exam_token)
+            ? route('student.login', auth()->user()->exam_token)
             : null;
 
         foreach (array_keys(Setting::definitions()) as $key) {
@@ -64,7 +65,7 @@ class SettingController extends Controller
         ]);
 
         auth()->user()->update([
-            'password' => $request->password,
+            'password' => Hash::make($request->password),
         ]);
 
         return back()->with('password_success', 'Password berhasil diperbarui.');
