@@ -75,6 +75,16 @@
                         <div class="mb-6 rounded-2xl border border-red-100 bg-red-50 p-4 text-sm text-red-700">
                             <p class="font-bold mb-1">Login gagal</p>
                             <p>{{ $errors->first('login') ?: 'Periksa kembali email dan password kamu.' }}</p>
+                            @if(str_contains($errors->first('login') ?? '', 'OTP'))
+                                <form method="POST" action="{{ route('auth.email-otp.resend') }}" class="mt-3">
+                                    @csrf
+                                    <input type="hidden" name="email" value="{{ old('login') }}">
+                                    <button type="submit"
+                                        class="inline-flex items-center gap-1.5 font-bold text-red-700 underline underline-offset-2 hover:text-red-900 transition">
+                                        <i class="fa-solid fa-paper-plane text-xs"></i> Kirim ulang OTP
+                                    </button>
+                                </form>
+                            @endif
                         </div>
                     @endif
 
