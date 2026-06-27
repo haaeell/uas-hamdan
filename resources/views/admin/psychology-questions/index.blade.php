@@ -54,9 +54,10 @@
                     </button>
                 </form>
 
-                <div class="mt-4 rounded-2xl border border-blue-100 bg-blue-50 px-4 py-3 text-xs text-blue-700 leading-relaxed">
-                    Gunakan kolom <span class="font-bold">question_group</span> untuk mengelompokkan opsi A-D dan
-                    <span class="font-bold">image_url</span> bila soal memakai gambar.
+                <div class="mt-4 rounded-2xl border border-blue-100 bg-blue-50 px-4 py-3 text-xs text-blue-700 leading-relaxed space-y-1.5">
+                    <p><span class="font-bold">question_group</span> — kode unik untuk mengelompokkan 5 baris opsi A–E menjadi satu soal.</p>
+                    <p><span class="font-bold">weight_[kode]</span> — bobot nilai untuk tiap jurusan, mis. <span class="font-bold">weight_ipa</span>, <span class="font-bold">weight_ips</span>. Kolom ini muncul otomatis sesuai paket aktif saat download template.</p>
+                    <p class="text-blue-500">Soal yang diimport otomatis diset aktif.</p>
                 </div>
 
                 <div class="grid grid-cols-2 gap-3 mt-4">

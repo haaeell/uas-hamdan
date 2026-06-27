@@ -62,7 +62,7 @@ class PsychologyQuestionsImport implements SkipsEmptyRows, ToCollection, WithHea
                     'question' => $questionText,
                     'image_path' => $this->imageService->storeFromUrl($firstRow['image_url'] ?? null),
                     'order' => $nextOrder++,
-                    'is_active' => $this->toBoolean($firstRow['is_active'] ?? 1),
+                    'is_active' => true,
                 ]);
 
                 foreach ($groupRows as $rowIndex => $row) {
@@ -103,8 +103,4 @@ class PsychologyQuestionsImport implements SkipsEmptyRows, ToCollection, WithHea
         ]);
     }
 
-    private function toBoolean(mixed $value): bool
-    {
-        return filter_var($value, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE) ?? ((string) $value === '1');
-    }
 }
