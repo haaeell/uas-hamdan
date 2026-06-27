@@ -49,4 +49,24 @@ class SettingController extends Controller
 
         return back()->with('success', 'Pengaturan aplikasi berhasil diperbarui.');
     }
+
+    public function updatePassword(Request $request)
+    {
+        abort_unless(auth()->user()->role === 'owner', 403);
+
+        $request->validateWithBag('password', [
+            'current_password' => ['required', 'current_password'],
+            'password'         => ['required', 'string', 'min:8', 'confirmed'],
+        ], [
+            'current_password.current_password' => 'Password saat ini tidak sesuai.',
+            'password.min'                      => 'Password baru minimal 8 karakter.',
+            'password.confirmed'                => 'Konfirmasi password tidak cocok.',
+        ]);
+
+        auth()->user()->update([
+            'password' => $request->password,
+        ]);
+
+        return back()->with('password_success', 'Password berhasil diperbarui.');
+    }
 }

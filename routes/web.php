@@ -88,6 +88,7 @@ Route::middleware(['auth', 'role:admin,owner'])
             ->middleware('role:owner')
             ->name('dashboard.reset-owner-data');
 
+
         Route::middleware('role:admin')->group(function () {
             Route::get('/owner-approvals', [OwnerApprovalController::class, 'index'])
                 ->name('owner-approvals.index');
@@ -238,6 +239,10 @@ Route::middleware(['auth', 'role:admin,owner'])
 
         Route::put('/settings', [SettingController::class, 'update'])
             ->name('settings.update');
+
+        Route::put('/settings/update-password', [SettingController::class, 'updatePassword'])
+            ->middleware('role:owner')
+            ->name('settings.update-password');
     });
 
 /*

@@ -19,7 +19,7 @@
                     </p>
                 </div>
 
-                <div class="flex items-center gap-3">
+                <div class="flex items-center gap-3 flex-wrap">
                     <div class="bg-white/15 backdrop-blur-xl rounded-3xl px-5 py-4 border border-white/20">
                         <p class="text-xs text-white/75">Status Panel</p>
                         <p class="font-bold text-lg">Aktif</p>

@@ -171,6 +171,76 @@
                 </div>
             </form>
         </div>
+        @if(auth()->user()->role === 'owner')
+        <div class="grid xl:grid-cols-[0.95fr_1.65fr] gap-6 items-start">
+            <div class="bg-white border border-slate-200 rounded-[30px] p-6 shadow-sm">
+                <div class="flex items-center gap-3 mb-3">
+                    <div class="w-12 h-12 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center">
+                        <i class="fa-solid fa-key"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-xl font-extrabold text-slate-900">Keamanan Akun</h2>
+                        <p class="text-sm text-slate-500 mt-1">Perbarui password login akun owner Anda.</p>
+                    </div>
+                </div>
+                <div class="rounded-2xl border border-blue-100 bg-blue-50 px-4 py-3 text-sm text-blue-700 mt-4">
+                    <p class="font-semibold">{{ auth()->user()->name }}</p>
+                    <p class="text-blue-500">{{ auth()->user()->email }}</p>
+                </div>
+            </div>
+
+            <div class="bg-white border border-slate-200 rounded-[30px] p-6 shadow-sm">
+                @if(session('password_success'))
+                    <div class="mb-5 rounded-2xl bg-green-50 border border-green-200 px-4 py-3 text-sm text-green-700 font-semibold">
+                        <i class="fa-solid fa-circle-check mr-1"></i> {{ session('password_success') }}
+                    </div>
+                @endif
+
+                @if($errors->hasBag('password'))
+                    <div class="mb-5 rounded-2xl border border-red-100 bg-red-50 p-4 text-sm text-red-700">
+                        <p class="font-bold mb-2">Periksa kembali input:</p>
+                        <ul class="list-disc list-inside space-y-1">
+                            @foreach($errors->getBag('password')->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
+
+                <form method="POST" action="{{ route('admin.settings.update-password') }}" class="space-y-4">
+                    @csrf
+                    @method('PUT')
+
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-700 mb-2">Password Saat Ini</label>
+                        <input type="password" name="current_password" placeholder="••••••••" autocomplete="current-password"
+                            class="w-full px-4 py-3 rounded-2xl bg-slate-50 border border-slate-200 text-slate-800 focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-100 outline-none transition">
+                    </div>
+
+                    <div class="grid md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-semibold text-slate-700 mb-2">Password Baru</label>
+                            <input type="password" name="password" placeholder="Min. 8 karakter" autocomplete="new-password"
+                                class="w-full px-4 py-3 rounded-2xl bg-slate-50 border border-slate-200 text-slate-800 focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-100 outline-none transition">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-slate-700 mb-2">Konfirmasi Password Baru</label>
+                            <input type="password" name="password_confirmation" placeholder="Ulangi password baru" autocomplete="new-password"
+                                class="w-full px-4 py-3 rounded-2xl bg-slate-50 border border-slate-200 text-slate-800 focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-100 outline-none transition">
+                        </div>
+                    </div>
+
+                    <div class="flex justify-end">
+                        <button
+                            class="inline-flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-2xl font-bold shadow-lg shadow-blue-200 transition">
+                            <i class="fa-solid fa-key"></i>
+                            Simpan Password
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        @endif
     </div>
 @endsection
 
