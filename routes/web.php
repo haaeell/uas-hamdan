@@ -108,6 +108,7 @@ Route::middleware(['auth', 'role:admin,owner'])
             |--------------------------------------------------------------------------
             */
             Route::get('/students/data', [StudentController::class, 'data'])->name('students.data');
+            Route::delete('/students/destroy-all', [StudentController::class, 'destroyAll'])->name('students.destroy-all');
             Route::resource('/students', StudentController::class);
             Route::post('/students/import', [StudentController::class, 'import'])->name('students.import');
             Route::get('/students/export/excel', [StudentController::class, 'export'])->name('students.export');

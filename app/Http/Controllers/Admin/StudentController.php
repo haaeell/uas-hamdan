@@ -293,6 +293,25 @@ class StudentController extends Controller
         return back()->with('success', $message);
     }
 
+    public function destroyAll(ActivityLogService $logger)
+    {
+        $ownerId = auth()->id();
+
+        DB::transaction(function () use ($ownerId, $logger) {
+            Student::where('owner_id', $ownerId)
+                ->with('user')
+                ->chunkById(100, function ($students) use ($logger) {
+                    foreach ($students as $student) {
+                        $logger->log('student', 'delete', $student);
+                    }
+
+                    $this->deleteStudents($students);
+                });
+        });
+
+        return back()->with('success', 'Semua data siswa berhasil dihapus.');
+    }
+
     private function deleteStudents(Collection $students): void
     {
         foreach ($students as $student) {

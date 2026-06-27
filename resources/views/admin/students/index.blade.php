@@ -160,6 +160,17 @@
                         <i class="fa-solid fa-trash"></i>
                         Hapus
                     </button>
+
+                    <form id="destroyAllStudentsForm" method="POST"
+                        action="{{ route('admin.students.destroy-all') }}" class="inline">
+                        @csrf
+                        @method('DELETE')
+                        <button type="button" id="destroyAllStudentsBtn"
+                            class="inline-flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white px-4 py-2.5 rounded-2xl font-bold shadow-lg shadow-red-100 transition">
+                            <i class="fa-solid fa-trash-can"></i>
+                            Hapus Semua
+                        </button>
+                    </form>
                 </div>
 
                 <div class="overflow-x-auto">
@@ -405,6 +416,23 @@
                 if (e.key === 'Escape') {
                     closeEditModal();
                 }
+            });
+
+            $('#destroyAllStudentsBtn').on('click', function () {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Hapus semua siswa?',
+                    text: 'Seluruh data siswa beserta akun login akan dihapus permanen dan tidak bisa dikembalikan.',
+                    showCancelButton: true,
+                    confirmButtonText: 'Ya, hapus semua',
+                    cancelButtonText: 'Batal',
+                    confirmButtonColor: '#dc2626',
+                    cancelButtonColor: '#64748b'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $('#destroyAllStudentsForm').submit();
+                    }
+                });
             });
         });
     </script>
