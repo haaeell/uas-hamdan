@@ -42,14 +42,7 @@ Auth::routes([
 ]);
 
 Route::get('/uji/{token}', function (string $token) {
-    $owner = \App\Models\User::where('role', 'owner')
-        ->where('is_active', true)
-        ->where('exam_token', $token)
-        ->firstOrFail();
-
-    session(['exam_owner_id' => $owner->id]);
-
-    return redirect()->route('login')->with('success', 'Link ujian aktif untuk ' . $owner->name . '.');
+    return redirect()->route('student.login', $token);
 })->name('owner.exam-link');
 
 Route::get('/redirect-after-login', RedirectController::class)
