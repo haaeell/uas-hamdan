@@ -510,8 +510,8 @@
                         {{ auth()->user()?->role === 'admin' ? 'A' : 'O' }}
                     </div>
                     <div class="min-w-0">
-                        <p class="text-sm font-bold text-slate-900 truncate">{{ $profileLabel }}</p>
-                        <p class="text-xs text-slate-500 truncate">{{ auth()->user()?->role === 'admin' ? 'Panel Admin' : 'Panel Owner' }}</p>
+                        <p class="text-sm font-bold text-slate-900 truncate">{{ auth()->user()?->name ?? $profileLabel }}</p>
+                        <p class="text-xs text-slate-500 truncate">{{ auth()->user()?->email ?? (auth()->user()?->role === 'admin' ? 'Panel Admin' : 'Panel Owner') }}</p>
                     </div>
                 </div>
             </div>
