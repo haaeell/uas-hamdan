@@ -382,9 +382,9 @@
     </main>
 
     <footer class="border-t border-gray-100 bg-white">
-        <div class="mx-auto flex max-w-7xl flex-col gap-3 px-5 py-7 text-sm text-gray-400 md:flex-row md:items-center md:justify-between">
-            <img src="{{ asset('logo.png') }}" alt="jejakcita.id" class="h-11 w-auto">
-            <span>Platform deteksi potensi karir siswa untuk sekolah modern.</span>
+        <div class="mx-auto flex max-w-7xl items-center justify-between gap-4 px-5 py-6 text-sm text-gray-400 flex-row">
+            <img src="{{ asset('logo.png') }}" alt="jejakcita.id" class="h-9 w-auto flex-shrink-0">
+            <span class="text-right leading-snug">Platform deteksi potensi karir siswa untuk sekolah modern.</span>
         </div>
     </footer>
 
