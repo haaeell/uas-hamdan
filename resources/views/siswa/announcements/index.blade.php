@@ -207,6 +207,21 @@
                         </div>
 
                         @if($testResult)
+                            @if($testResult->recommendedPackage)
+                                <div class="rounded-2xl p-5 mb-4" style="background:#1a2d6b">
+                                    <p class="text-xs font-bold uppercase tracking-widest mb-2" style="color:#c9a227">Hasil Rekomendasi</p>
+                                    <p class="text-lg font-extrabold leading-snug text-white">
+                                        Berdasarkan hasil tes kamu, kamu cocok di
+                                        <span class="underline underline-offset-2" style="color:#c9a227">{{ $testResult->recommendedPackage->name }}</span>
+                                    </p>
+                                    @if($testResult->recommendedPackage->description)
+                                        <p class="mt-3 text-sm leading-relaxed" style="color:#d1d9f0">
+                                            {{ $testResult->recommendedPackage->description }}
+                                        </p>
+                                    @endif
+                                </div>
+                            @endif
+
                             <div class="grid sm:grid-cols-2 gap-3 text-sm mb-4">
                                 <div class="rounded-2xl bg-blue-600 text-white p-4">
                                     <p class="font-semibold text-blue-100">Status Tes</p>
