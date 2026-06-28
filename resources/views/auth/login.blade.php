@@ -133,9 +133,9 @@
             </section>
         </main>
 
-        <footer class="mx-auto flex w-full max-w-6xl flex-col gap-2 px-5 pb-8 text-xs font-medium text-gray-400 sm:flex-row sm:items-center sm:justify-between">
-            <img src="{{ asset('logo.png') }}" alt="jejakcita.id" class="h-11 w-auto">
-            <span>Platform deteksi potensi karir siswa</span>
+        <footer class="mx-auto flex w-full max-w-6xl flex-row items-center justify-between gap-4 px-5 pb-8 text-xs font-medium text-gray-400">
+            <img src="{{ asset('logo.png') }}" alt="jejakcita.id" class="h-9 w-auto flex-shrink-0">
+            <span class="text-right leading-snug">Platform deteksi potensi karir siswa</span>
         </footer>
     </div>
 @endsection
