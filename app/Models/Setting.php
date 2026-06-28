@@ -234,7 +234,7 @@ class Setting extends Model
             return asset('storage/' . $logoPath);
         }
 
-        return asset('images/logo.png');
+        return asset('favicon.svg');
     }
 
     public static function hasLogo(): bool
@@ -252,7 +252,7 @@ class Setting extends Model
             return Storage::disk('public')->path($logoPath);
         }
 
-        $defaultPath = public_path('images/logo.png');
+        $defaultPath = public_path('favicon.svg');
 
         return is_file($defaultPath) ? $defaultPath : null;
     }
@@ -270,6 +270,7 @@ class Setting extends Model
             'jpg', 'jpeg' => 'image/jpeg',
             'gif' => 'image/gif',
             'webp' => 'image/webp',
+            'svg' => 'image/svg+xml',
             default => 'image/png',
         };
 

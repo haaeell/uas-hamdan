@@ -10,7 +10,7 @@
     <meta charset="UTF-8">
     <title>Siswa - {{ $appName }}</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="icon" type="image/png" href="{{ $logoUrl }}">
+    <link rel="icon" href="{{ $logoUrl }}">
 
     <script src="https://cdn.tailwindcss.com"></script>
 

@@ -6,7 +6,7 @@
         $appName = \App\Models\Setting::getSetting('app_name', 'Sistem Pemilihan Jurusan');
         $schoolName = \App\Models\Setting::getSetting('school_name', 'Pemilihan Jurusan');
         $hasLogo = \App\Models\Setting::hasLogo();
-        $logoUrl = $hasLogo ? \App\Models\Setting::logoUrl() : null;
+        $logoUrl = \App\Models\Setting::logoUrl();
         $themeColor = \App\Models\Setting::getSetting('theme_color', '#2563eb');
         $panelLabel = auth()->user()?->role === 'admin' ? 'Admin Panel' : 'Owner Panel';
         $profileLabel = auth()->user()?->role === 'admin' ? 'Administrator' : 'Owner';
@@ -55,9 +55,7 @@
     <meta charset="UTF-8">
     <title>Admin - {{ $appName }}</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    @if($hasLogo)
-        <link rel="icon" type="image/png" href="{{ $logoUrl }}">
-    @endif
+    <link rel="icon" href="{{ $logoUrl }}">
 
     {{-- Tailwind --}}
     <script src="https://cdn.tailwindcss.com"></script>

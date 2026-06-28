@@ -32,7 +32,7 @@ Route::get('/', function () {
         return redirect()->route('redirect.after.login');
     }
 
-    return redirect()->route('login');
+    return view('welcome');
 });
 
 Auth::routes([
