@@ -6,7 +6,9 @@
     <title>@yield('title', 'jejakcita.id')</title>
 
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="icon" href="{{ asset('favicon.svg') }}" type="image/svg+xml">
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('jejakcitafaviconfix.png') }}">
+    <link rel="icon" type="image/png" sizes="512x512" href="{{ asset('jejakcitafaviconfix.png') }}">
+    <link rel="apple-touch-icon" href="{{ asset('jejakcitafaviconfix.png') }}">
 
     {{-- Fonts --}}
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -71,13 +73,14 @@
         }
 
         body {
-            background: #f8fafc;
-            color: #0f172a;
+            background: #f6f8fb;
+            color: #0f1f3d;
             overflow-x: hidden;
         }
 
         :root {
-            --theme-color: #2563eb;
+            --theme-color: #1a2d6b;
+            --gold: #c9a227;
         }
 
         .bg-blue-600,
@@ -88,12 +91,12 @@
 
         .text-blue-600,
         .text-blue-700 {
-            color: var(--theme-color) !important;
+            color: var(--gold) !important;
         }
 
         .border-blue-100,
         .border-blue-600 {
-            border-color: color-mix(in srgb, var(--theme-color) 30%, white) !important;
+            border-color: color-mix(in srgb, var(--gold) 30%, white) !important;
         }
 
         ::selection {

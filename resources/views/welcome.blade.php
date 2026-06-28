@@ -6,8 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>jejakcita.id - Platform Deteksi Potensi Karir Siswa</title>
     <meta name="description" content="jejakcita.id membantu sekolah mendeteksi potensi karir siswa, memetakan minat dan bakat, serta mempersiapkan mereka untuk masa depan setelah lulus.">
-    <meta name="theme-color" content="#f8fafc">
-    <link rel="icon" href="{{ asset('favicon.svg') }}" type="image/svg+xml">
+    <meta name="theme-color" content="#1a2d6b">
+    <link rel="icon" href="{{ asset('jejakcitafaviconfix.png') }}" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="{{ asset('logo.png') }}">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -16,19 +17,25 @@
     <script src="https://cdn.tailwindcss.com"></script>
 
     <style>
+        :root {
+            --navy:        #1a2d6b;
+            --navy-dark:   #111e4a;
+            --gold:        #c9a227;
+            --gold-light:  #fdf6e3;
+            --navy-light:  #edf0f8;
+        }
+
         *, *::before, *::after {
             font-family: 'Poppins', sans-serif;
             box-sizing: border-box;
         }
 
         body {
-            background: #f8f9fb;
-            color: #111827;
+            background: #f6f8fb;
+            color: #0f1f3d;
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
         }
-
-        .serif { font-family: 'Poppins', sans-serif; }
 
         .float-slow { animation: floatSlow 7s ease-in-out infinite; }
         .float-delay { animation: floatSlow 8s ease-in-out infinite; animation-delay: -2.5s; }
@@ -44,12 +51,25 @@
 
         .label-tag {
             display: inline-block;
-            font-size: 0.7rem;
+            font-size: 0.68rem;
             font-weight: 600;
-            letter-spacing: 0.12em;
+            letter-spacing: 0.13em;
             text-transform: uppercase;
-            color: #3b5bdb;
+            color: var(--gold);
         }
+
+        .btn-primary {
+            background: var(--navy);
+            color: #fff;
+            transition: background .2s;
+        }
+        .btn-primary:hover { background: var(--navy-dark); }
+
+        .accent { color: var(--gold); }
+        .bg-gold-light { background: var(--gold-light); }
+        .bg-navy-light { background: var(--navy-light); }
+        .text-navy { color: var(--navy); }
+        .text-gold { color: var(--gold); }
     </style>
 </head>
 
@@ -57,19 +77,15 @@
 
     {{-- ─── NAVBAR ─────────────────────────────────────────────── --}}
     <header class="fixed inset-x-0 top-0 z-50 border-b border-gray-200/70 bg-white/90 backdrop-blur-md">
-        <div class="mx-auto flex h-15 max-w-7xl items-center justify-between px-5 py-3">
+        <div class="mx-auto flex h-16 max-w-7xl items-center justify-between px-5">
             <a href="/" class="inline-flex items-center gap-2.5">
-                <span class="flex h-9 w-9 items-center justify-center rounded-lg bg-gray-950 text-xs font-bold tracking-tight text-white">JC</span>
-                <span>
-                    <span class="block text-[0.95rem] font-extrabold leading-tight tracking-tight text-gray-950">jejakcita.id</span>
-                    <span class="hidden text-[0.7rem] font-medium text-gray-400 sm:block">Temukan arah karir siswa Anda</span>
-                </span>
+                <img src="{{ asset('logo.png') }}" alt="jejakcita.id" class="h-11 w-auto">
             </a>
 
             <nav class="hidden items-center gap-7 text-sm font-medium text-gray-500 md:flex">
-                <a href="#fitur" class="transition hover:text-gray-900">Fitur</a>
-                <a href="#alur" class="transition hover:text-gray-900">Alur</a>
-                <a href="#laporan" class="transition hover:text-gray-900">Laporan</a>
+                <a href="#fitur" class="transition hover:text-navy" style="--tw-text-opacity:1">Fitur</a>
+                <a href="#alur" class="transition hover:text-navy">Alur</a>
+                <a href="#laporan" class="transition hover:text-navy">Laporan</a>
             </nav>
 
             <div class="flex items-center gap-1.5">
@@ -78,7 +94,7 @@
                     Masuk
                 </a>
                 <a href="{{ route('register') }}"
-                    class="hidden rounded-lg bg-gray-950 px-4 py-2 text-sm font-semibold text-white transition hover:bg-gray-800 sm:inline-flex">
+                    class="btn-primary hidden rounded-lg px-4 py-2 text-sm font-semibold sm:inline-flex">
                     Daftar sekarang
                 </a>
             </div>
@@ -88,14 +104,13 @@
     <main>
 
         {{-- ─── HERO ───────────────────────────────────────────────── --}}
-        <section class="relative overflow-hidden bg-[#f8f9fb] pt-24">
+        <section class="relative overflow-hidden pt-24" style="background:#f6f8fb">
             <div class="mx-auto grid max-w-7xl gap-12 px-5 pb-16 pt-10 sm:pt-12 lg:grid-cols-[1fr_1.1fr] lg:items-center">
 
                 <div class="relative z-10 max-w-xl">
-                    <span class="label-tag">jejakcita.id</span>
 
-                    <h1 class="serif mt-4 text-4xl font-bold leading-[1.08] text-gray-950 sm:mt-5 sm:text-5xl md:text-[3.8rem]">
-                        Bantu siswa temukan arah karir terbaik<em> setelah lulus.</em>
+                    <h1 class="mt-4 text-4xl font-bold leading-[1.1] text-[#0f1f3d] sm:mt-5 sm:text-5xl md:text-[3.6rem]">
+                        Temukan Arah <span class="text-gold">Wujudkan Masa Depan.</span>
                     </h1>
 
                     <p class="mt-5 max-w-lg text-[0.975rem] leading-[1.75] text-gray-500 sm:mt-6">
@@ -104,7 +119,7 @@
 
                     <div class="mt-8 flex flex-col gap-3 sm:flex-row">
                         <a href="{{ route('register') }}"
-                            class="inline-flex items-center justify-center gap-2 rounded-xl bg-gray-950 px-6 py-3.5 text-sm font-bold text-white shadow-sm transition hover:bg-gray-800">
+                            class="btn-primary inline-flex items-center justify-center gap-2 rounded-xl px-6 py-3.5 text-sm font-bold shadow-sm">
                             Mulai gunakan gratis
                             <i class="bi bi-arrow-right"></i>
                         </a>
@@ -117,15 +132,15 @@
 
                     <div class="mt-9 grid max-w-sm grid-cols-3 divide-x divide-gray-100 rounded-xl border border-gray-100 bg-white text-center shadow-sm sm:mt-11">
                         <div class="px-3 py-4">
-                            <p class="serif text-2xl font-bold text-gray-950">100+</p>
+                            <p class="text-2xl font-bold text-[#0f1f3d]">100+</p>
                             <p class="mt-0.5 text-[0.7rem] font-medium text-gray-400">Jalur karir</p>
                         </div>
                         <div class="px-3 py-4">
-                            <p class="serif text-2xl font-bold text-gray-950">4</p>
+                            <p class="text-2xl font-bold text-[#0f1f3d]">4</p>
                             <p class="mt-0.5 text-[0.7rem] font-medium text-gray-400">Laporan potensi</p>
                         </div>
                         <div class="px-3 py-4">
-                            <p class="serif text-2xl font-bold text-gray-950">24/7</p>
+                            <p class="text-2xl font-bold text-[#0f1f3d]">24/7</p>
                             <p class="mt-0.5 text-[0.7rem] font-medium text-gray-400">Akses online</p>
                         </div>
                     </div>
@@ -134,7 +149,7 @@
                 {{-- Mock dashboard --}}
                 <div class="relative grid gap-4 md:min-h-[500px] lg:min-h-[580px]">
 
-                    <div class="float-slow w-full rounded-2xl border border-gray-200 bg-white shadow-xl shadow-gray-200/60 md:absolute md:left-0 md:top-6 md:w-[87%]">
+                    <div class="float-slow w-full rounded-2xl border border-gray-200 bg-white shadow-xl shadow-[#1e3a6e]/10 md:absolute md:left-0 md:top-6 md:w-[87%]">
                         <div class="flex h-11 items-center justify-between border-b border-gray-100 px-4">
                             <div class="flex items-center gap-1.5">
                                 <span class="h-2.5 w-2.5 rounded-full bg-red-300"></span>
@@ -148,35 +163,35 @@
                             <div class="grid grid-cols-3 gap-2.5">
                                 <div class="rounded-xl border border-gray-100 bg-gray-50 p-3 sm:p-4">
                                     <p class="text-[0.68rem] font-medium text-gray-400">Siswa</p>
-                                    <p class="serif mt-2 text-2xl text-gray-950">426</p>
+                                    <p class="mt-2 text-2xl font-bold text-[#0f1f3d]">426</p>
                                 </div>
-                                <div class="rounded-xl border border-blue-100 bg-blue-50 p-3 sm:p-4">
-                                    <p class="text-[0.68rem] font-medium text-blue-500">Tes selesai</p>
-                                    <p class="serif mt-2 text-2xl text-gray-950">318</p>
+                                <div class="rounded-xl p-3 sm:p-4" style="background:var(--gold-light); border:1px solid #e8d58a">
+                                    <p class="text-[0.68rem] font-medium text-gold">Tes selesai</p>
+                                    <p class="mt-2 text-2xl font-bold text-[#0f1f3d]">318</p>
                                 </div>
-                                <div class="rounded-xl border border-emerald-100 bg-emerald-50 p-3 sm:p-4">
-                                    <p class="text-[0.68rem] font-medium text-emerald-600">Karir dipetakan</p>
-                                    <p class="serif mt-2 text-2xl text-gray-950">12</p>
+                                <div class="rounded-xl p-3 sm:p-4" style="background:var(--navy-light); border:1px solid #c8d1e8">
+                                    <p class="text-[0.68rem] font-medium text-navy">Karir dipetakan</p>
+                                    <p class="mt-2 text-2xl font-bold text-[#0f1f3d]">12</p>
                                 </div>
                             </div>
 
                             <div class="rounded-xl border border-gray-100 p-4">
                                 <div class="mb-4 flex items-center justify-between">
-                                    <p class="text-sm font-semibold text-gray-800">Distribusi potensi karir</p>
-                                    <span class="rounded-full bg-gray-100 px-2.5 py-0.5 text-[0.65rem] font-medium text-gray-400">Live</span>
+                                    <p class="text-sm font-semibold text-[#0f1f3d]">Distribusi potensi karir</p>
+                                    <span class="rounded-full px-2.5 py-0.5 text-[0.65rem] font-medium text-gold" style="background:var(--gold-light)">Live</span>
                                 </div>
                                 <div class="space-y-3">
                                     <div>
                                         <div class="mb-1.5 flex justify-between text-[0.7rem] font-medium text-gray-400">
                                             <span>Sains & Teknologi</span><span>84%</span>
                                         </div>
-                                        <div class="h-1.5 rounded-full bg-gray-100"><div class="h-1.5 w-[84%] rounded-full bg-blue-500"></div></div>
+                                        <div class="h-1.5 rounded-full bg-gray-100"><div class="h-1.5 w-[84%] rounded-full" style="background:var(--navy)"></div></div>
                                     </div>
                                     <div>
                                         <div class="mb-1.5 flex justify-between text-[0.7rem] font-medium text-gray-400">
                                             <span>Sosial & Humaniora</span><span>72%</span>
                                         </div>
-                                        <div class="h-1.5 rounded-full bg-gray-100"><div class="h-1.5 w-[72%] rounded-full bg-emerald-500"></div></div>
+                                        <div class="h-1.5 rounded-full bg-gray-100"><div class="h-1.5 w-[72%] rounded-full" style="background:var(--gold)"></div></div>
                                     </div>
                                     <div>
                                         <div class="mb-1.5 flex justify-between text-[0.7rem] font-medium text-gray-400">
@@ -190,34 +205,34 @@
                             <div class="grid gap-2.5 sm:grid-cols-2">
                                 <div class="rounded-xl border border-gray-100 p-3.5">
                                     <p class="text-[0.68rem] font-medium text-gray-400">Hasil rekomendasi</p>
-                                    <p class="mt-1.5 text-sm font-semibold text-gray-900">Siap dibagikan ke siswa</p>
+                                    <p class="mt-1.5 text-sm font-semibold text-[#0f1f3d]">Siap dibagikan ke siswa</p>
                                 </div>
                                 <div class="rounded-xl border border-gray-100 p-3.5">
                                     <p class="text-[0.68rem] font-medium text-gray-400">Laporan karir</p>
-                                    <p class="mt-1.5 text-sm font-semibold text-gray-900">Excel dan PDF siap</p>
+                                    <p class="mt-1.5 text-sm font-semibold text-[#0f1f3d]">Excel dan PDF siap</p>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <div class="float-delay w-full rounded-2xl border border-gray-200 bg-white p-4 shadow-lg shadow-gray-200/60 md:absolute md:bottom-8 md:right-0 md:w-[52%]">
+                    <div class="float-delay w-full rounded-2xl border border-gray-200 bg-white p-4 shadow-lg shadow-[#1e3a6e]/10 md:absolute md:bottom-8 md:right-0 md:w-[52%]">
                         <div class="mb-3 flex items-center gap-3">
-                            <span class="flex h-9 w-9 items-center justify-center rounded-xl bg-gray-950 text-sm text-white">
+                            <span class="flex h-9 w-9 items-center justify-center rounded-xl text-sm text-white" style="background:var(--navy)">
                                 <i class="bi bi-mortarboard"></i>
                             </span>
                             <div>
-                                <p class="text-sm font-semibold text-gray-900">Portal siswa</p>
+                                <p class="text-sm font-semibold text-[#0f1f3d]">Portal siswa</p>
                                 <p class="text-[0.68rem] font-medium text-gray-400">Hasil potensi karir kamu</p>
                             </div>
                         </div>
                         <div class="space-y-1.5">
-                            <div class="flex items-center justify-between rounded-lg bg-blue-50 px-3 py-2">
-                                <span class="text-[0.72rem] font-medium text-blue-700">Rekayasa Perangkat Lunak</span>
-                                <span class="text-[0.72rem] font-semibold text-blue-600">92%</span>
+                            <div class="flex items-center justify-between rounded-lg px-3 py-2" style="background:var(--navy-light)">
+                                <span class="text-[0.72rem] font-medium text-navy">Rekayasa Perangkat Lunak</span>
+                                <span class="text-[0.72rem] font-bold text-navy">92%</span>
                             </div>
-                            <div class="flex items-center justify-between rounded-lg bg-emerald-50 px-3 py-2">
-                                <span class="text-[0.72rem] font-medium text-emerald-700">Data Science</span>
-                                <span class="text-[0.72rem] font-semibold text-emerald-600">87%</span>
+                            <div class="flex items-center justify-between rounded-lg px-3 py-2" style="background:var(--gold-light)">
+                                <span class="text-[0.72rem] font-medium text-gold">Data Science</span>
+                                <span class="text-[0.72rem] font-bold text-gold">87%</span>
                             </div>
                             <div class="flex items-center justify-between rounded-lg bg-gray-50 px-3 py-2">
                                 <span class="text-[0.72rem] font-medium text-gray-500">Desain Grafis</span>
@@ -235,41 +250,41 @@
             <div class="mx-auto max-w-7xl px-5">
                 <div class="max-w-xl">
                     <span class="label-tag">Fitur utama</span>
-                    <h2 class="serif mt-3 text-3xl font-bold text-gray-950 md:text-4xl">
+                    <h2 class="mt-3 text-3xl font-bold text-[#0f1f3d] md:text-4xl">
                         Semua yang dibutuhkan untuk memetakan masa depan siswa.
                     </h2>
                 </div>
 
                 <div class="mt-10 grid gap-3 md:grid-cols-2 lg:grid-cols-4">
                     <article class="rounded-xl border border-gray-100 bg-white p-5">
-                        <span class="flex h-9 w-9 items-center justify-center rounded-lg bg-blue-50 text-blue-600">
+                        <span class="flex h-9 w-9 items-center justify-center rounded-lg text-white text-sm" style="background:var(--navy)">
                             <i class="bi bi-people"></i>
                         </span>
-                        <h3 class="mt-4 text-sm font-bold text-gray-900">Data siswa</h3>
+                        <h3 class="mt-4 text-sm font-bold text-[#0f1f3d]">Data siswa</h3>
                         <p class="mt-2 text-sm leading-6 text-gray-500">Import, aktivasi akun, dan kelola profil lengkap setiap siswa per sekolah.</p>
                     </article>
 
                     <article class="rounded-xl border border-gray-100 bg-white p-5">
-                        <span class="flex h-9 w-9 items-center justify-center rounded-lg bg-emerald-50 text-emerald-600">
+                        <span class="flex h-9 w-9 items-center justify-center rounded-lg text-white text-sm" style="background:var(--gold)">
                             <i class="bi bi-lightbulb"></i>
                         </span>
-                        <h3 class="mt-4 text-sm font-bold text-gray-900">Tes minat & bakat</h3>
+                        <h3 class="mt-4 text-sm font-bold text-[#0f1f3d]">Tes minat & bakat</h3>
                         <p class="mt-2 text-sm leading-6 text-gray-500">Instrumen terstruktur, timer, pengawasan CBT, dan analisis potensi otomatis setelah selesai.</p>
                     </article>
 
                     <article class="rounded-xl border border-gray-100 bg-white p-5">
-                        <span class="flex h-9 w-9 items-center justify-center rounded-lg bg-amber-50 text-amber-600">
+                        <span class="flex h-9 w-9 items-center justify-center rounded-lg text-white text-sm" style="background:var(--gold)">
                             <i class="bi bi-compass"></i>
                         </span>
-                        <h3 class="mt-4 text-sm font-bold text-gray-900">Rekomendasi karir</h3>
+                        <h3 class="mt-4 text-sm font-bold text-[#0f1f3d]">Rekomendasi karir</h3>
                         <p class="mt-2 text-sm leading-6 text-gray-500">Setiap siswa mendapat rekomendasi jalur karir berdasarkan hasil tes dan pilihan mereka.</p>
                     </article>
 
                     <article class="rounded-xl border border-gray-100 bg-white p-5">
-                        <span class="flex h-9 w-9 items-center justify-center rounded-lg bg-rose-50 text-rose-500">
+                        <span class="flex h-9 w-9 items-center justify-center rounded-lg text-white text-sm" style="background:var(--navy)">
                             <i class="bi bi-file-earmark-text"></i>
                         </span>
-                        <h3 class="mt-4 text-sm font-bold text-gray-900">Laporan potensi</h3>
+                        <h3 class="mt-4 text-sm font-bold text-[#0f1f3d]">Laporan potensi</h3>
                         <p class="mt-2 text-sm leading-6 text-gray-500">Laporan PDF dan Excel siap cetak untuk siswa, orang tua, maupun arsip sekolah.</p>
                     </article>
                 </div>
@@ -277,11 +292,11 @@
         </section>
 
         {{-- ─── ALUR ───────────────────────────────────────────────── --}}
-        <section id="alur" class="bg-[#f8f9fb] py-16">
+        <section id="alur" class="py-16" style="background:#f6f8fb">
             <div class="mx-auto grid max-w-7xl gap-12 px-5 lg:grid-cols-[0.9fr_1.1fr] lg:items-start">
                 <div>
                     <span class="label-tag">Alur kerja</span>
-                    <h2 class="serif mt-3 text-3xl font-bold text-gray-950 md:text-4xl">
+                    <h2 class="mt-3 text-3xl font-bold text-[#0f1f3d] md:text-4xl">
                         Dari tes hingga rekomendasi karir siap dibagikan.
                     </h2>
                     <p class="mt-4 max-w-md text-[0.975rem] leading-[1.75] text-gray-500">
@@ -291,23 +306,23 @@
 
                 <div class="grid gap-3">
                     <div class="flex gap-4 rounded-xl border border-gray-100 bg-white p-5">
-                        <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-gray-950 text-xs font-semibold text-white">1</span>
+                        <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-xs font-semibold text-white" style="background:var(--navy)">1</span>
                         <div>
-                            <h3 class="text-sm font-bold text-gray-900">Sekolah menyiapkan ruang tes</h3>
+                            <h3 class="text-sm font-bold text-[#0f1f3d]">Sekolah menyiapkan ruang tes</h3>
                             <p class="mt-1 text-sm leading-6 text-gray-500">Setiap sekolah punya panel sendiri — data siswa, instrumen tes, dan laporan tidak bercampur.</p>
                         </div>
                     </div>
                     <div class="flex gap-4 rounded-xl border border-gray-100 bg-white p-5">
-                        <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-gray-950 text-xs font-semibold text-white">2</span>
+                        <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-xs font-semibold text-white" style="background:var(--gold)">2</span>
                         <div>
-                            <h3 class="text-sm font-bold text-gray-900">Siswa mengikuti tes minat & bakat</h3>
+                            <h3 class="text-sm font-bold text-[#0f1f3d]">Siswa mengikuti tes minat & bakat</h3>
                             <p class="mt-1 text-sm leading-6 text-gray-500">Biodata, pilihan minat, sesi tes online — semua bisa dipantau secara real-time dari panel sekolah.</p>
                         </div>
                     </div>
                     <div class="flex gap-4 rounded-xl border border-gray-100 bg-white p-5">
-                        <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-gray-950 text-xs font-semibold text-white">3</span>
+                        <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-xs font-semibold text-white" style="background:var(--navy)">3</span>
                         <div>
-                            <h3 class="text-sm font-bold text-gray-900">Hasil potensi karir siap dibagikan</h3>
+                            <h3 class="text-sm font-bold text-[#0f1f3d]">Hasil potensi karir siap dibagikan</h3>
                             <p class="mt-1 text-sm leading-6 text-gray-500">Rekomendasi jalur karir, distribusi kelompok siswa, laporan PDF, dan surat hasil — selesai di satu tempat.</p>
                         </div>
                     </div>
@@ -315,41 +330,48 @@
             </div>
         </section>
 
-        {{-- ─── LAPORAN / CTA ──────────────────────────────────────── --}}
-        <section id="laporan" class="bg-gray-950 py-16 text-white">
+        {{-- ─── CTA ────────────────────────────────────────────────── --}}
+        <section id="laporan" class="py-16 text-white" style="background:var(--navy)">
             <div class="mx-auto grid max-w-7xl gap-12 px-5 lg:grid-cols-[1fr_0.75fr] lg:items-center">
                 <div>
-                    <span class="label-tag text-blue-400">Siap dipakai</span>
-                    <h2 class="serif mt-3 max-w-2xl text-3xl font-bold leading-[1.1] text-white md:text-5xl">
+                    <span class="label-tag" style="color:var(--gold)">Siap dipakai</span>
+                    <h2 class="mt-3 max-w-2xl text-3xl font-bold leading-[1.1] text-white md:text-5xl">
                         Laporan potensi karir dan branding sekolah — semua di satu panel.
                     </h2>
-                    <p class="mt-5 max-w-xl text-[0.975rem] leading-[1.75] text-gray-400">
+                    <p class="mt-5 max-w-xl text-[0.975rem] leading-[1.75] text-blue-100/80">
                         Cocok untuk sekolah, konsultan pendidikan, atau guru BK yang ingin membantu siswa menentukan arah karir masa depan dengan data yang valid.
                     </p>
                 </div>
 
-                <div class="rounded-2xl border border-white/10 bg-white/5 p-5">
-                    <div class="divide-y divide-white/8">
+                <div class="rounded-2xl p-5" style="background:rgba(255,255,255,0.07); border:1px solid rgba(255,255,255,0.12)">
+                    <div style="border-bottom:1px solid rgba(255,255,255,0.1)">
                         <div class="flex items-center justify-between px-1 py-3.5">
-                            <span class="text-sm font-medium text-gray-200">Laporan potensi karir (PDF)</span>
-                            <i class="bi bi-check-lg text-emerald-400"></i>
+                            <span class="text-sm font-medium text-white/80">Laporan potensi karir (PDF)</span>
+                            <i class="bi bi-check-lg" style="color:var(--gold)"></i>
                         </div>
+                    </div>
+                    <div style="border-bottom:1px solid rgba(255,255,255,0.1)">
                         <div class="flex items-center justify-between px-1 py-3.5">
-                            <span class="text-sm font-medium text-gray-200">Export rekap siswa (Excel)</span>
-                            <i class="bi bi-check-lg text-emerald-400"></i>
+                            <span class="text-sm font-medium text-white/80">Export rekap siswa (Excel)</span>
+                            <i class="bi bi-check-lg" style="color:var(--gold)"></i>
                         </div>
+                    </div>
+                    <div style="border-bottom:1px solid rgba(255,255,255,0.1)">
                         <div class="flex items-center justify-between px-1 py-3.5">
-                            <span class="text-sm font-medium text-gray-200">Rekomendasi jalur karir otomatis</span>
-                            <i class="bi bi-check-lg text-emerald-400"></i>
+                            <span class="text-sm font-medium text-white/80">Rekomendasi jalur karir otomatis</span>
+                            <i class="bi bi-check-lg" style="color:var(--gold)"></i>
                         </div>
+                    </div>
+                    <div>
                         <div class="flex items-center justify-between px-1 py-3.5">
-                            <span class="text-sm font-medium text-gray-200">Logo dan tema per sekolah</span>
-                            <i class="bi bi-check-lg text-emerald-400"></i>
+                            <span class="text-sm font-medium text-white/80">Logo dan tema per sekolah</span>
+                            <i class="bi bi-check-lg" style="color:var(--gold)"></i>
                         </div>
                     </div>
 
                     <a href="{{ route('register') }}"
-                        class="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-white px-5 py-3.5 text-sm font-semibold text-gray-950 transition hover:bg-gray-100">
+                        class="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-white px-5 py-3.5 text-sm font-bold transition hover:bg-gray-50"
+                        style="color:var(--navy)">
                         Mulai deteksi potensi siswa
                         <i class="bi bi-arrow-right"></i>
                     </a>
@@ -360,8 +382,8 @@
     </main>
 
     <footer class="border-t border-gray-100 bg-white">
-        <div class="mx-auto flex max-w-7xl flex-col gap-2 px-5 py-7 text-sm text-gray-400 md:flex-row md:items-center md:justify-between">
-            <span class="font-bold text-gray-900">jejakcita.id</span>
+        <div class="mx-auto flex max-w-7xl flex-col gap-3 px-5 py-7 text-sm text-gray-400 md:flex-row md:items-center md:justify-between">
+            <img src="{{ asset('logo.png') }}" alt="jejakcita.id" class="h-11 w-auto">
             <span>Platform deteksi potensi karir siswa untuk sekolah modern.</span>
         </div>
     </footer>
