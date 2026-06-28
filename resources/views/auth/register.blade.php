@@ -23,7 +23,6 @@
 
         <main class="mx-auto grid w-full max-w-6xl gap-8 px-5 pb-10 pt-4 lg:grid-cols-[0.9fr_1.1fr] lg:items-start lg:pt-10">
             <section class="max-w-xl">
-                <p class="text-sm font-extrabold uppercase tracking-[0.18em] text-blue-700">Pengajuan owner</p>
 
                 <h1 class="mt-4 text-4xl font-black leading-tight tracking-tight text-slate-950 sm:text-5xl">
                     Ajukan akses panel sekolah.
