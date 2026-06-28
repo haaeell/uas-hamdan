@@ -36,6 +36,11 @@
                     </div>
                 </div>
 
+                <div class="mb-5 rounded-2xl border border-blue-100 bg-blue-50 px-4 py-3 text-sm text-blue-700">
+                    <div class="font-extrabold">{{ $settingScopeLabel }}</div>
+                    <p class="mt-1 leading-relaxed">{{ $settingScopeDescription }}</p>
+                </div>
+
                 @if(session('link_success'))
                     <div class="mb-3 rounded-2xl bg-green-50 border border-green-200 px-4 py-3 text-sm text-green-700 font-semibold">
                         <i class="fa-solid fa-circle-check mr-1"></i> {{ session('link_success') }}
@@ -135,15 +140,15 @@
                                                     class="block w-full text-sm text-slate-600 file:mr-4 file:rounded-xl file:border-0 file:bg-blue-600 file:px-4 file:py-2 file:font-semibold file:text-white hover:file:bg-blue-700">
 
                                                 <div class="mt-4 flex items-center gap-4">
-                                                    @if(\App\Models\Setting::hasLogo())
-                                                        <img src="{{ \App\Models\Setting::logoUrl() }}" alt="Logo aplikasi"
+                                                    @if($hasLogo)
+                                                        <img src="{{ $logoUrl }}" alt="Logo aplikasi"
                                                             class="w-16 h-16 rounded-2xl object-contain bg-white border border-slate-200 p-2">
                                                     @else
                                                         <div class="w-16 h-16 rounded-2xl bg-white border border-dashed border-slate-300"></div>
                                                     @endif
                                                     <div class="text-xs text-slate-500">
                                                         <div class="font-semibold text-slate-700">
-                                                            {{ \App\Models\Setting::hasLogo() ? 'Logo aktif saat ini' : 'Belum ada logo' }}
+                                                            {{ $hasLogo ? 'Logo aktif saat ini' : 'Belum ada logo' }}
                                                         </div>
                                                         <div>Upload file baru untuk menampilkan logo di panel.</div>
                                                     </div>

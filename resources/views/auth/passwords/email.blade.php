@@ -1,133 +1,101 @@
 @extends('layouts.auth')
 
-@section('title', 'Lupa Password')
+@section('title', 'Lupa Password - jejakcita.id')
 
 @section('content')
-    @php
-        $appName = \App\Models\Setting::getSetting('app_name', 'Sistem Pemilihan Jurusan');
-        $schoolName = \App\Models\Setting::getSetting('school_name', 'Sekolah Menengah Atas');
-        $supportContact = \App\Models\Setting::getSetting('support_contact', 'Hubungi admin sekolah');
-    @endphp
+    <div class="min-h-screen bg-[#f7f8fa] text-slate-950">
+        <header class="mx-auto flex w-full max-w-6xl items-center justify-between px-5 py-6">
+            <a href="{{ route('login') }}" class="inline-flex items-center gap-3">
+                <span class="flex h-10 w-10 items-center justify-center rounded-lg bg-slate-950 text-sm font-black text-white">
+                    JC
+                </span>
+                <span>
+                    <span class="block text-base font-extrabold leading-5 tracking-tight">jejakcita.id</span>
+                    <span class="block text-xs font-semibold text-slate-500">Account Recovery</span>
+                </span>
+            </a>
 
-    <div class="min-h-screen bg-slate-100 flex items-center justify-center px-4 py-10">
+            <a href="{{ route('login') }}"
+                class="hidden rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-bold text-slate-700 shadow-sm transition hover:border-slate-300 hover:text-slate-950 sm:inline-flex">
+                Kembali login
+            </a>
+        </header>
 
-        <div class="w-full max-w-6xl grid lg:grid-cols-2 bg-white rounded-[36px] overflow-hidden shadow-2xl shadow-red-100 border border-slate-200">
+        <main class="mx-auto grid w-full max-w-6xl gap-8 px-5 pb-10 pt-4 lg:grid-cols-[0.9fr_1.1fr] lg:items-center lg:pt-10">
+            <section class="max-w-xl">
+                <p class="text-sm font-extrabold uppercase tracking-[0.18em] text-blue-700">Reset password</p>
 
-            {{-- Left Branding --}}
-            <div class="hidden lg:flex relative bg-gradient-to-br from-red-700 via-red-600 to-red-500 p-10 text-white overflow-hidden">
+                <h1 class="mt-4 text-4xl font-black leading-tight tracking-tight text-slate-950 sm:text-5xl">
+                    Pulihkan akses panel.
+                </h1>
 
-                <div class="absolute -top-20 -right-20 w-72 h-72 rounded-full bg-white/10"></div>
-                <div class="absolute bottom-10 -left-16 w-64 h-64 rounded-full bg-white/10"></div>
+                <p class="mt-5 max-w-lg text-base leading-7 text-slate-600">
+                    Masukkan email admin atau owner yang terdaftar. Sistem akan mengirim tautan untuk membuat password baru.
+                </p>
+            </section>
 
-                <div class="relative z-10 flex flex-col justify-between w-full">
+            <section class="rounded-lg border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
+                <div class="mb-8 flex items-start justify-between gap-4">
                     <div>
-                        <div class="w-16 h-16 rounded-3xl bg-white/15 backdrop-blur-xl border border-white/20 flex items-center justify-center shadow-xl">
-                            <i class="fa-solid fa-key text-2xl"></i>
-                        </div>
-
-                        <h1 class="text-4xl font-extrabold mt-8 leading-tight">
-                            Lupa Password?
-                        </h1>
-
-                        <p class="text-red-100 mt-4 leading-relaxed max-w-md">
-                            Jangan khawatir. Masukkan email yang terdaftar dan kami akan mengirimkan link untuk mereset password kamu.
-                        </p>
+                        <p class="text-sm font-bold text-blue-700">Lupa password</p>
+                        <h2 class="mt-1 text-2xl font-black tracking-tight text-slate-950">Kirim link reset</h2>
+                        <p class="mt-2 text-sm leading-6 text-slate-500">Gunakan email yang masih aktif.</p>
                     </div>
 
-                    <div class="grid grid-cols-3 gap-4 mt-10">
-                        <div class="bg-white/15 backdrop-blur-xl rounded-3xl p-4 border border-white/20">
-                            <i class="fa-solid fa-envelope text-2xl mb-3"></i>
-                            <p class="text-sm font-bold">Cek Email</p>
-                        </div>
-
-                        <div class="bg-white/15 backdrop-blur-xl rounded-3xl p-4 border border-white/20">
-                            <i class="fa-solid fa-link text-2xl mb-3"></i>
-                            <p class="text-sm font-bold">Klik Link</p>
-                        </div>
-
-                        <div class="bg-white/15 backdrop-blur-xl rounded-3xl p-4 border border-white/20">
-                            <i class="fa-solid fa-shield-halved text-2xl mb-3"></i>
-                            <p class="text-sm font-bold">Aman</p>
-                        </div>
+                    <div class="flex h-11 w-11 items-center justify-center rounded-lg border border-slate-200 bg-slate-50 text-slate-600">
+                        <i class="fa-solid fa-key"></i>
                     </div>
                 </div>
-            </div>
 
-            {{-- Form --}}
-            <div class="p-6 sm:p-10 lg:p-14 flex items-center">
-                <div class="w-full max-w-md mx-auto">
+                @if (session('status'))
+                    <div class="mb-6 rounded-lg border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-700">
+                        <p class="font-extrabold">Email terkirim</p>
+                        <p class="mt-1">{{ session('status') }}</p>
+                    </div>
+                @endif
 
-                    <div class="mb-8">
-                        <p class="text-sm font-bold text-red-600 uppercase tracking-wide">
-                            Reset Password
-                        </p>
+                @if ($errors->any())
+                    <div class="mb-6 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+                        <p class="font-extrabold">Terjadi kesalahan</p>
+                        <p class="mt-1">{{ $errors->first() }}</p>
+                    </div>
+                @endif
 
-                        <h2 class="text-3xl font-extrabold text-slate-900 mt-2">
-                            Lupa Password
-                        </h2>
+                <form method="POST" action="{{ route('password.email') }}" class="space-y-5">
+                    @csrf
 
-                        <p class="text-slate-500 mt-3">
-                            Masukkan alamat email yang terdaftar. Kami akan mengirim link reset password ke email tersebut.
-                        </p>
+                    <div>
+                        <label class="block text-sm font-bold text-slate-700" for="resetEmail">Email</label>
+                        <div class="relative mt-2">
+                            <i class="fa-solid fa-envelope absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                            <input id="resetEmail" type="email" name="email" value="{{ old('email') }}" required autofocus
+                                placeholder="owner@sekolah.sch.id"
+                                class="w-full rounded-lg border border-slate-200 bg-white py-3.5 pl-11 pr-4 text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-blue-600 focus:ring-4 focus:ring-blue-100">
+                        </div>
+                        @error('email')
+                            <p class="mt-2 text-sm font-semibold text-red-700">{{ $message }}</p>
+                        @enderror
                     </div>
 
-                    @if (session('status'))
-                        <div class="mb-6 rounded-2xl border border-green-100 bg-green-50 p-4 text-sm text-green-700">
-                            <div class="flex items-start gap-3">
-                                <i class="fa-solid fa-circle-check mt-0.5 text-green-500"></i>
-                                <p class="font-semibold">{{ session('status') }}</p>
-                            </div>
-                        </div>
-                    @endif
+                    <button type="submit"
+                        class="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-slate-950 px-5 py-3.5 font-extrabold text-white shadow-sm transition hover:bg-slate-800 focus:outline-none focus:ring-4 focus:ring-slate-200">
+                        <i class="fa-solid fa-paper-plane"></i>
+                        Kirim link reset
+                    </button>
+                </form>
 
-                    @if ($errors->any())
-                        <div class="mb-6 rounded-2xl border border-red-100 bg-red-50 p-4 text-sm text-red-700">
-                            <p class="font-bold mb-1">Terjadi kesalahan</p>
-                            <p>{{ $errors->first() }}</p>
-                        </div>
-                    @endif
-
-                    <form method="POST" action="{{ route('password.email') }}" class="space-y-5">
-                        @csrf
-
-                        <div>
-                            <label class="block text-sm font-semibold text-slate-700 mb-2">
-                                Alamat Email
-                            </label>
-
-                            <div class="relative">
-                                <i class="fa-solid fa-envelope absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
-
-                                <input type="email" name="email" value="{{ old('email') }}" required autofocus
-                                    placeholder="Masukkan email yang terdaftar"
-                                    class="w-full pl-11 pr-4 py-3.5 rounded-2xl bg-slate-50 border border-slate-200 text-slate-800
-                                        focus:bg-white focus:border-red-500 focus:ring-4 focus:ring-red-100 outline-none transition">
-                            </div>
-
-                            @error('email')
-                                <p class="text-sm text-red-700 mt-2 font-semibold">{{ $message }}</p>
-                            @enderror
-                        </div>
-
-                        <button type="submit"
-                            class="w-full inline-flex items-center justify-center gap-2 py-3.5 rounded-2xl bg-red-600 hover:bg-red-700
-                                text-white font-extrabold shadow-lg shadow-red-200 transition-all duration-300 hover:-translate-y-0.5">
-                            <i class="fa-solid fa-paper-plane"></i>
-                            Kirim Link Reset Password
-                        </button>
-                    </form>
-
-                    <a href="{{ route('login') }}"
-                        class="mt-4 inline-flex w-full items-center justify-center gap-2 py-3.5 rounded-2xl bg-white hover:bg-red-50 text-red-700 border border-red-100 font-extrabold transition">
-                        <i class="fa-solid fa-arrow-left"></i>
-                        Kembali ke Login
+                <div class="mt-6 rounded-lg border border-slate-200 bg-slate-50 px-4 py-4 text-sm text-slate-600">
+                    Ingat password?
+                    <a href="{{ route('login') }}" class="font-extrabold text-blue-700 hover:text-blue-900">
+                        Masuk ke panel
                     </a>
-
-                    <div class="mt-8 text-center text-sm text-slate-400">
-                        © {{ date('Y') }} {{ $appName }} · Bantuan: {{ $supportContact }}
-                    </div>
                 </div>
-            </div>
-        </div>
+            </section>
+        </main>
+
+        <footer class="mx-auto flex w-full max-w-6xl flex-col gap-2 px-5 pb-8 text-xs font-semibold text-slate-500 sm:flex-row sm:items-center sm:justify-between">
+            <span>jejakcita.id</span>
+            <span>Account Recovery</span>
+        </footer>
     </div>
 @endsection

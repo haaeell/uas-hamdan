@@ -1,187 +1,164 @@
 @extends('layouts.auth')
 
-@section('title', 'Buat Password Baru')
+@section('title', 'Buat Password Baru - jejakcita.id')
 
 @section('content')
-    @php
-        $appName = \App\Models\Setting::getSetting('app_name', 'Sistem Pemilihan Jurusan');
-        $schoolName = \App\Models\Setting::getSetting('school_name', 'Sekolah Menengah Atas');
-        $supportContact = \App\Models\Setting::getSetting('support_contact', 'Hubungi admin sekolah');
-    @endphp
+    <div class="min-h-screen bg-[#f7f8fa] text-slate-950">
+        <header class="mx-auto flex w-full max-w-6xl items-center justify-between px-5 py-6">
+            <a href="{{ route('login') }}" class="inline-flex items-center gap-3">
+                <span class="flex h-10 w-10 items-center justify-center rounded-lg bg-slate-950 text-sm font-black text-white">
+                    JC
+                </span>
+                <span>
+                    <span class="block text-base font-extrabold leading-5 tracking-tight">jejakcita.id</span>
+                    <span class="block text-xs font-semibold text-slate-500">Password Reset</span>
+                </span>
+            </a>
 
-    <div class="min-h-screen bg-slate-100 flex items-center justify-center px-4 py-10">
+            <a href="{{ route('login') }}"
+                class="hidden rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-bold text-slate-700 shadow-sm transition hover:border-slate-300 hover:text-slate-950 sm:inline-flex">
+                Kembali login
+            </a>
+        </header>
 
-        <div class="w-full max-w-6xl grid lg:grid-cols-2 bg-white rounded-[36px] overflow-hidden shadow-2xl shadow-red-100 border border-slate-200">
+        <main class="mx-auto grid w-full max-w-6xl gap-8 px-5 pb-10 pt-4 lg:grid-cols-[0.9fr_1.1fr] lg:items-start lg:pt-10">
+            <section class="max-w-xl">
+                <p class="text-sm font-extrabold uppercase tracking-[0.18em] text-blue-700">Password baru</p>
 
-            {{-- Left Branding --}}
-            <div class="hidden lg:flex relative bg-gradient-to-br from-red-700 via-red-600 to-red-500 p-10 text-white overflow-hidden">
+                <h1 class="mt-4 text-4xl font-black leading-tight tracking-tight text-slate-950 sm:text-5xl">
+                    Amankan kembali akun Anda.
+                </h1>
 
-                <div class="absolute -top-20 -right-20 w-72 h-72 rounded-full bg-white/10"></div>
-                <div class="absolute bottom-10 -left-16 w-64 h-64 rounded-full bg-white/10"></div>
+                <p class="mt-5 max-w-lg text-base leading-7 text-slate-600">
+                    Buat password baru untuk akun admin atau owner. Gunakan minimal delapan karakter.
+                </p>
 
-                <div class="relative z-10 flex flex-col justify-between w-full">
+                <div class="mt-8 space-y-3 text-sm text-slate-600">
+                    <div class="flex items-center gap-3">
+                        <i class="fa-solid fa-check text-blue-700"></i>
+                        <span>Minimal 8 karakter.</span>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <i class="fa-solid fa-check text-blue-700"></i>
+                        <span>Hindari password yang sama dengan email.</span>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <i class="fa-solid fa-check text-blue-700"></i>
+                        <span>Simpan akses hanya untuk pemilik akun.</span>
+                    </div>
+                </div>
+            </section>
+
+            <section class="rounded-lg border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
+                <div class="mb-8 flex items-start justify-between gap-4">
                     <div>
-                        <div class="w-16 h-16 rounded-3xl bg-white/15 backdrop-blur-xl border border-white/20 flex items-center justify-center shadow-xl">
-                            <i class="fa-solid fa-lock-open text-2xl"></i>
-                        </div>
-
-                        <h1 class="text-4xl font-extrabold mt-8 leading-tight">
-                            Buat Password Baru
-                        </h1>
-
-                        <p class="text-red-100 mt-4 leading-relaxed max-w-md">
-                            Buat password baru yang kuat dan mudah kamu ingat. Pastikan password minimal 8 karakter.
-                        </p>
+                        <p class="text-sm font-bold text-blue-700">Reset password</p>
+                        <h2 class="mt-1 text-2xl font-black tracking-tight text-slate-950">Buat password baru</h2>
+                        <p class="mt-2 text-sm leading-6 text-slate-500">Isi email dan password baru.</p>
                     </div>
 
-                    <div class="mt-10 bg-white/15 backdrop-blur-xl rounded-3xl p-6 border border-white/20">
-                        <p class="text-sm font-bold mb-3">Tips password yang aman:</p>
-                        <ul class="space-y-2 text-sm text-red-100">
-                            <li class="flex items-center gap-2">
-                                <i class="fa-solid fa-check text-white text-xs"></i>
-                                Minimal 8 karakter
-                            </li>
-                            <li class="flex items-center gap-2">
-                                <i class="fa-solid fa-check text-white text-xs"></i>
-                                Kombinasi huruf dan angka
-                            </li>
-                            <li class="flex items-center gap-2">
-                                <i class="fa-solid fa-check text-white text-xs"></i>
-                                Jangan gunakan tanggal lahir
-                            </li>
-                        </ul>
+                    <div class="flex h-11 w-11 items-center justify-center rounded-lg border border-slate-200 bg-slate-50 text-slate-600">
+                        <i class="fa-solid fa-lock-open"></i>
                     </div>
                 </div>
-            </div>
 
-            {{-- Form --}}
-            <div class="p-6 sm:p-10 lg:p-14 flex items-center">
-                <div class="w-full max-w-md mx-auto">
+                @if ($errors->any())
+                    <div class="mb-6 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+                        <p class="font-extrabold">Terjadi kesalahan</p>
+                        <p class="mt-1">{{ $errors->first() }}</p>
+                    </div>
+                @endif
 
-                    <div class="mb-8">
-                        <p class="text-sm font-bold text-red-600 uppercase tracking-wide">
-                            Reset Password
-                        </p>
+                <form method="POST" action="{{ route('password.update') }}" class="space-y-5">
+                    @csrf
 
-                        <h2 class="text-3xl font-extrabold text-slate-900 mt-2">
-                            Password Baru
-                        </h2>
+                    <input type="hidden" name="token" value="{{ $token }}">
 
-                        <p class="text-slate-500 mt-3">
-                            Masukkan password baru untuk akun kamu.
-                        </p>
+                    <div>
+                        <label class="block text-sm font-bold text-slate-700" for="resetAccountEmail">Email</label>
+                        <div class="relative mt-2">
+                            <i class="fa-solid fa-envelope absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                            <input id="resetAccountEmail" type="email" name="email" value="{{ $email ?? old('email') }}" required autofocus
+                                placeholder="owner@sekolah.sch.id"
+                                class="w-full rounded-lg border border-slate-200 bg-white py-3.5 pl-11 pr-4 text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-blue-600 focus:ring-4 focus:ring-blue-100">
+                        </div>
+                        @error('email')
+                            <p class="mt-2 text-sm font-semibold text-red-700">{{ $message }}</p>
+                        @enderror
                     </div>
 
-                    @if ($errors->any())
-                        <div class="mb-6 rounded-2xl border border-red-100 bg-red-50 p-4 text-sm text-red-700">
-                            <p class="font-bold mb-1">Terjadi kesalahan</p>
-                            <p>{{ $errors->first() }}</p>
+                    <div>
+                        <label class="block text-sm font-bold text-slate-700" for="passwordInput">Password baru</label>
+                        <div class="relative mt-2">
+                            <i class="fa-solid fa-key absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                            <input id="passwordInput" type="password" name="password" required
+                                placeholder="Masukkan password baru"
+                                class="w-full rounded-lg border border-slate-200 bg-white py-3.5 pl-11 pr-12 text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-blue-600 focus:ring-4 focus:ring-blue-100">
+
+                            <button type="button" id="togglePassword"
+                                class="absolute right-3 top-1/2 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-md text-slate-400 transition hover:bg-slate-100 hover:text-slate-700"
+                                aria-label="Tampilkan password">
+                                <i class="fa-solid fa-eye"></i>
+                            </button>
                         </div>
-                    @endif
+                        @error('password')
+                            <p class="mt-2 text-sm font-semibold text-red-700">{{ $message }}</p>
+                        @enderror
+                    </div>
 
-                    <form method="POST" action="{{ route('password.update') }}" class="space-y-5">
-                        @csrf
+                    <div>
+                        <label class="block text-sm font-bold text-slate-700" for="passwordConfirmInput">Konfirmasi password</label>
+                        <div class="relative mt-2">
+                            <i class="fa-solid fa-shield-halved absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                            <input id="passwordConfirmInput" type="password" name="password_confirmation" required
+                                placeholder="Ulangi password baru"
+                                class="w-full rounded-lg border border-slate-200 bg-white py-3.5 pl-11 pr-12 text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-blue-600 focus:ring-4 focus:ring-blue-100">
 
-                        <input type="hidden" name="token" value="{{ $token }}">
-
-                        {{-- Email --}}
-                        <div>
-                            <label class="block text-sm font-semibold text-slate-700 mb-2">
-                                Alamat Email
-                            </label>
-
-                            <div class="relative">
-                                <i class="fa-solid fa-envelope absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
-
-                                <input type="email" name="email" value="{{ $email ?? old('email') }}" required autofocus
-                                    placeholder="Masukkan email kamu"
-                                    class="w-full pl-11 pr-4 py-3.5 rounded-2xl bg-slate-50 border border-slate-200 text-slate-800
-                                        focus:bg-white focus:border-red-500 focus:ring-4 focus:ring-red-100 outline-none transition">
-                            </div>
-
-                            @error('email')
-                                <p class="text-sm text-red-700 mt-2 font-semibold">{{ $message }}</p>
-                            @enderror
+                            <button type="button" id="togglePasswordConfirm"
+                                class="absolute right-3 top-1/2 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-md text-slate-400 transition hover:bg-slate-100 hover:text-slate-700"
+                                aria-label="Tampilkan konfirmasi password">
+                                <i class="fa-solid fa-eye"></i>
+                            </button>
                         </div>
+                    </div>
 
-                        {{-- Password Baru --}}
-                        <div>
-                            <label class="block text-sm font-semibold text-slate-700 mb-2">
-                                Password Baru
-                            </label>
+                    <button type="submit"
+                        class="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-slate-950 px-5 py-3.5 font-extrabold text-white shadow-sm transition hover:bg-slate-800 focus:outline-none focus:ring-4 focus:ring-slate-200">
+                        <i class="fa-solid fa-floppy-disk"></i>
+                        Simpan password baru
+                    </button>
+                </form>
 
-                            <div class="relative">
-                                <i class="fa-solid fa-lock absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
-
-                                <input type="password" name="password" id="passwordInput" required
-                                    placeholder="Masukkan password baru"
-                                    class="w-full pl-11 pr-12 py-3.5 rounded-2xl bg-slate-50 border border-slate-200 text-slate-800
-                                        focus:bg-white focus:border-red-500 focus:ring-4 focus:ring-red-100 outline-none transition">
-
-                                <button type="button" id="togglePassword"
-                                    class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-red-600 transition">
-                                    <i class="fa-solid fa-eye"></i>
-                                </button>
-                            </div>
-
-                            @error('password')
-                                <p class="text-sm text-red-700 mt-2 font-semibold">{{ $message }}</p>
-                            @enderror
-                        </div>
-
-                        {{-- Konfirmasi Password --}}
-                        <div>
-                            <label class="block text-sm font-semibold text-slate-700 mb-2">
-                                Konfirmasi Password Baru
-                            </label>
-
-                            <div class="relative">
-                                <i class="fa-solid fa-lock absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
-
-                                <input type="password" name="password_confirmation" id="passwordConfirmInput" required
-                                    placeholder="Ulangi password baru"
-                                    class="w-full pl-11 pr-12 py-3.5 rounded-2xl bg-slate-50 border border-slate-200 text-slate-800
-                                        focus:bg-white focus:border-red-500 focus:ring-4 focus:ring-red-100 outline-none transition">
-
-                                <button type="button" id="togglePasswordConfirm"
-                                    class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-red-600 transition">
-                                    <i class="fa-solid fa-eye"></i>
-                                </button>
-                            </div>
-                        </div>
-
-                        <button type="submit"
-                            class="w-full inline-flex items-center justify-center gap-2 py-3.5 rounded-2xl bg-red-600 hover:bg-red-700
-                                text-white font-extrabold shadow-lg shadow-red-200 transition-all duration-300 hover:-translate-y-0.5">
-                            <i class="fa-solid fa-floppy-disk"></i>
-                            Simpan Password Baru
-                        </button>
-                    </form>
-
-                    <a href="{{ route('login') }}"
-                        class="mt-4 inline-flex w-full items-center justify-center gap-2 py-3.5 rounded-2xl bg-white hover:bg-red-50 text-red-700 border border-red-100 font-extrabold transition">
-                        <i class="fa-solid fa-arrow-left"></i>
-                        Kembali ke Login
+                <div class="mt-6 rounded-lg border border-slate-200 bg-slate-50 px-4 py-4 text-sm text-slate-600">
+                    Batal mengganti password?
+                    <a href="{{ route('login') }}" class="font-extrabold text-blue-700 hover:text-blue-900">
+                        Kembali ke login
                     </a>
-
-                    <div class="mt-8 text-center text-sm text-slate-400">
-                        © {{ date('Y') }} {{ $appName }} · Bantuan: {{ $supportContact }}
-                    </div>
                 </div>
-            </div>
-        </div>
+            </section>
+        </main>
+
+        <footer class="mx-auto flex w-full max-w-6xl flex-col gap-2 px-5 pb-8 text-xs font-semibold text-slate-500 sm:flex-row sm:items-center sm:justify-between">
+            <span>jejakcita.id</span>
+            <span>Password Reset</span>
+        </footer>
     </div>
 @endsection
 
 @push('scripts')
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            function setupToggle(inputId, btnId) {
+            function setupToggle(inputId, buttonId) {
                 const input = document.getElementById(inputId);
-                const btn = document.getElementById(btnId);
-                if (!input || !btn) return;
-                btn.addEventListener('click', function () {
+                const button = document.getElementById(buttonId);
+
+                if (!input || !button) {
+                    return;
+                }
+
+                button.addEventListener('click', function () {
                     const isPassword = input.type === 'password';
+
                     input.type = isPassword ? 'text' : 'password';
                     this.innerHTML = isPassword
                         ? '<i class="fa-solid fa-eye-slash"></i>'

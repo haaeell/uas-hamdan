@@ -19,9 +19,24 @@ class Setting extends Model
 
     protected static array $cachedSettings = [];
 
+    protected static function contextOwnerId(): ?int
+    {
+        $ownerId = OwnerContext::id();
+
+        if ($ownerId) {
+            return $ownerId;
+        }
+
+        if (!auth()->check()) {
+            return session('exam_owner_id') ?: null;
+        }
+
+        return null;
+    }
+
     protected static function cacheKey(): string
     {
-        return 'settings.all_keyed.' . (OwnerContext::id() ?: session('exam_owner_id', 'global')) . '.v1';
+        return 'settings.all_keyed.' . (static::contextOwnerId() ?: 'global') . '.v2';
     }
 
     public static function definitions(): array
@@ -147,9 +162,17 @@ class Setting extends Model
         if (!isset(static::$cachedSettings[$cacheKey])) {
             static::$cachedSettings[$cacheKey] = Cache::store('file')->rememberForever(
                 $cacheKey,
-                    fn () => static::query()
-                        ->when(OwnerContext::id() ?: session('exam_owner_id'), fn ($query, $ownerId) => $query->where('owner_id', $ownerId))
-                        ->pluck('value', 'key')
+                function () {
+                    $ownerId = static::contextOwnerId();
+
+                    return static::query()
+                        ->when(
+                            $ownerId,
+                            fn ($query) => $query->where('owner_id', $ownerId),
+                            fn ($query) => $query->whereNull('owner_id')
+                        )
+                        ->pluck('value', 'key');
+                }
             );
         }
 
@@ -177,6 +200,7 @@ class Setting extends Model
     {
         $definitions = static::definitions();
         $currentValues = static::allKeyed();
+        $ownerId = static::contextOwnerId();
 
         foreach ($definitions as $key => $definition) {
             $value = array_key_exists($key, $values)
@@ -187,7 +211,7 @@ class Setting extends Model
 
             static::updateOrCreate(
                 [
-                    'owner_id' => OwnerContext::id(),
+                    'owner_id' => $ownerId,
                     'key' => $key,
                 ],
                 [

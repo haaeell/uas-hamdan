@@ -16,15 +16,32 @@ class SettingController extends Controller
     {
         $definitions = Setting::groupedDefinitions();
         $values = [];
+        $user = auth()->user();
         $examLink = auth()->user()->exam_token
             ? route('student.login', auth()->user()->exam_token)
             : null;
+        $hasLogo = Setting::hasLogo();
+        $logoUrl = $hasLogo ? Setting::logoUrl() : null;
+        $settingScopeLabel = $user?->role === 'owner'
+            ? 'Owner: ' . $user->name
+            : 'Global platform';
+        $settingScopeDescription = $user?->role === 'owner'
+            ? 'Pengaturan ini hanya berlaku untuk siswa, panel, laporan, dan PDF milik owner ini.'
+            : 'Pengaturan ini tidak mengambil data owner mana pun.';
 
         foreach (array_keys(Setting::definitions()) as $key) {
             $values[$key] = Setting::getSetting($key);
         }
 
-        return view('admin.settings.index', compact('definitions', 'values', 'examLink'));
+        return view('admin.settings.index', compact(
+            'definitions',
+            'values',
+            'examLink',
+            'hasLogo',
+            'logoUrl',
+            'settingScopeLabel',
+            'settingScopeDescription'
+        ));
     }
 
     public function update(Request $request, ActivityLogService $logger)

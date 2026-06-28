@@ -1,12 +1,6 @@
 @extends('layouts.auth')
 
 @section('content')
-    @php
-        $appName    = \App\Models\Setting::getSetting('app_name', 'Sistem Pemilihan Jurusan');
-        $schoolName = \App\Models\Setting::getSetting('school_name', 'Sekolah Menengah Atas');
-        $supportContact = \App\Models\Setting::getSetting('support_contact', 'Hubungi admin sekolah');
-    @endphp
-
     <div class="min-h-screen bg-slate-100 flex items-center justify-center px-4 py-10">
         <div class="w-full max-w-6xl grid lg:grid-cols-2 bg-white rounded-[36px] overflow-hidden shadow-2xl shadow-blue-100 border border-slate-200">
 
@@ -24,7 +18,7 @@
 
                         <h1 class="text-4xl font-extrabold mt-8 leading-tight">Login Siswa</h1>
                         <p class="text-white/80 mt-3 text-lg font-semibold">{{ $owner->name }}</p>
-                        <p class="text-white/60 mt-1">{{ $schoolName }}</p>
+                        <p class="text-white/60 mt-1">Portal siswa jejakcita.id</p>
                         <p class="text-white/70 mt-4 leading-relaxed max-w-md">
                             Masuk menggunakan NISN dan password yang diberikan oleh admin untuk mengikuti tes pemilihan jurusan.
                         </p>
@@ -106,7 +100,7 @@
                     </form>
 
                     <div class="mt-8 text-center text-sm text-slate-400">
-                        © {{ date('Y') }} {{ $appName }} · Bantuan: {{ $supportContact }}
+                        © {{ date('Y') }} jejakcita.id · Portal Siswa
                     </div>
                 </div>
             </div>
